@@ -300,43 +300,101 @@ const KEEPER_EXCLUSIONS: Record<string, TermState> = {
   xxl: 'exclude',
 };
 
-export const SEARCH_PRESETS: SearchPreset[] = [
+// IV spreads favored in capped PvP leagues: low attack, high defense and HP.
+const PVP_IVS: Partial<SearchStringState> = { stats: { attack: [0, 1], defense: [3, 4], hp: [3, 4] } };
+
+export interface SearchPresetGroup {
+  title: string;
+  presets: SearchPreset[];
+}
+
+export const SEARCH_PRESET_GROUPS: SearchPresetGroup[] = [
   {
-    label: 'Transfer candidates',
-    description: '0–2★ Pokémon that are not shiny, lucky, shadow, legendary, costumed, or favorited.',
-    state: withTerms({ '0*': 'include', '1*': 'include', '2*': 'include', ...KEEPER_EXCLUSIONS }),
+    title: 'PvP IVs',
+    presets: [
+      {
+        label: 'Little Cup IVs',
+        description: 'PvP-friendly IVs at or under 500 CP.',
+        state: withTerms({}, { ...PVP_IVS, ranges: { cp: { min: '', max: '500' } } }),
+      },
+      {
+        label: 'Great League IVs',
+        description: 'PvP-friendly IVs at or under 1,500 CP.',
+        state: withTerms({}, { ...PVP_IVS, ranges: { cp: { min: '', max: '1500' } } }),
+      },
+      {
+        label: 'Ultra League IVs',
+        description: 'PvP-friendly IVs at or under 2,500 CP.',
+        state: withTerms({}, { ...PVP_IVS, ranges: { cp: { min: '', max: '2500' } } }),
+      },
+      {
+        label: 'Master League IVs',
+        description: 'Uncapped league: three or more bars in every stat.',
+        state: withTerms({}, { stats: { attack: [3, 4], defense: [3, 4], hp: [3, 4] } }),
+      },
+    ],
   },
   {
-    label: 'Hundos',
-    description: 'Perfect 15/15/15 Pokémon.',
-    state: withTerms({ '4*': 'include' }),
+    title: 'Cleanup',
+    presets: [
+      {
+        label: 'Transfer candidates',
+        description: '0–2★ Pokémon that are not shiny, lucky, shadow, legendary, costumed, or favorited.',
+        state: withTerms({ '0*': 'include', '1*': 'include', '2*': 'include', ...KEEPER_EXCLUSIONS }),
+      },
+      {
+        label: 'Today’s catches to transfer',
+        description: 'The same filter, limited to Pokémon caught today.',
+        state: withTerms(
+          { '0*': 'include', '1*': 'include', '2*': 'include', ...KEEPER_EXCLUSIONS },
+          { ranges: { age: { min: '0', max: '0' } } }
+        ),
+      },
+    ],
   },
   {
-    label: 'Nundos',
-    description: 'Zero-IV 0/0/0 Pokémon.',
-    state: withTerms({}, { stats: { attack: [0, 0], defense: [0, 0], hp: [0, 0] } }),
-  },
-  {
-    label: 'Great League IVs',
-    description: 'Low attack, high defense and HP, at or under 1,500 CP.',
-    state: withTerms(
-      {},
-      { ranges: { cp: { min: '', max: '1500' } }, stats: { attack: [0, 1], defense: [3, 4], hp: [3, 4] } }
-    ),
-  },
-  {
-    label: 'Trade evolutions',
-    description: 'Untraded Pokémon that evolve for free after a trade.',
-    state: withTerms({ tradeevolve: 'include', traded: 'exclude' }),
-  },
-  {
-    label: 'New Pokédex entries',
-    description: 'Evolutions that would register a new Pokédex entry.',
-    state: withTerms({ evolvenew: 'include' }),
-  },
-  {
-    label: 'Legacy moves',
-    description: 'Pokémon knowing a move they can no longer learn.',
-    state: withTerms({ '@special': 'include' }),
+    title: 'Collection & Trading',
+    presets: [
+      {
+        label: 'Hundos',
+        description: 'Perfect 15/15/15 Pokémon.',
+        state: withTerms({ '4*': 'include' }),
+      },
+      {
+        label: 'Nundos',
+        description: 'Zero-IV 0/0/0 Pokémon.',
+        state: withTerms({}, { stats: { attack: [0, 0], defense: [0, 0], hp: [0, 0] } }),
+      },
+      {
+        label: 'Lucky trade candidates',
+        description: 'Untraded, non-lucky Pokémon caught 2016–2019, which trade into lucky more often.',
+        state: withTerms(
+          { traded: 'exclude', lucky: 'exclude' },
+          { custom: 'year2016,year2017,year2018,year2019' }
+        ),
+      },
+      {
+        label: 'Trade evolutions',
+        description: 'Untraded Pokémon that evolve for free after a trade.',
+        state: withTerms({ tradeevolve: 'include', traded: 'exclude' }),
+      },
+      {
+        label: 'New Pokédex entries',
+        description: 'Evolutions that would register a new Pokédex entry.',
+        state: withTerms({ evolvenew: 'include' }),
+      },
+      {
+        label: 'Legacy moves',
+        description: 'Pokémon knowing a move they can no longer learn.',
+        state: withTerms({ '@special': 'include' }),
+      },
+      {
+        label: 'Max Battle Pokémon',
+        description: 'Dynamax and Gigantamax Pokémon.',
+        state: withTerms({ dynamax: 'include', gigantamax: 'include' }),
+      },
+    ],
   },
 ];
+
+export const SEARCH_PRESETS: SearchPreset[] = SEARCH_PRESET_GROUPS.flatMap(({ presets }) => presets);

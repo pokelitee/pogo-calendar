@@ -13,12 +13,13 @@ import { Label } from '../components/ui/label';
 import { Slider } from '../components/ui/slider';
 import { ToggleGroup, ToggleGroupItem } from '../components/ui/toggle-group';
 import {
-  SEARCH_PRESETS,
+  SEARCH_PRESET_GROUPS,
   SEARCH_RANGE_FIELDS,
   SEARCH_RANGE_KEYS,
   SEARCH_SECTIONS,
   SEARCH_TERM_CATEGORIES,
   SEARCH_TERM_GROUPS,
+  type SearchPreset,
   type SearchRangeField,
   type SearchSection,
   type SearchSectionField,
@@ -150,6 +151,38 @@ function RangeInputs({
         />
       </div>
     </div>
+  );
+}
+
+const PRESET_STRINGS = new Map(
+  SEARCH_PRESET_GROUPS.flatMap(({ presets }) => presets).map((preset) => [
+    preset.label,
+    buildSearchString({ ...EMPTY_SEARCH_STATE, ...preset.state }, SEARCH_TERM_GROUPS, SEARCH_RANGE_KEYS),
+  ])
+);
+
+function PresetButton({
+  preset,
+  active,
+  onApply,
+}: {
+  preset: SearchPreset;
+  active: boolean;
+  onApply: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onApply}
+      aria-pressed={active}
+      className={cn(
+        'flex flex-col gap-0.5 rounded-md border px-3 py-2 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        active ? 'border-primary bg-primary/10' : 'border-border bg-card hover:bg-accent'
+      )}
+    >
+      <span className={cn('text-sm font-semibold', active && 'text-primary')}>{preset.label}</span>
+      <span className="text-xs text-muted-foreground">{preset.description}</span>
+    </button>
   );
 }
 
@@ -297,17 +330,23 @@ function SearchStringBuilderPage() {
           <Card className="p-4">
             <h2 className="text-base font-semibold">Presets</h2>
             <p className="mb-3 text-sm text-muted-foreground">Start from a common search, then adjust it.</p>
-            <div className="flex flex-wrap gap-2">
-              {SEARCH_PRESETS.map((preset) => (
-                <Button
-                  key={preset.label}
-                  variant="outline"
-                  size="sm"
-                  title={preset.description}
-                  onClick={() => setState({ ...EMPTY_SEARCH_STATE, ...preset.state })}
-                >
-                  {preset.label}
-                </Button>
+            <div className="flex flex-col gap-4">
+              {SEARCH_PRESET_GROUPS.map((group) => (
+                <div key={group.title} className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    {group.title}
+                  </p>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                    {group.presets.map((preset) => (
+                      <PresetButton
+                        key={preset.label}
+                        preset={preset}
+                        active={searchString !== '' && searchString === PRESET_STRINGS.get(preset.label)}
+                        onApply={() => setState({ ...EMPTY_SEARCH_STATE, ...preset.state })}
+                      />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           </Card>
