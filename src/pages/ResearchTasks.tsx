@@ -1,6 +1,7 @@
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { ShinyChip } from '../components/filters/shared';
+import { CopyDexSearchButton } from '../components/shared/CopyDexSearchButton';
 import { DataErrorDisplay } from '../components/shared/DataErrorDisplay';
 import { DataImage } from '../components/shared/DataImage';
 import { DataLoadingSkeleton } from '../components/shared/DataLoadingSkeleton';
@@ -189,7 +190,14 @@ function ResearchTasksPage() {
       <PageHeader
         title="Research Tasks"
         description="Current field research tasks and their rewards"
-        actions={<ViewModeToggle value={viewMode} onChange={setViewMode} />}
+        actions={
+          <div className="flex items-center gap-2">
+            <CopyDexSearchButton pokemon={Object.values(filteredData)
+                .flat()
+                .flatMap((task) => task.rewards.filter((reward) => reward.type === 'encounter'))} />
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          </div>
+        }
       />
 
       <Alert variant="info" className="mb-6">

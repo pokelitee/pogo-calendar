@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { CopyDexSearchButton } from '../components/shared/CopyDexSearchButton';
 import { DataLoadingSkeleton } from '../components/shared/DataLoadingSkeleton';
 import { NoResults } from '../components/shared/NoResults';
 import { PageHeader } from '../components/shared/PageHeader';
@@ -66,7 +67,12 @@ function ShinyTrackerPage() {
         <NoResults message="No shiny-eligible Pokémon match these filters." />
       ) : (
         <>
-          <p className="mb-3 text-sm text-muted-foreground">{shinies.length} shiny-eligible Pokémon</p>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm text-muted-foreground">{shinies.length} shiny-eligible Pokémon</p>
+            <CopyDexSearchButton
+              pokemon={shinies.map((entry) => ({ asset_url: entry.assetUrl }))}
+            />
+          </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {shinies.map((entry) => (
               <PokemonAvailabilityCard key={entry.name} entry={entry} />

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ShadowChip, ShinyChip } from '../components/filters/shared';
+import { CopyDexSearchButton } from '../components/shared/CopyDexSearchButton';
 import { DataErrorDisplay } from '../components/shared/DataErrorDisplay';
 import { DataImage } from '../components/shared/DataImage';
 import { DataLoadingSkeleton } from '../components/shared/DataLoadingSkeleton';
@@ -182,7 +183,12 @@ function RaidBossesPage() {
       <PageHeader
         title="Raid Bosses"
         description="Current raid bosses available in Pokémon GO"
-        actions={<ViewModeToggle value={viewMode} onChange={setViewMode} />}
+        actions={
+          <div className="flex items-center gap-2">
+            <CopyDexSearchButton pokemon={Object.values(filteredData).flat()} />
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          </div>
+        }
       />
 
       <Alert variant="info" className="mb-6">

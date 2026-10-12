@@ -3,6 +3,7 @@ import test from 'node:test';
 import { SEARCH_PRESETS, SEARCH_TERM_KEYWORDS } from '../src/config/searchTerms.ts';
 import {
   EMPTY_SEARCH_STATE,
+  buildDexSearchString,
   buildSearchString,
   nextTermState,
 } from '../src/utils/searchString.ts';
@@ -89,4 +90,9 @@ test('builds the documented preset strings', () => {
 test('uses each search keyword only once', () => {
   const keywords = SEARCH_TERM_KEYWORDS.flat();
   assert.equal(new Set(keywords).size, keywords.length);
+});
+
+test('builds a sorted, de-duplicated dex number search', () => {
+  assert.equal(buildDexSearchString([570, 25, 104, 25]), '25,104,570');
+  assert.equal(buildDexSearchString([]), '');
 });

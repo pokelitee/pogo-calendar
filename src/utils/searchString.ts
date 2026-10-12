@@ -102,3 +102,13 @@ export function nextTermState(current: TermState | undefined): TermState | undef
   if (current === 'include') return 'exclude';
   return undefined;
 }
+
+/**
+ * Builds a search string matching any of the given Pokédex numbers. Numbers
+ * work in every game language, unlike species names and keywords.
+ */
+export function buildDexSearchString(dexNumbers: Iterable<number>): string {
+  return Array.from(new Set(dexNumbers))
+    .sort((a, b) => a - b)
+    .join(',');
+}
