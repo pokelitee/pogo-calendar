@@ -8,7 +8,6 @@ import {
   Menu,
   RefreshCw,
   Ship,
-  Wrench,
   Sliders,
   X,
   Zap,
@@ -66,10 +65,7 @@ const NAV_ENTRIES: NavEntry[] = [
   },
   {
     label: 'Tools',
-    items: [
-      { label: 'All Tools', path: ROUTES.TOOLS, icon: Wrench },
-      ...TOOLS.map(({ label, path, icon }) => ({ label, path, icon })),
-    ],
+    items: TOOLS,
   },
   { label: 'FAQ', path: ROUTES.FAQ, icon: HelpCircle },
 ];
