@@ -2,52 +2,45 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
+// Matches modules inside the named node_modules packages, with either path separator.
+const vendor = (...packages: string[]) =>
+  new RegExp(
+    `[\\\\/]node_modules[\\\\/](${packages.map((name) => name.replace('/', '[\\\\/]')).join('|')})[\\\\/]`
+  );
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: '/pogo-calendar',
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          // React core
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+        codeSplitting: {
+          groups: [
+            // React core
+            {
+              name: 'react-vendor',
+              test: vendor('react', 'react-dom', 'react-router', 'react-router-dom', 'scheduler'),
+            },
 
-          // Radix UI primitives
-          'radix-vendor': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-popover',
-            '@radix-ui/react-tooltip',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-checkbox',
-            '@radix-ui/react-switch',
-            '@radix-ui/react-slider',
-            '@radix-ui/react-toggle-group',
-            '@radix-ui/react-select',
-            '@radix-ui/react-toast',
-            '@radix-ui/react-hover-card',
-            '@radix-ui/react-label',
-            '@radix-ui/react-separator',
-            '@radix-ui/react-slot',
+            // Radix UI primitives
+            { name: 'radix-vendor', test: vendor('@radix-ui/[^\\\\/]+') },
+            { name: 'icons', test: vendor('lucide-react') },
+            { name: 'pickers', test: vendor('react-day-picker', 'cmdk') },
+
+            // FullCalendar
+            { name: 'fullcalendar-core', test: vendor('@fullcalendar/core', '@fullcalendar/react', 'preact') },
+            {
+              name: 'fullcalendar-plugins',
+              test: vendor('@fullcalendar/daygrid', '@fullcalendar/list', '@fullcalendar/interaction'),
+            },
+
+            // Date utilities
+            { name: 'date-utils', test: vendor('date-fns') },
+
+            // Other utilities
+            { name: 'utils', test: vendor('ics', 'uuid') },
           ],
-          icons: ['lucide-react'],
-          pickers: ['react-day-picker', 'cmdk'],
-
-          // FullCalendar
-          'fullcalendar-core': ['@fullcalendar/core', '@fullcalendar/react'],
-          'fullcalendar-plugins': [
-            '@fullcalendar/daygrid',
-            '@fullcalendar/list',
-            '@fullcalendar/interaction',
-          ],
-
-          // Date utilities
-          'date-utils': ['date-fns'],
-
-          // Other utilities
-          utils: ['ics', 'uuid'],
         },
       },
     },
