@@ -1,15 +1,15 @@
 import type { CalendarEvent } from '../types/events';
+import type { DataManifest } from '../types/manifest';
 
-export const EVENT_ARCHIVE_START_YEAR = 2025;
+const ARCHIVE_PATH_PATTERN = /^archives\/archive_(\d{4})\.json$/;
 
-export function getEventArchiveYears(
-  currentYear = new Date().getFullYear()
-): number[] {
-  if (currentYear < EVENT_ARCHIVE_START_YEAR) return [];
-  return Array.from(
-    { length: currentYear - EVENT_ARCHIVE_START_YEAR + 1 },
-    (_, index) => EVENT_ARCHIVE_START_YEAR + index
-  );
+export function getEventArchiveYears(manifest: DataManifest): number[] {
+  return Object.keys(manifest.files)
+    .flatMap((path) => {
+      const match = ARCHIVE_PATH_PATTERN.exec(path);
+      return match ? [Number(match[1])] : [];
+    })
+    .sort((a, b) => a - b);
 }
 
 export function mergeEventCollections(

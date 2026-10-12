@@ -10,13 +10,15 @@ import {
   localDateTimeToInstant,
 } from '../utils/eventTimeUtils';
 import { getEventArchiveYears } from '../utils/eventHistoryUtils';
+import { fetchManifest } from './dataService';
 import { parseArchiveEventData, parseEventData } from './dataValidation';
 
 type EventDetails = ApiEvent['details'];
 
 type ApiResponse = Record<string, ApiEvent[]>;
 
-const archiveDataCache = new Map<number, ApiResponse>();
+// Keyed by year; the stored hash lets a refresh pick up a changed archive.
+const archiveDataCache = new Map<number, { sha256: string; data: ApiResponse }>();
 
 interface TimezoneApiItem {
   text: string;
@@ -139,9 +141,12 @@ function transformApiData(
   return events;
 }
 
-async function fetchArchiveData(year: number): Promise<ApiResponse> {
+async function fetchArchiveData(
+  year: number,
+  sha256: string
+): Promise<ApiResponse> {
   const cached = archiveDataCache.get(year);
-  if (cached) return cached;
+  if (cached?.sha256 === sha256) return cached.data;
 
   const response = await fetch(getEventArchiveApiUrl(year), { cache: 'no-store' });
   if (!response.ok) {
@@ -151,7 +156,7 @@ async function fetchArchiveData(year: number): Promise<ApiResponse> {
   }
 
   const data = parseArchiveEventData(await response.json());
-  archiveDataCache.set(year, data);
+  archiveDataCache.set(year, { sha256, data });
   return data;
 }
 
@@ -175,11 +180,13 @@ export const fetchEvents = async (
 };
 
 export const fetchEventHistory = async (
-  timezone: string,
-  currentYear = new Date().getFullYear()
+  timezone: string
 ): Promise<CalendarEvent[]> => {
+  const manifest = await fetchManifest();
   const archives = await Promise.all(
-    getEventArchiveYears(currentYear).map(fetchArchiveData)
+    getEventArchiveYears(manifest).map((year) =>
+      fetchArchiveData(year, manifest.files[`archives/archive_${year}.json`].sha256)
+    )
   );
 
   return archives.flatMap((archive) => transformApiData(archive, timezone));
