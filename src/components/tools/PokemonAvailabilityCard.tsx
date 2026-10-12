@@ -43,16 +43,11 @@ function SourceRow({ source }: { source: PokemonSource }) {
   );
 }
 
-interface PokemonAvailabilityCardProps {
-  entry: PokemonAvailability;
-  sources?: PokemonSource[];
-}
-
 /**
- * Shows a Pokémon and where it can be obtained. Pass `sources` to show a
- * subset, such as only the shiny-eligible ones.
+ * Shows a Pokémon and where it can be obtained.
  */
-export function PokemonAvailabilityCard({ entry, sources = entry.sources }: PokemonAvailabilityCardProps) {
+export function PokemonAvailabilityCard({ entry }: { entry: PokemonAvailability }) {
+  const { sources } = entry;
   return (
     <Card className="flex gap-4 p-4">
       <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted">
