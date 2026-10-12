@@ -4,10 +4,23 @@ updates:
     directory: "/"
     schedule:
       interval: monthly
+    # Packages that must be upgraded together are grouped for every update
+    # type; a lone major bump in these sets cannot install.
     groups:
+      vite:
+        patterns: ["vite", "@vitejs/*"]
+      eslint:
+        patterns: ["eslint", "@eslint/*", "eslint-plugin-*", "typescript-eslint"]
+      fullcalendar:
+        patterns: ["@fullcalendar/*"]
       npm-dependencies:
         patterns: ["*"]
         update-types: [minor, patch]
+    ignore:
+      # @fullcalendar/core and react have a stable 7.x, but the daygrid, list
+      # and interaction plugins are still 7.0.0 release candidates.
+      - dependency-name: "@fullcalendar/*"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: "/"
