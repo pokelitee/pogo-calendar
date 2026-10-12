@@ -378,9 +378,9 @@ function SearchStringBuilderPage() {
           </Card>
         </div>
 
-        <Card className="flex flex-col gap-3 p-4 lg:sticky lg:top-20">
-          <h2 className="text-base font-semibold">Your Search String</h2>
-          <code aria-live="polite" className="min-h-16 break-all rounded-md bg-muted p-3 font-mono text-sm">
+        <Card className="sticky bottom-24 z-10 flex flex-col gap-3 p-3 shadow-soft-lg lg:bottom-auto lg:top-20 lg:p-4 lg:shadow-soft-sm">
+          <h2 className="hidden text-base font-semibold lg:block">Your Search String</h2>
+          <code aria-live="polite" className="break-all lg:min-h-16 rounded-md bg-muted p-3 font-mono text-sm">
             {searchString || <span className="text-muted-foreground">Select filters to build a search.</span>}
           </code>
           <div className="flex gap-2">
