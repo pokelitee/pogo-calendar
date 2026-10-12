@@ -6,6 +6,14 @@ import type { RocketLineupData } from '../types/rocketLineup';
 
 export type PokemonSourceKind = 'event' | 'raid' | 'egg' | 'research' | 'rocket';
 
+export const POKEMON_SOURCE_KIND_LABELS: Record<PokemonSourceKind, string> = {
+  event: 'Event',
+  raid: 'Raid',
+  egg: 'Egg',
+  research: 'Research',
+  rocket: 'Rocket',
+};
+
 export type EventTiming = 'active' | 'upcoming';
 
 export interface PokemonSource {
@@ -138,4 +146,20 @@ export function searchPokemonAvailability(
   const needle = normalizeSearchText(query);
   if (!needle) return [];
   return entries.filter((entry) => normalizeSearchText(entry.name).includes(needle));
+}
+
+/**
+ * Keeps only shiny-eligible sources, optionally limited to some source kinds,
+ * and drops Pokémon left with none.
+ */
+export function getShinyAvailability(
+  entries: PokemonAvailability[],
+  kinds?: ReadonlySet<PokemonSourceKind>
+): PokemonAvailability[] {
+  return entries.flatMap((entry) => {
+    const sources = entry.sources.filter(
+      (source) => source.shiny && (!kinds || kinds.size === 0 || kinds.has(source.kind))
+    );
+    return sources.length > 0 ? [{ ...entry, sources }] : [];
+  });
 }

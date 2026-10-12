@@ -1,4 +1,4 @@
-import { MapPin, Search, type LucideIcon } from 'lucide-react';
+import { MapPin, Search, Sparkles, type LucideIcon } from 'lucide-react';
 import { ROUTES } from './routes';
 
 export interface ToolDefinition {
@@ -20,5 +20,11 @@ export const TOOLS: ToolDefinition[] = [
     description: 'See every current event, raid, egg, research task, and Rocket encounter that offers a Pokémon.',
     path: ROUTES.POKEMON_FINDER,
     icon: MapPin,
+  },
+  {
+    label: 'Shinies Available Now',
+    description: 'Every Pokémon currently obtainable as a shiny, grouped with where to find it.',
+    path: ROUTES.SHINY_TRACKER,
+    icon: Sparkles,
   },
 ];

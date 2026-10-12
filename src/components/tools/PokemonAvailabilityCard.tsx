@@ -1,6 +1,11 @@
 import { Link as RouterLink } from 'react-router-dom';
 import { ROUTES } from '../../config/routes';
-import type { PokemonAvailability, PokemonSource, PokemonSourceKind } from '../../utils/pokemonAvailability';
+import {
+  POKEMON_SOURCE_KIND_LABELS,
+  type PokemonAvailability,
+  type PokemonSource,
+  type PokemonSourceKind,
+} from '../../utils/pokemonAvailability';
 import { getPokemonFieldTitle } from '../../utils/eventDetailUtils';
 import { DataImage } from '../shared/DataImage';
 import { ShinyIndicator } from '../shared/ShinyIndicator';
@@ -8,21 +13,20 @@ import { ShinyChip } from '../filters/shared';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 
-const SOURCE_KIND_DETAILS: Record<PokemonSourceKind, { label: string; path: string }> = {
-  event: { label: 'Event', path: ROUTES.CALENDAR },
-  raid: { label: 'Raid', path: ROUTES.RAID_BOSSES },
-  egg: { label: 'Egg', path: ROUTES.EGG_POOL },
-  research: { label: 'Research', path: ROUTES.RESEARCH_TASKS },
-  rocket: { label: 'Rocket', path: ROUTES.ROCKET_LINEUP },
+const SOURCE_KIND_PATHS: Record<PokemonSourceKind, string> = {
+  event: ROUTES.CALENDAR,
+  raid: ROUTES.RAID_BOSSES,
+  egg: ROUTES.EGG_POOL,
+  research: ROUTES.RESEARCH_TASKS,
+  rocket: ROUTES.ROCKET_LINEUP,
 };
 
 function SourceRow({ source }: { source: PokemonSource }) {
-  const kind = SOURCE_KIND_DETAILS[source.kind];
   return (
     <li className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-      <RouterLink to={kind.path} className="no-underline">
+      <RouterLink to={SOURCE_KIND_PATHS[source.kind]} className="no-underline">
         <Badge variant="outline" size="sm">
-          {kind.label}
+          {POKEMON_SOURCE_KIND_LABELS[source.kind]}
         </Badge>
       </RouterLink>
       <span className="min-w-0">

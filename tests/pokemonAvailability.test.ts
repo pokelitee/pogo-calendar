@@ -4,6 +4,7 @@ import type { CalendarEvent } from '../src/types/events.ts';
 import {
   buildPokemonAvailability,
   getDexNumber,
+  getShinyAvailability,
   searchPokemonAvailability,
 } from '../src/utils/pokemonAvailability.ts';
 
@@ -119,4 +120,24 @@ test('searches names ignoring case and accents', () => {
   assert.deepEqual(searchPokemonAvailability(entries, 'FLABEBE').map(({ name }) => name), ['Flabébé']);
   assert.deepEqual(searchPokemonAvailability(entries, 'meow').map(({ name }) => name), ['Galarian Meowth']);
   assert.deepEqual(searchPokemonAvailability(entries, '  '), []);
+});
+
+test('keeps only shiny sources, optionally for some source kinds', () => {
+  const entries = buildPokemonAvailability({
+    eggPool: {
+      '5 km Eggs': [
+        { ...pokemon('Zorua', null, true), hatch_distance: 5, rarity_tier: 1 },
+        { ...pokemon('Pidgey', null, false), hatch_distance: 5, rarity_tier: 1 },
+      ],
+    },
+    rocketLineups: {
+      Cliff: [{ slot: 1, pokemons: [pokemon('Zorua', null, false)], is_encounter: true }],
+    },
+  });
+
+  const shiny = getShinyAvailability(entries);
+  assert.deepEqual(shiny.map(({ name }) => name), ['Zorua']);
+  assert.deepEqual(shiny[0].sources.map(({ kind }) => kind), ['egg']);
+  assert.deepEqual(getShinyAvailability(entries, new Set(['rocket'])), []);
+  assert.deepEqual(getShinyAvailability(entries, new Set()).map(({ name }) => name), ['Zorua']);
 });

@@ -12,6 +12,7 @@ export const ROUTES = {
   TOOLS: '/tools',
   SEARCH_STRING_BUILDER: '/tools/search-string',
   POKEMON_FINDER: '/tools/pokemon-finder',
+  SHINY_TRACKER: '/tools/shinies',
   FAQ: '/faq',
 } as const;
 
