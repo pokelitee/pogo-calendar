@@ -4,15 +4,46 @@ export type StatName = 'attack' | 'defense' | 'hp';
 
 export type StatRange = [min: number, max: number];
 
+// '' matches a move in any slot; 1 is the fast move, 2 and 3 the charged moves.
+export type MoveSlot = '' | '1' | '2' | '3';
+
+export type RangeKey =
+  | 'cp'
+  | 'hp'
+  | 'distance'
+  | 'age'
+  | 'year'
+  | 'buddy'
+  | 'mega'
+  | 'count'
+  | 'countcandy'
+  | 'countcandyxl'
+  | 'candykm';
+
+export interface NumberRange {
+  min: string;
+  max: string;
+}
+
 export interface SearchStringState {
   // Comma-separated Pokémon names, dex numbers, or dex ranges such as 1-151.
   pokemon: string;
   includeFamily: boolean;
+  // Comma-separated tag names, without the leading #.
+  tags: string;
   terms: Record<string, TermState>;
-  cpMin: string;
-  cpMax: string;
+  moveSlot: MoveSlot;
+  // Comma-separated move names, without the leading @.
+  moveNames: string;
+  ranges: Partial<Record<RangeKey, NumberRange>>;
   stats: Record<StatName, StatRange>;
   custom: string;
+}
+
+export interface SearchTermGroup {
+  keywords: string[];
+  // Whether the move slot prefix applies, as for move-type keywords (@fire).
+  slotted?: boolean;
 }
 
 export const STAT_NAMES: StatName[] = ['attack', 'defense', 'hp'];
@@ -22,31 +53,44 @@ export const FULL_STAT_RANGE: StatRange = [0, 4];
 export const EMPTY_SEARCH_STATE: SearchStringState = {
   pokemon: '',
   includeFamily: false,
+  tags: '',
   terms: {},
-  cpMin: '',
-  cpMax: '',
+  moveSlot: '',
+  moveNames: '',
+  ranges: {},
   stats: { attack: FULL_STAT_RANGE, defense: FULL_STAT_RANGE, hp: FULL_STAT_RANGE },
   custom: '',
 };
 
 const DEX_TOKEN_PATTERN = /^\d+(-\d*)?$|^-\d+$/;
 
-function parsePokemonTokens(value: string, includeFamily: boolean): string[] {
+function splitList(value: string): string[] {
   return value
     .split(/[,;]/)
     .map((token) => token.trim().toLowerCase())
-    .filter(Boolean)
-    .map((token) =>
-      // The family prefix only applies to species names, not dex numbers.
-      includeFamily && !DEX_TOKEN_PATTERN.test(token) ? `+${token}` : token
-    );
+    .filter(Boolean);
 }
 
-function formatRange(prefix: string, min: string, max: string): string | null {
-  const low = min.trim();
-  const high = max.trim();
+function parsePokemonTokens(value: string, includeFamily: boolean): string[] {
+  return splitList(value).map((token) =>
+    // The family prefix only applies to species names, not dex numbers.
+    includeFamily && !DEX_TOKEN_PATTERN.test(token) ? `+${token}` : token
+  );
+}
+
+function withMoveSlot(keyword: string, slot: MoveSlot): string {
+  return slot ? `@${slot}${keyword.slice(1)}` : keyword;
+}
+
+/**
+ * Formats a numeric range term: `cp10-500`, `cp2500-` (at least), or
+ * `cp-1500` (at most). Equal bounds collapse to a single value.
+ */
+export function formatRange(prefix: string, range: NumberRange | undefined): string | null {
+  const low = range?.min.trim() ?? '';
+  const high = range?.max.trim() ?? '';
   if (!low && !high) return null;
-  if (low && high) return `${prefix}${low}-${high}`;
+  if (low && high) return low === high ? `${prefix}${low}` : `${prefix}${low}-${high}`;
   return low ? `${prefix}${low}-` : `${prefix}-${high}`;
 }
 
@@ -57,41 +101,52 @@ function formatStat(stat: StatName, [min, max]: StatRange): string | null {
 
 /**
  * Builds a Pokémon GO storage search string. In-game, `,` (OR) binds tighter
- * than `&` (AND), so each category's included terms form one OR group and
- * every excluded term becomes its own `!term` group.
+ * than `&` (AND), so each group's included terms form one OR group and every
+ * excluded term becomes its own `!term` group.
  *
  * @param state The builder selections.
- * @param categories Term keywords grouped by category, in display order.
+ * @param groups Term keywords grouped by category, in display order.
+ * @param rangeKeys Range fields, in display order.
  */
 export function buildSearchString(
   state: SearchStringState,
-  categories: string[][]
+  groups: SearchTermGroup[],
+  rangeKeys: RangeKey[]
 ): string {
-  const groups: string[] = [];
+  const parts: string[] = [];
+  const addOrGroup = (terms: string[]) => {
+    if (terms.length > 0) parts.push(terms.join(','));
+  };
 
-  const pokemon = parsePokemonTokens(state.pokemon, state.includeFamily);
-  if (pokemon.length > 0) groups.push(pokemon.join(','));
+  addOrGroup(parsePokemonTokens(state.pokemon, state.includeFamily));
+  addOrGroup(splitList(state.tags).map((tag) => `#${tag.replace(/^#/, '')}`));
 
-  categories.forEach((keywords) => {
-    const included = keywords.filter((keyword) => state.terms[keyword] === 'include');
-    if (included.length > 0) groups.push(included.join(','));
+  groups.forEach(({ keywords, slotted }) => {
+    const format = (keyword: string) => (slotted ? withMoveSlot(keyword, state.moveSlot) : keyword);
+    addOrGroup(keywords.filter((keyword) => state.terms[keyword] === 'include').map(format));
     keywords
       .filter((keyword) => state.terms[keyword] === 'exclude')
-      .forEach((keyword) => groups.push(`!${keyword}`));
+      .forEach((keyword) => parts.push(`!${format(keyword)}`));
   });
 
-  const cp = formatRange('cp', state.cpMin, state.cpMax);
-  if (cp) groups.push(cp);
+  addOrGroup(
+    splitList(state.moveNames).map((move) => withMoveSlot(`@${move.replace(/^@/, '')}`, state.moveSlot))
+  );
+
+  rangeKeys.forEach((key) => {
+    const term = formatRange(key, state.ranges[key]);
+    if (term) parts.push(term);
+  });
 
   STAT_NAMES.forEach((stat) => {
     const term = formatStat(stat, state.stats[stat]);
-    if (term) groups.push(term);
+    if (term) parts.push(term);
   });
 
   const custom = state.custom.trim();
-  if (custom) groups.push(custom);
+  if (custom) parts.push(custom);
 
-  return groups.join('&');
+  return parts.join('&');
 }
 
 /**

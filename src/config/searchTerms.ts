@@ -1,4 +1,9 @@
-import type { SearchStringState, TermState } from '../utils/searchString';
+import type {
+  RangeKey,
+  SearchStringState,
+  SearchTermGroup,
+  TermState,
+} from '../utils/searchString';
 
 export interface SearchTerm {
   keyword: string;
@@ -8,8 +13,27 @@ export interface SearchTerm {
 export interface SearchTermCategory {
   id: string;
   title: string;
-  description: string;
   terms: SearchTerm[];
+  slotted?: boolean;
+}
+
+export interface SearchRangeField {
+  key: RangeKey;
+  label: string;
+  hint: string;
+  min?: number;
+  max?: number;
+}
+
+export type SearchSectionField = 'pokemon' | 'tags' | 'stats' | 'moveSlot' | 'moveNames' | 'custom';
+
+export interface SearchSection {
+  id: string;
+  title: string;
+  description: string;
+  fields: SearchSectionField[];
+  categories: string[];
+  ranges: RangeKey[];
 }
 
 const term = (keyword: string, label = keyword): SearchTerm => ({ keyword, label });
@@ -19,13 +43,13 @@ const POKEMON_TYPES = [
   'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy',
 ];
 
-// Pokémon GO's English storage search keywords. The game localizes these, so
-// they only work with the game language set to English.
+// Pokémon GO's English storage search keywords, from Niantic's help article
+// "Searching and filtering your Pokémon inventory" and Serebii's search term
+// list. The game localizes them, so they only work in English.
 export const SEARCH_TERM_CATEGORIES: SearchTermCategory[] = [
   {
     id: 'appraisal',
     title: 'Appraisal',
-    description: 'Star rating from the in-game appraisal.',
     terms: [
       term('0*', '0★'),
       term('1*', '1★'),
@@ -35,95 +59,222 @@ export const SEARCH_TERM_CATEGORIES: SearchTermCategory[] = [
     ],
   },
   {
-    id: 'special',
-    title: 'Special',
-    description: 'Rare variants and classifications.',
+    id: 'variant',
+    title: 'Variant',
     terms: [
       term('shiny', 'Shiny'),
       term('lucky', 'Lucky'),
       term('shadow', 'Shadow'),
       term('purified', 'Purified'),
-      term('legendary', 'Legendary'),
-      term('mythical', 'Mythical'),
-      term('ultrabeasts', 'Ultra Beasts'),
       term('costume', 'Costume'),
-      term('background', 'Any background'),
-      term('locationbackground', 'Location background'),
-      term('specialbackground', 'Special background'),
       term('dynamax', 'Dynamax'),
       term('gigantamax', 'Gigantamax'),
+      term('fusion', 'Fusion'),
+      term('adventureeffect', 'Adventure effect'),
     ],
   },
   {
-    id: 'evolution',
-    title: 'Evolution',
-    description: 'Evolution options for Pokémon you own.',
+    id: 'background',
+    title: 'Background',
     terms: [
-      term('evolve', 'Can evolve'),
-      term('evolvenew', 'Evolves into a new Pokédex entry'),
-      term('tradeevolve', 'Trade evolution'),
-      term('item', 'Item evolution'),
-      term('megaevolve', 'Can Mega Evolve'),
+      term('background', 'Any background'),
+      term('locationbackground', 'Location background'),
+      term('specialbackground', 'Special background'),
+    ],
+  },
+  {
+    id: 'classification',
+    title: 'Classification',
+    terms: [
+      term('legendary', 'Legendary'),
+      term('mythical', 'Mythical'),
+      term('ultrabeast', 'Ultra Beast'),
       term('eggsonly', 'Baby (eggs only)'),
     ],
   },
   {
+    id: 'type',
+    title: 'Pokémon type',
+    terms: POKEMON_TYPES.map((type) => term(type.toLowerCase(), type)),
+  },
+  {
+    id: 'region',
+    title: 'Region',
+    terms: ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Unova', 'Kalos', 'Alola', 'Galar', 'Hisui', 'Paldea'].map(
+      (region) => term(region.toLowerCase(), region)
+    ),
+  },
+  {
+    id: 'moveType',
+    title: 'Move type',
+    slotted: true,
+    terms: POKEMON_TYPES.map((type) => term(`@${type.toLowerCase()}`, type)),
+  },
+  {
+    id: 'moveStatus',
+    title: 'Move status',
+    terms: [term('@special', 'Legacy or event move'), term('@weather', 'Weather boosted')],
+  },
+  {
+    id: 'superEffective',
+    title: 'Has a move super effective against',
+    terms: POKEMON_TYPES.map((type) => term(`>${type.toLowerCase()}`, type)),
+  },
+  {
+    id: 'evolution',
+    title: 'Evolution',
+    terms: [
+      term('evolve', 'Can evolve'),
+      term('evolvenew', 'New Pokédex entry'),
+      term('evolvequest', 'Quest evolution'),
+      term('tradeevolve', 'Trade evolution'),
+      term('item', 'Item evolution'),
+      term('megaevolve', 'Can Mega Evolve'),
+    ],
+  },
+  {
+    id: 'training',
+    title: 'Training',
+    terms: [term('hypertraining', 'Hyper Training'), term('candyxl', 'Above level 40')],
+  },
+  {
     id: 'origin',
-    title: 'Origin',
-    description: 'How the Pokémon was obtained.',
+    title: 'Caught from',
     terms: [
       term('traded', 'Traded'),
       term('hatched', 'Hatched'),
       term('research', 'Research'),
       term('raid', 'Raid'),
-      term('exraid', 'EX Raid'),
+      term('remoteraid', 'Remote raid'),
+      term('megaraid', 'Mega raid'),
+      term('primalraid', 'Primal raid'),
+      term('exraid', 'EX raid'),
+      term('rocket', 'Team GO Rocket'),
       term('gbl', 'GO Battle League'),
       term('snapshot', 'Snapshot'),
+      term('party', 'Party'),
     ],
   },
   {
     id: 'status',
     title: 'Status',
-    description: 'Flags you set or that change in play.',
     terms: [term('favorite', 'Favorite'), term('defender', 'Gym defender')],
   },
   {
     id: 'size',
     title: 'Size',
-    description: 'Size class shown on the Pokémon.',
     terms: [term('xxs', 'XXS'), term('xs', 'XS'), term('xl', 'XL'), term('xxl', 'XXL')],
   },
   {
     id: 'gender',
     title: 'Gender',
-    description: 'Gender of the Pokémon.',
     terms: [term('male', 'Male'), term('female', 'Female'), term('genderunknown', 'Unknown')],
-  },
-  {
-    id: 'type',
-    title: 'Pokémon Type',
-    description: 'Matches either of the Pokémon’s types.',
-    terms: POKEMON_TYPES.map((type) => term(type.toLowerCase(), type)),
-  },
-  {
-    id: 'moveType',
-    title: 'Move Type',
-    description: 'Has a fast or charged move of this type.',
-    terms: POKEMON_TYPES.map((type) => term(`@${type.toLowerCase()}`, type)),
-  },
-  {
-    id: 'region',
-    title: 'Region',
-    description: 'Region the species is native to.',
-    terms: [
-      'Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Unova', 'Kalos', 'Alola', 'Galar', 'Hisui', 'Paldea',
-    ].map((region) => term(region.toLowerCase(), region)),
   },
 ];
 
-export const SEARCH_TERM_KEYWORDS: string[][] = SEARCH_TERM_CATEGORIES.map((category) =>
-  category.terms.map(({ keyword }) => keyword)
-);
+export const SEARCH_RANGE_FIELDS: SearchRangeField[] = [
+  { key: 'cp', label: 'CP', hint: 'Combat Power', min: 0 },
+  { key: 'hp', label: 'HP', hint: 'Maximum HP', min: 0 },
+  { key: 'mega', label: 'Mega level', hint: '0 (never) to 3 (max)', min: 0, max: 3 },
+  { key: 'year', label: 'Year caught', hint: 'For example 2016', min: 2016 },
+  { key: 'age', label: 'Age (days)', hint: '0 is caught today', min: 0 },
+  { key: 'distance', label: 'Distance (km)', hint: 'From where it was caught', min: 0 },
+  { key: 'buddy', label: 'Buddy level', hint: '0 (never) to 5 (best)', min: 0, max: 5 },
+  { key: 'count', label: 'Owned of the species', hint: 'How many you have', min: 0 },
+  { key: 'countcandy', label: 'Candy', hint: 'Candy for the species', min: 0 },
+  { key: 'countcandyxl', label: 'XL Candy', hint: 'XL Candy for the species', min: 0 },
+  { key: 'candykm', label: 'Buddy Candy distance (km)', hint: '1, 3, 5, or 20', min: 0 },
+];
+
+export const SEARCH_SECTIONS: SearchSection[] = [
+  {
+    id: 'pokemon',
+    title: 'Pokémon',
+    description: 'Names, Pokédex numbers, families, and tags.',
+    fields: ['pokemon', 'tags'],
+    categories: [],
+    ranges: [],
+  },
+  {
+    id: 'stats',
+    title: 'Appraisal & Stats',
+    description: 'Star rating, IV bars, CP, and HP.',
+    fields: ['stats'],
+    categories: ['appraisal'],
+    ranges: ['cp', 'hp'],
+  },
+  {
+    id: 'attributes',
+    title: 'Variants & Classification',
+    description: 'Shiny, shadow, costumes, backgrounds, legendaries, and more.',
+    fields: [],
+    categories: ['variant', 'background', 'classification'],
+    ranges: [],
+  },
+  {
+    id: 'typing',
+    title: 'Types & Regions',
+    description: 'Pokémon type and native region.',
+    fields: [],
+    categories: ['type', 'region'],
+    ranges: [],
+  },
+  {
+    id: 'moves',
+    title: 'Moves',
+    description: 'Move types, specific moves, legacy moves, and matchups.',
+    fields: ['moveSlot', 'moveNames'],
+    categories: ['moveType', 'moveStatus', 'superEffective'],
+    ranges: [],
+  },
+  {
+    id: 'evolution',
+    title: 'Evolution & Training',
+    description: 'Evolution options, Mega level, and Hyper Training.',
+    fields: [],
+    categories: ['evolution', 'training'],
+    ranges: ['mega'],
+  },
+  {
+    id: 'origin',
+    title: 'Origin',
+    description: 'How, when, and how far away it was caught.',
+    fields: [],
+    categories: ['origin'],
+    ranges: ['year', 'age', 'distance'],
+  },
+  {
+    id: 'status',
+    title: 'Status, Size & Gender',
+    description: 'Favorites, gym defenders, buddies, size class, and gender.',
+    fields: [],
+    categories: ['status', 'size', 'gender'],
+    ranges: ['buddy'],
+  },
+  {
+    id: 'inventory',
+    title: 'Inventory Counts',
+    description: 'How many you own, Candy, and buddy Candy distance.',
+    fields: [],
+    categories: [],
+    ranges: ['count', 'countcandy', 'countcandyxl', 'candykm'],
+  },
+  {
+    id: 'other',
+    title: 'Other Terms',
+    description: 'Anything else, added as-is.',
+    fields: ['custom'],
+    categories: [],
+    ranges: [],
+  },
+];
+
+export const SEARCH_TERM_GROUPS: SearchTermGroup[] = SEARCH_TERM_CATEGORIES.map(({ terms, slotted }) => ({
+  keywords: terms.map(({ keyword }) => keyword),
+  slotted,
+}));
+
+export const SEARCH_RANGE_KEYS: RangeKey[] = SEARCH_RANGE_FIELDS.map(({ key }) => key);
 
 export interface SearchPreset {
   label: string;
@@ -143,7 +294,7 @@ const KEEPER_EXCLUSIONS: Record<string, TermState> = {
   shadow: 'exclude',
   legendary: 'exclude',
   mythical: 'exclude',
-  ultrabeasts: 'exclude',
+  ultrabeast: 'exclude',
   costume: 'exclude',
   background: 'exclude',
   favorite: 'exclude',
@@ -170,7 +321,10 @@ export const SEARCH_PRESETS: SearchPreset[] = [
   {
     label: 'Great League IVs',
     description: 'Low attack, high defense and HP, at or under 1,500 CP.',
-    state: withTerms({}, { cpMax: '1500', stats: { attack: [0, 1], defense: [3, 4], hp: [3, 4] } }),
+    state: withTerms(
+      {},
+      { ranges: { cp: { min: '', max: '1500' } }, stats: { attack: [0, 1], defense: [3, 4], hp: [3, 4] } }
+    ),
   },
   {
     label: 'Trade evolutions',
@@ -181,5 +335,10 @@ export const SEARCH_PRESETS: SearchPreset[] = [
     label: 'New Pokédex entries',
     description: 'Evolutions that would register a new Pokédex entry.',
     state: withTerms({ evolvenew: 'include' }),
+  },
+  {
+    label: 'Legacy moves',
+    description: 'Pokémon knowing a move they can no longer learn.',
+    state: withTerms({ '@special': 'include' }),
   },
 ];
