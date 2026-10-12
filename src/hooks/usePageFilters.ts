@@ -23,6 +23,7 @@ export const defaultRaidBossFilters: RaidBossFilters = {
   selectedRaidTiers: [],
   selectedTypes: [],
   shinyOnly: false,
+  shadowOnly: false,
   minCP: 0,
   maxCP: 60000,
 };
@@ -59,6 +60,7 @@ export const countRaidBossFilters = (filters: RaidBossFilters) =>
   filters.selectedRaidTiers.length +
   filters.selectedTypes.length +
   (filters.shinyOnly ? 1 : 0) +
+  (filters.shadowOnly ? 1 : 0) +
   (filters.minCP > defaultRaidBossFilters.minCP || filters.maxCP < defaultRaidBossFilters.maxCP ? 1 : 0);
 
 export const countResearchTaskFilters = (filters: ResearchTaskFilters) =>

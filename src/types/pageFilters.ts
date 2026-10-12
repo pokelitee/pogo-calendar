@@ -14,6 +14,7 @@ export interface RaidBossFilters {
   selectedRaidTiers: string[];
   selectedTypes: string[];
   shinyOnly: boolean;
+  shadowOnly: boolean;
   minCP: number;
   maxCP: number;
 }

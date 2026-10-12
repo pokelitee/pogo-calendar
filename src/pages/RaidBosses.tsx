@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ShinyChip } from '../components/filters/shared';
+import { ShadowChip, ShinyChip } from '../components/filters/shared';
 import { DataErrorDisplay } from '../components/shared/DataErrorDisplay';
 import { DataImage } from '../components/shared/DataImage';
 import { DataLoadingSkeleton } from '../components/shared/DataLoadingSkeleton';
@@ -54,6 +54,9 @@ function RaidBossesPage() {
           return false;
         }
         if (filters.shinyOnly && !boss.shiny_available) {
+          return false;
+        }
+        if (filters.shadowOnly && !boss.is_shadow) {
           return false;
         }
         if (filters.selectedTypes.length > 0) {
@@ -115,6 +118,7 @@ function RaidBossesPage() {
                 {type}
               </Badge>
             ))}
+            {boss.is_shadow && <ShadowChip />}
             {boss.shiny_available && <ShinyChip />}
           </div>
 
@@ -149,6 +153,7 @@ function RaidBossesPage() {
       <div className="min-w-0 flex-1">
         <div className="mb-1 flex flex-wrap items-center gap-1.5">
           <p className="text-sm font-semibold">{boss.name}</p>
+          {boss.is_shadow && <ShadowChip />}
           {boss.shiny_available && <ShinyChip />}
         </div>
         <div className="flex flex-wrap gap-1">

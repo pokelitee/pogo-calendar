@@ -130,6 +130,7 @@ function parseRaidBoss(value: unknown, path: string): RaidBoss {
     shiny_available: base.shiny_available,
     asset_url: base.asset_url,
     tier,
+    is_shadow: asBoolean(base.item.is_shadow, `${path}.is_shadow`),
     cp_range: parseCpRange(base.item.cp_range, `${path}.cp_range`),
     boosted_cp_range: parseCpRange(
       base.item.boosted_cp_range,
