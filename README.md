@@ -41,9 +41,8 @@ The data pages are grouped under the **Game Data** menu.
 
 ### Tools
 
-- **Search String Builder:** Build a storage search from Pokémon, dex ranges, appraisal, variants, evolution, origin, size, gender, types, move types, regions, CP, and IV bars, with presets such as transfer candidates and Great League IVs. Keywords are English, matching the game's English search terms.
-- **Pokémon Finder:** Search one Pokémon across active and upcoming events, raids, eggs, research encounters, and Rocket encounters.
-- **Shinies Available Now:** Every Pokémon currently obtainable as a shiny, filterable by name and source.
+- **Search String Builder:** Build a storage search from every term in [Niantic's search guide](https://niantic.helpshift.com/hc/faq/1486-searching-filtering-your-pokemon-inventory/) plus the community-documented ones on [Serebii](https://serebii.net/pokemongo/pokemonsearch.shtml), grouped into collapsible sections: Pokémon and tags, appraisal and stats, variants, types and regions, moves (with move slots), evolution and training, origin, status/size/gender, and inventory counts. Includes presets such as transfer candidates and Great League IVs. Keywords are English, matching the game's English search terms.
+- **Pokémon Finder:** Browse or search every Pokémon available from active and upcoming events, raids, eggs, research encounters, and Rocket encounters, filtered by source and shiny availability.
 
 ### Advanced Filtering
 
