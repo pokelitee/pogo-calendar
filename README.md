@@ -6,7 +6,7 @@ A comprehensive React application for tracking Pokémon GO events and game data.
 
 ## Live Demo
 
-You can view the live application here: `https://pogo-calendar.github.io/pogo-calendar`
+You can view the live application here: [pokelitee.github.io/pogo-calendar](https://pokelitee.github.io/pogo-calendar/)
 
 ---
 
@@ -16,7 +16,7 @@ You can view the live application here: `https://pogo-calendar.github.io/pogo-ca
 
 - **Multiple Views:** View events in responsive month and weekly list views, powered by FullCalendar.
 - **Configurable Calendar Display:** Choose an automatic, month, or list default view; set the first day of the week; and show or hide event times in month view.
-- **Optional Event History:** Load archived official events dating back to 2025 only when enabled in Settings.
+- **Optional Event History:** Load every yearly archive of official events published by leak-duck, only when enabled in Settings.
 - **Theme Modes:** Choose a light, dark, or automatic system theme with persistence in `localStorage`.
 - **Custom Dark Mode Theming:** Thoroughly styled dark mode that covers all aspects of the calendar, including headers and pop-ups.
 - **Responsive Header:** A modern "glassmorphism" header that becomes opaque on scroll and adapts its layout for mobile.
@@ -31,15 +31,15 @@ You can view the live application here: `https://pogo-calendar.github.io/pogo-ca
 
 ### Data Reference Pages
 
-- **Egg Pool:** Browse current egg hatches by tier (2km, 5km, 7km, 10km, 12km) with regional availability filters.
-- **Raid Bosses:** View active raid bosses by tier (1-star through Mega) with CP ranges, shiny availability, and move filters.
-- **Research Tasks:** Search research tasks by rewards (Pokemon, items, Stardust, XP, etc.) and track shiny availability.
-- **Rocket Lineup:** View current Team GO Rocket encounters by grunt type, leader, or Giovanni, with shiny tracking.
+- **Egg Pool:** Browse current egg hatches by egg type with rarity tier and shiny filters.
+- **Raid Bosses:** View active raid bosses by tier (1-star through Mega), including shadow raids, with type, CP range, shiny, and shadow filters.
+- **Research Tasks:** Search research tasks by description or Pokémon reward, and filter by reward type, task category, and shiny availability.
+- **Rocket Lineup:** View current Team GO Rocket lineups for Giovanni, the leaders, and every grunt type, filtered by member, battle slot, encounter, and shiny availability.
 
 ### Advanced Filtering
 
 - **Calendar Filters:** Filter events by search term, date range, time-of-day range, and category with view-specific settings.
-- **Page-Specific Filters:** Each data page has tailored filters (tiers, types, shiny status, regions, etc.) with search and bulk selection.
+- **Page-Specific Filters:** Each data page has tailored filters (tiers, types, shiny status, slots, etc.) with search and bulk selection.
 - **Optimized Category Filter:** Modern pop-up menu for category selection with grouping, color keys, "Select All," and "Clear All" actions.
 - **Integrated "Saved" Filter:** Filter by your saved events directly from the category menu.
 - **Persistent State:** Calendar filters, custom events, saved events, notes, and settings are preserved in `localStorage`.
@@ -69,121 +69,29 @@ You can view the live application here: `https://pogo-calendar.github.io/pogo-ca
 
 ## Project Structure
 
-The project is organized into a clean, scalable structure that separates concerns:
-
 ```
 src/
-├── App.tsx               # Main application component with routing
-├── main.tsx              # Application entry point
-├── index.css             # Tailwind entry point and design tokens
-├── vite-env.d.ts         # Vite environment type definitions
-├── assets/images/        # Static images
-│   └── default-banner.jpg
+├── App.tsx, main.tsx  # App shell, hash routing, and entry point
 ├── components/
-│   ├── calendar/         # Calendar-specific components
-│   │   ├── EventCalendar.tsx
-│   │   ├── CalendarEventContent.tsx
-│   │   ├── RotatingPokemonSprite.tsx
-│   │   └── CalendarSkeleton.tsx
-│   ├── events/           # Event management components
-│   │   ├── CreateEventDialog.tsx
-│   │   ├── EventDetailDialog.tsx
-│   │   ├── EventHoverDetails.tsx
-│   │   ├── ExportEventDialog.tsx
-│   │   ├── CategoryExportPanel.tsx
-│   │   └── SpecificEventExportPanel.tsx
-│   ├── filters/          # Filter components
-│   │   ├── shared/       # Shared filter components
-│   │   │   ├── FilterSection.tsx
-│   │   │   ├── FilterActions.tsx
-│   │   │   ├── ShinyChip.tsx
-│   │   │   └── index.ts
-│   │   ├── AdvancedFilter.tsx
-│   │   ├── EventFilter.tsx
-│   │   ├── ColorKeyLabel.tsx
-│   │   ├── EggPoolFilter.tsx
-│   │   ├── RaidBossFilter.tsx
-│   │   ├── ResearchTaskFilter.tsx
-│   │   └── RocketLineupFilter.tsx
-│   ├── layout/           # Layout components
-│   │   ├── Header.tsx
-│   │   └── Footer.tsx
-│   └── shared/           # Reusable UI components
-│       ├── CategoryTag.tsx
-│       ├── ErrorBoundary.tsx
-│       ├── DataLoadingSkeleton.tsx
-│       ├── DataErrorDisplay.tsx
-│       ├── PageHeader.tsx
-│       ├── EventStatusTag.tsx
-│       ├── PageLoader.tsx
-│       ├── ScrollToTop.tsx
-│       ├── SettingsDialog.tsx
-│       ├── DeleteConfirmationDialog.tsx
-│       └── UnsavedChangesDialog.tsx
-├── config/               # Configuration files
-│   ├── api.ts
-│   ├── constants.ts
-│   ├── eventFilter.ts
-│   ├── colorMapping.ts
-│   ├── timeConstants.ts
-│   └── routes.ts
-├── contexts/             # React contexts for state management
-│   ├── CalendarProvider.tsx
-│   ├── EventDataContext.ts
-│   ├── EventDataProvider.tsx
-│   ├── FilterContext.ts
-│   ├── FilterProvider.tsx
-│   ├── CustomEventsContext.ts
-│   ├── CustomEventsProvider.tsx
-│   ├── SettingsContext.ts
-│   └── SettingsProvider.tsx
-├── hooks/                # Custom React hooks
-│   ├── useEventData.ts
-│   ├── useFilters.ts
-│   ├── usePageData.ts
-│   ├── usePageFilters.ts
-│   ├── useSavedEvents.ts
-│   ├── useCustomEvents.ts
-│   ├── useEventNotes.ts
-│   ├── useEventStatus.ts
-│   ├── useLastUpdated.ts
-│   ├── useDialogs.ts
-│   ├── useToast.ts
-│   └── useNoteEditor.ts
-├── pages/                # Page components (lazy-loaded)
-│   ├── Calendar.tsx
-│   ├── EggPool.tsx
-│   ├── RaidBosses.tsx
-│   ├── ResearchTasks.tsx
-│   ├── RocketLineup.tsx
-│   └── Faq.tsx
-├── services/             # API services
-│   ├── eventService.ts   # Calendar event fetching
-│   ├── dataService.ts    # Game data fetching
-│   └── dataValidation.ts # Runtime validation for leak-duck data
-├── styles/               # Global styles
-│   └── calendar.css
-├── types/                # TypeScript definitions
-│   ├── events.ts
-│   ├── filters.ts
-│   ├── pageFilters.ts
-│   ├── settings.ts
-│   ├── eggPool.ts
-│   ├── raidBosses.ts
-│   ├── researchTasks.ts
-│   └── rocketLineup.ts
-└── utils/                # Utility functions
-    ├── colorUtils.ts
-    ├── dateUtils.ts
-    ├── storageUtils.ts
-    ├── eventTimeUtils.ts
-    ├── calendarSpriteUtils.ts
-    └── calendarUtils.ts
+│   ├── calendar/      # FullCalendar view, event content, sprites
+│   ├── events/        # Event detail, create/edit, and .ics export dialogs
+│   ├── filters/       # Calendar and data-page filter panels
+│   ├── layout/        # Header, footer, page layout
+│   ├── shared/        # App-level shared components (settings, errors, loaders)
+│   └── ui/            # Component kit built on Radix UI primitives
+├── config/            # Data URLs, storage keys, colors, routes
+├── contexts/          # Calendar, event data, custom events, page filters, settings
+├── hooks/             # Data fetching and state hooks
+├── pages/             # Lazy-loaded pages (Calendar, data pages, FAQ)
+├── services/          # leak-duck fetching and runtime validation
+├── types/             # TypeScript definitions for app state and leak-duck data
+└── utils/             # Date/time, calendar, color, and storage helpers
+tests/                 # Node test runner unit tests
 ```
 
 ### Architecture Patterns
 
-- **Context-based State Management:** Separate contexts for calendar, events, filters, and settings
+- **Context-based State Management:** Separate contexts for calendar, event data, custom events, page filters, and settings
 - **Custom Hooks:** Business logic separated into reusable hooks
 - **Lazy Loading:** Page components are lazy-loaded for better performance
 - **Validated Data Boundaries:** Remote `leak-duck` JSON is parsed and validated before entering application state
@@ -203,7 +111,7 @@ src/
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/pogo-calendar/pogo-calendar.git
+    git clone https://github.com/pokelitee/pogo-calendar.git
     ```
 2.  Navigate into the project directory:
     ```bash
@@ -231,39 +139,30 @@ npm run build
 
 ---
 
-## Deployment to GitHub Pages
+## Data Source
 
-1.  **Install `gh-pages`**:
-    ```bash
-    npm install gh-pages --save-dev
-    ```
-2.  **Update `vite.config.ts`**: Add the `base` property.
-    ```ts
-    export default defineConfig({
-      plugins: [react()],
-      base: '/pogo-calendar/',
-    });
-    ```
-3.  **Update `package.json`**: Add a `homepage` URL and `deploy` scripts.
-    ```json
-    {
-      "name": "pogo-calendar",
-      "homepage": "https://pogo-calendar.github.io/pogo-calendar",
-      "scripts": {
-        "predeploy": "npm run build",
-        "deploy": "gh-pages -d dist"
-      }
-    }
-    ```
-4.  **Run the deploy script**:
-    ```bash
-    npm run deploy
-    ```
-5.  **Configure GitHub:** In your repository's **Settings \> Pages**, set the source to deploy from the **`gh-pages`** branch.
+All game data comes from [leak-duck](https://github.com/pokelitee/leak-duck), served from GitHub Pages at `https://pokelitee.github.io/leak-duck/<file>`:
+
+| File | Used for |
+| --- | --- |
+| `events.json` | Calendar events |
+| `archives/archive_{year}.json` | Optional event history |
+| `raid_bosses.json`, `egg_pool.json`, `research_tasks.json`, `rocket_lineups.json` | Data reference pages |
+| `manifest.json` | "Updated" time in the header and the list of available archive years |
+
+Every response is validated in `src/services/dataValidation.ts` before it reaches application state. The schemas are documented in the [leak-duck API reference](https://pokelitee.github.io/leak-duck/#reference).
+
+---
+
+## Deployment
+
+Every push to `main` is built and deployed to GitHub Pages by `.github/workflows/deploy_pages.yml`, using the official Pages actions. The repository's **Settings > Pages** source must be set to **GitHub Actions**. A deploy can also be started manually from the workflow's **Run workflow** button.
+
+`vite.config.ts` sets `base: '/pogo-calendar'` to match the repository name.
 
 ---
 
 ## Credits & Attribution
 
-- The source code for the data scraper is available at [github.com/pogo-calendar/leak-duck](https://github.com/pogo-calendar/leak-duck).
+- The source code for the data scraper is available at [github.com/pokelitee/leak-duck](https://github.com/pokelitee/leak-duck).
 - All event information is gratefully sourced from [LeekDuck.com](https://leekduck.com/events/).
