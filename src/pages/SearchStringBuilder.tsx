@@ -123,6 +123,7 @@ function RangeInputs({
 }) {
   const range = value ?? { min: '', max: '' };
   const id = `search-range-${field.key}`;
+  const digitsOnly = (input: string) => input.replace(/\D/g, '');
   return (
     <div className="space-y-1.5">
       <Label htmlFor={`${id}-min`}>
@@ -133,23 +134,19 @@ function RangeInputs({
           id={`${id}-min`}
           aria-label={`${field.label} minimum`}
           placeholder="Min"
-          type="number"
           inputMode="numeric"
-          min={field.min}
-          max={field.max}
+          autoComplete="off"
           value={range.min}
-          onChange={(event) => onChange({ ...range, min: event.target.value })}
+          onChange={(event) => onChange({ ...range, min: digitsOnly(event.target.value) })}
         />
         <span className="text-muted-foreground">–</span>
         <Input
           aria-label={`${field.label} maximum`}
           placeholder="Max"
-          type="number"
           inputMode="numeric"
-          min={field.min}
-          max={field.max}
+          autoComplete="off"
           value={range.max}
-          onChange={(event) => onChange({ ...range, max: event.target.value })}
+          onChange={(event) => onChange({ ...range, max: digitsOnly(event.target.value) })}
         />
       </div>
     </div>

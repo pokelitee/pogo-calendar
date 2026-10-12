@@ -21,8 +21,6 @@ export interface SearchRangeField {
   key: RangeKey;
   label: string;
   hint: string;
-  min?: number;
-  max?: number;
 }
 
 export type SearchSectionField = 'pokemon' | 'tags' | 'stats' | 'moveSlot' | 'moveNames' | 'custom';
@@ -173,17 +171,17 @@ export const SEARCH_TERM_CATEGORIES: SearchTermCategory[] = [
 ];
 
 export const SEARCH_RANGE_FIELDS: SearchRangeField[] = [
-  { key: 'cp', label: 'CP', hint: 'Combat Power', min: 0 },
-  { key: 'hp', label: 'HP', hint: 'Maximum HP', min: 0 },
-  { key: 'mega', label: 'Mega level', hint: '0 (never) to 3 (max)', min: 0, max: 3 },
-  { key: 'year', label: 'Year caught', hint: 'For example 2016', min: 2016 },
-  { key: 'age', label: 'Age (days)', hint: '0 is caught today', min: 0 },
-  { key: 'distance', label: 'Distance (km)', hint: 'From where it was caught', min: 0 },
-  { key: 'buddy', label: 'Buddy level', hint: '0 (never) to 5 (best)', min: 0, max: 5 },
-  { key: 'count', label: 'Owned of the species', hint: 'How many you have', min: 0 },
-  { key: 'countcandy', label: 'Candy', hint: 'Candy for the species', min: 0 },
-  { key: 'countcandyxl', label: 'XL Candy', hint: 'XL Candy for the species', min: 0 },
-  { key: 'candykm', label: 'Buddy Candy distance (km)', hint: '1, 3, 5, or 20', min: 0 },
+  { key: 'cp', label: 'CP', hint: 'Combat Power' },
+  { key: 'hp', label: 'HP', hint: 'Maximum HP' },
+  { key: 'mega', label: 'Mega level', hint: '0 (never) to 3 (max)' },
+  { key: 'year', label: 'Year caught', hint: 'For example 2016' },
+  { key: 'age', label: 'Age (days)', hint: '0 is caught today' },
+  { key: 'distance', label: 'Distance (km)', hint: 'From where it was caught' },
+  { key: 'buddy', label: 'Buddy level', hint: '0 (never) to 5 (best)' },
+  { key: 'count', label: 'Owned of the species', hint: 'How many you have' },
+  { key: 'countcandy', label: 'Candy', hint: 'Candy for the species' },
+  { key: 'countcandyxl', label: 'XL Candy', hint: 'XL Candy for the species' },
+  { key: 'candykm', label: 'Buddy Candy distance (km)', hint: '1, 3, 5, or 20' },
 ];
 
 export const SEARCH_SECTIONS: SearchSection[] = [
