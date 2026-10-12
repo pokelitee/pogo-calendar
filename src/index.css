@@ -4,6 +4,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
+  /* Draws native controls (number spinners, time pickers, scrollbars) to match the theme. */
+  color-scheme: light;
   --background: 228 38% 97%;
   --foreground: 230 21% 11%;
 
@@ -46,6 +48,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: 223 20% 7%;
   --foreground: 220 13% 95%;
 
