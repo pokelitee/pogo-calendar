@@ -1,5 +1,6 @@
 import type { EggPoolData, EggPokemon } from '../types/eggPool';
 import type { ApiEvent, EventPokemon } from '../types/events';
+import type { DataManifest, ManifestFile } from '../types/manifest';
 import type { CPRange, RaidBoss, RaidBossData } from '../types/raidBosses';
 import type {
   ResearchTask,
@@ -253,6 +254,31 @@ function parseApiEvent(
     details: parseEventDetails(event.details, `${path}.details`),
   };
 }
+
+function parseManifestFile(value: unknown, path: string): ManifestFile {
+  const file = asRecord(value, path);
+  const updatedAt = asString(file.updated_at, `${path}.updated_at`);
+  if (Number.isNaN(new Date(updatedAt).getTime())) {
+    fail(`${path}.updated_at`, 'an ISO 8601 timestamp');
+  }
+  return {
+    sha256: asString(file.sha256, `${path}.sha256`),
+    size: asNumber(file.size, `${path}.size`),
+    updated_at: updatedAt,
+  };
+}
+
+export const parseManifestData = (value: unknown): DataManifest => {
+  const files = asRecord(asRecord(value, 'manifest').files, 'manifest.files');
+  return {
+    files: Object.fromEntries(
+      Object.entries(files).map(([path, file]) => [
+        path,
+        parseManifestFile(file, `manifest.files.${path}`),
+      ])
+    ),
+  };
+};
 
 export const parseEggPoolData = (value: unknown): EggPoolData =>
   parseSections(value, 'egg_pool', parseEggPokemon);

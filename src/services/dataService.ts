@@ -1,10 +1,12 @@
-import { LEAK_DUCK_DATA_BASE_URL } from '../config/api';
+import { LEAK_DUCK_DATA_BASE_URL, MANIFEST_API_URL } from '../config/api';
 import type { EggPoolData } from '../types/eggPool';
+import type { DataManifest } from '../types/manifest';
 import type { RaidBossData } from '../types/raidBosses';
 import type { ResearchTaskData } from '../types/researchTasks';
 import type { RocketLineupData } from '../types/rocketLineup';
 import {
   parseEggPoolData,
+  parseManifestData,
   parseRaidBossData,
   parseResearchTaskData,
   parseRocketLineupData,
@@ -65,4 +67,13 @@ export const fetchResearchTasks = createDataFetcher<ResearchTaskData>(
 export const fetchRocketLineup = createDataFetcher<RocketLineupData>(
   GITHUB_ROCKET_LINEUP_URL,
   parseRocketLineupData
+);
+
+/**
+ * Fetch the leak-duck manifest, which lists every published file and when its
+ * content last changed
+ */
+export const fetchManifest = createDataFetcher<DataManifest>(
+  MANIFEST_API_URL,
+  parseManifestData
 );

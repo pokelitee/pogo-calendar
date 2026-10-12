@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   parseArchiveEventData,
   parseEventData,
+  parseManifestData,
   parseRaidBossData,
   parseResearchTaskData,
 } from '../src/services/dataValidation.ts';
@@ -122,5 +123,31 @@ test('rejects malformed remote records with a useful path', () => {
         Tasks: [{ task: 'Broken', rewards: [{ type: 'item' }] }],
       }),
     /research_tasks\.Tasks\[0\]\.rewards\[0\]\.name/
+  );
+});
+
+test('parses manifest file entries', () => {
+  const parsed = parseManifestData({
+    files: {
+      'events.json': {
+        sha256: 'abc123',
+        size: 1024,
+        updated_at: '2026-10-12T17:30:07Z',
+      },
+    },
+  });
+
+  assert.equal(parsed.files['events.json'].updated_at, '2026-10-12T17:30:07Z');
+});
+
+test('rejects manifest entries with an invalid update time', () => {
+  assert.throws(
+    () =>
+      parseManifestData({
+        files: {
+          'events.json': { sha256: 'abc123', size: 1024, updated_at: 'soon' },
+        },
+      }),
+    /manifest\.files\.events\.json\.updated_at/
   );
 });

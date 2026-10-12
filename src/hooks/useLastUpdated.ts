@@ -1,19 +1,11 @@
 import { format } from 'date-fns';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { GITHUB_LAST_UPDATED_API_URL } from '../config/api';
-
-interface GitHubCommitResponseItem {
-  commit: {
-    committer: {
-      date: string;
-    };
-  };
-}
+import { fetchManifest } from '../services/dataService';
 
 /**
- * Custom hook to fetch and manage the last updated time of a resource from GitHub.
+ * Custom hook to fetch and manage the time leak-duck's events.json last changed.
  *
- * @returns A custom hook to fetch and manage the last updated time of a resource from GitHub.
+ * @returns The formatted last updated time with loading and error states.
  */
 export function useLastUpdated() {
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
@@ -26,21 +18,12 @@ export function useLastUpdated() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(GITHUB_LAST_UPDATED_API_URL, {
-        cache: 'no-store',
-      });
-      if (!response.ok) {
-        throw new Error(`GitHub API responded with status ${response.status}`);
-      }
-      const data: GitHubCommitResponseItem[] = await response.json();
-      if (data && data.length > 0) {
-        const lastCommitDate = new Date(data[0].commit.committer.date);
-        const formattedDate = format(lastCommitDate, 'MMM d, h:mm a');
-        if (requestId === requestIdRef.current) {
-          setLastUpdated(formattedDate);
-        }
-      } else {
-        if (requestId === requestIdRef.current) setLastUpdated('N/A');
+      const manifest = await fetchManifest();
+      const updatedAt = manifest.files['events.json']?.updated_at;
+      if (requestId === requestIdRef.current) {
+        setLastUpdated(
+          updatedAt ? format(new Date(updatedAt), 'MMM d, h:mm a') : 'N/A'
+        );
       }
     } catch (err: unknown) {
       if (requestId === requestIdRef.current) {
