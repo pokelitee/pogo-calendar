@@ -1,63 +1,76 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { SEARCH_PRESETS, SEARCH_TERM_KEYWORDS } from '../src/config/searchTerms.ts';
+import {
+  SEARCH_PRESETS,
+  SEARCH_RANGE_FIELDS,
+  SEARCH_RANGE_KEYS,
+  SEARCH_SECTIONS,
+  SEARCH_TERM_CATEGORIES,
+  SEARCH_TERM_GROUPS,
+} from '../src/config/searchTerms.ts';
 import {
   EMPTY_SEARCH_STATE,
   buildDexSearchString,
   buildSearchString,
+  formatRange,
   nextTermState,
+  type SearchStringState,
 } from '../src/utils/searchString.ts';
 
-const CATEGORIES = [
-  ['shiny', 'lucky', 'shadow'],
-  ['fire', 'water'],
+const GROUPS = [
+  { keywords: ['shiny', 'lucky', 'shadow'] },
+  { keywords: ['fire', 'water'] },
+  { keywords: ['@fire', '@water'], slotted: true },
 ];
 
+const build = (overrides: Partial<SearchStringState>) =>
+  buildSearchString({ ...EMPTY_SEARCH_STATE, ...overrides }, GROUPS, ['cp', 'buddy']);
+
 test('builds an empty string when nothing is selected', () => {
-  assert.equal(buildSearchString(EMPTY_SEARCH_STATE, CATEGORIES), '');
+  assert.equal(build({}), '');
 });
 
 test('ORs included terms within a category and ANDs categories', () => {
-  const state = {
-    ...EMPTY_SEARCH_STATE,
-    terms: { shiny: 'include', lucky: 'include', fire: 'include' } as const,
-  };
-
-  assert.equal(buildSearchString(state, CATEGORIES), 'shiny,lucky&fire');
+  assert.equal(build({ terms: { shiny: 'include', lucky: 'include', fire: 'include' } }), 'shiny,lucky&fire');
 });
 
 test('negates each excluded term as its own group', () => {
-  const state = {
-    ...EMPTY_SEARCH_STATE,
-    terms: { shiny: 'exclude', shadow: 'exclude', water: 'include' } as const,
-  };
-
-  assert.equal(buildSearchString(state, CATEGORIES), '!shiny&!shadow&water');
+  assert.equal(build({ terms: { shiny: 'exclude', shadow: 'exclude', water: 'include' } }), '!shiny&!shadow&water');
 });
 
 test('adds the family prefix to names but not dex numbers', () => {
-  const state = {
-    ...EMPTY_SEARCH_STATE,
-    pokemon: 'Pikachu, 1-151; 25 , ',
-    includeFamily: true,
-  };
-
-  assert.equal(buildSearchString(state, CATEGORIES), '+pikachu,1-151,25');
+  assert.equal(build({ pokemon: 'Pikachu, 1-151; 25 , ', includeFamily: true }), '+pikachu,1-151,25');
 });
 
-test('formats open and closed CP and IV stat ranges', () => {
-  const state = {
-    ...EMPTY_SEARCH_STATE,
-    cpMax: '1500',
-    stats: { attack: [0, 1], defense: [4, 4], hp: [0, 4] } as typeof EMPTY_SEARCH_STATE.stats,
-    custom: ' age0-7 ',
-  };
+test('prefixes tags with # and move names with @', () => {
+  assert.equal(build({ tags: 'battle, #trade', moveNames: 'Hyper Beam, @scratch' }), '#battle,#trade&@hyper beam,@scratch');
+});
 
-  assert.equal(buildSearchString(state, CATEGORIES), 'cp-1500&0-1attack&4defense&age0-7');
-  assert.equal(buildSearchString({ ...EMPTY_SEARCH_STATE, cpMin: '2500' }, CATEGORIES), 'cp2500-');
+test('applies the move slot to move types and move names only', () => {
   assert.equal(
-    buildSearchString({ ...EMPTY_SEARCH_STATE, cpMin: '10', cpMax: '500' }, CATEGORIES),
-    'cp10-500'
+    build({ moveSlot: '3', terms: { '@fire': 'include', '@water': 'exclude', shiny: 'include' }, moveNames: 'shadow ball' }),
+    'shiny&@3fire&!@3water&@3shadow ball'
+  );
+});
+
+test('formats open, closed, and single-value ranges', () => {
+  assert.equal(formatRange('cp', { min: '', max: '1500' }), 'cp-1500');
+  assert.equal(formatRange('cp', { min: '2500', max: '' }), 'cp2500-');
+  assert.equal(formatRange('cp', { min: '10', max: '500' }), 'cp10-500');
+  assert.equal(formatRange('buddy', { min: '4', max: '4' }), 'buddy4');
+  assert.equal(formatRange('cp', { min: ' ', max: '' }), null);
+  assert.equal(formatRange('cp', undefined), null);
+});
+
+test('orders ranges and IV stats after keyword groups', () => {
+  assert.equal(
+    build({
+      terms: { shiny: 'include' },
+      ranges: { buddy: { min: '2', max: '5' }, cp: { min: '', max: '1500' } },
+      stats: { attack: [0, 1], defense: [4, 4], hp: [0, 4] },
+      custom: ' age0-7 ',
+    }),
+    'shiny&cp-1500&buddy2-5&0-1attack&4defense&age0-7'
   );
 });
 
@@ -68,28 +81,36 @@ test('cycles a term through include, exclude, and unselected', () => {
 });
 
 test('builds the documented preset strings', () => {
-  const build = (label: string) =>
+  const preset = (label: string) =>
     buildSearchString(
-      {
-        ...EMPTY_SEARCH_STATE,
-        ...SEARCH_PRESETS.find((preset) => preset.label === label)!.state,
-      },
-      SEARCH_TERM_KEYWORDS
+      { ...EMPTY_SEARCH_STATE, ...SEARCH_PRESETS.find((p) => p.label === label)!.state },
+      SEARCH_TERM_GROUPS,
+      SEARCH_RANGE_KEYS
     );
 
-  assert.equal(build('Hundos'), '4*');
-  assert.equal(build('Nundos'), '0attack&0defense&0hp');
-  assert.equal(build('Great League IVs'), 'cp-1500&0-1attack&3-4defense&3-4hp');
-  assert.equal(build('Trade evolutions'), 'tradeevolve&!traded');
+  assert.equal(preset('Hundos'), '4*');
+  assert.equal(preset('Nundos'), '0attack&0defense&0hp');
+  assert.equal(preset('Great League IVs'), 'cp-1500&0-1attack&3-4defense&3-4hp');
+  assert.equal(preset('Trade evolutions'), 'tradeevolve&!traded');
+  assert.equal(preset('Legacy moves'), '@special');
   assert.equal(
-    build('Transfer candidates'),
-    '0*,1*,2*&!shiny&!lucky&!shadow&!legendary&!mythical&!ultrabeasts&!costume&!background&!favorite&!xxs&!xxl'
+    preset('Transfer candidates'),
+    '0*,1*,2*&!shiny&!lucky&!shadow&!costume&!background&!legendary&!mythical&!ultrabeast&!favorite&!xxs&!xxl'
   );
 });
 
-test('uses each search keyword only once', () => {
-  const keywords = SEARCH_TERM_KEYWORDS.flat();
+test('uses each search keyword and range only once', () => {
+  const keywords = SEARCH_TERM_GROUPS.flatMap(({ keywords }) => keywords);
   assert.equal(new Set(keywords).size, keywords.length);
+  assert.equal(new Set(SEARCH_RANGE_KEYS).size, SEARCH_RANGE_KEYS.length);
+});
+
+test('places every category and range in exactly one existing section', () => {
+  const sectionCategories = SEARCH_SECTIONS.flatMap(({ categories }) => categories);
+  const sectionRanges = SEARCH_SECTIONS.flatMap(({ ranges }) => ranges);
+
+  assert.deepEqual([...sectionCategories].sort(), SEARCH_TERM_CATEGORIES.map(({ id }) => id).sort());
+  assert.deepEqual([...sectionRanges].sort(), SEARCH_RANGE_FIELDS.map(({ key }) => key).sort());
 });
 
 test('builds a sorted, de-duplicated dex number search', () => {

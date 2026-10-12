@@ -91,7 +91,7 @@ const faqData: FaqDataItem[] = [
       {
         type: 'text',
         content:
-          'The Search String Builder turns filters into a search you can paste into your Pokémon storage. Pokémon Finder shows every current event, raid, egg, research task, and Rocket encounter that offers a Pokémon. Shinies Available Now lists every Pokémon you can currently find shiny.',
+          'The Search String Builder turns filters into a search you can paste into your Pokémon storage. Pokémon Finder lists every Pokémon offered by a current or upcoming event, raid, egg, research task, or Rocket encounter, and can narrow that to a name, a source, or shiny-eligible Pokémon.',
       },
       {
         type: 'text',

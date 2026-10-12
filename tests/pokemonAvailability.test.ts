@@ -3,9 +3,8 @@ import test from 'node:test';
 import type { CalendarEvent } from '../src/types/events.ts';
 import {
   buildPokemonAvailability,
+  filterPokemonAvailability,
   getDexNumber,
-  getShinyAvailability,
-  searchPokemonAvailability,
 } from '../src/utils/pokemonAvailability.ts';
 
 const CDN = 'https://cdn.leekduck.com/assets/img/pokemon_icons';
@@ -107,7 +106,9 @@ test('ignores legacy string entries in event details', () => {
   assert.deepEqual(entries, []);
 });
 
-test('searches names ignoring case and accents', () => {
+const NO_FILTERS = { query: '', kinds: new Set<never>(), shinyOnly: false };
+
+test('filters names ignoring case and accents, and browses when empty', () => {
   const entries = buildPokemonAvailability({
     eggPool: {
       '5 km Eggs': [
@@ -116,13 +117,15 @@ test('searches names ignoring case and accents', () => {
       ],
     },
   });
+  const names = (query: string) =>
+    filterPokemonAvailability(entries, { ...NO_FILTERS, query }).map(({ name }) => name);
 
-  assert.deepEqual(searchPokemonAvailability(entries, 'FLABEBE').map(({ name }) => name), ['Flabébé']);
-  assert.deepEqual(searchPokemonAvailability(entries, 'meow').map(({ name }) => name), ['Galarian Meowth']);
-  assert.deepEqual(searchPokemonAvailability(entries, '  '), []);
+  assert.deepEqual(names('FLABEBE'), ['Flabébé']);
+  assert.deepEqual(names('meow'), ['Galarian Meowth']);
+  assert.deepEqual(names('  '), ['Flabébé', 'Galarian Meowth']);
 });
 
-test('keeps only shiny sources, optionally for some source kinds', () => {
+test('keeps only matching shiny and source-kind sources', () => {
   const entries = buildPokemonAvailability({
     eggPool: {
       '5 km Eggs': [
@@ -135,9 +138,15 @@ test('keeps only shiny sources, optionally for some source kinds', () => {
     },
   });
 
-  const shiny = getShinyAvailability(entries);
+  const shiny = filterPokemonAvailability(entries, { ...NO_FILTERS, shinyOnly: true });
   assert.deepEqual(shiny.map(({ name }) => name), ['Zorua']);
   assert.deepEqual(shiny[0].sources.map(({ kind }) => kind), ['egg']);
-  assert.deepEqual(getShinyAvailability(entries, new Set(['rocket'])), []);
-  assert.deepEqual(getShinyAvailability(entries, new Set()).map(({ name }) => name), ['Zorua']);
+  assert.deepEqual(
+    filterPokemonAvailability(entries, { ...NO_FILTERS, shinyOnly: true, kinds: new Set(['rocket']) }),
+    []
+  );
+  assert.deepEqual(
+    filterPokemonAvailability(entries, { ...NO_FILTERS, kinds: new Set(['rocket']) }).map(({ name }) => name),
+    ['Zorua']
+  );
 });

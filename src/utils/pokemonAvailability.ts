@@ -136,29 +136,27 @@ export function buildPokemonAvailability(data: AvailabilityData): PokemonAvailab
   return Array.from(entries.values()).sort((a, b) => a.name.localeCompare(b.name));
 }
 
-/**
- * Returns the entries whose name contains the query, ignoring case and accents.
- */
-export function searchPokemonAvailability(
-  entries: PokemonAvailability[],
-  query: string
-): PokemonAvailability[] {
-  const needle = normalizeSearchText(query);
-  if (!needle) return [];
-  return entries.filter((entry) => normalizeSearchText(entry.name).includes(needle));
+export interface AvailabilityFilters {
+  query: string;
+  // Empty means every source kind.
+  kinds: ReadonlySet<PokemonSourceKind>;
+  shinyOnly: boolean;
 }
 
 /**
- * Keeps only shiny-eligible sources, optionally limited to some source kinds,
- * and drops Pokémon left with none.
+ * Narrows entries by name (ignoring case and accents) and their sources by
+ * kind and shiny eligibility, dropping Pokémon left with no sources. An empty
+ * query keeps every name, so the result can be browsed.
  */
-export function getShinyAvailability(
+export function filterPokemonAvailability(
   entries: PokemonAvailability[],
-  kinds?: ReadonlySet<PokemonSourceKind>
+  { query, kinds, shinyOnly }: AvailabilityFilters
 ): PokemonAvailability[] {
+  const needle = normalizeSearchText(query);
   return entries.flatMap((entry) => {
+    if (needle && !normalizeSearchText(entry.name).includes(needle)) return [];
     const sources = entry.sources.filter(
-      (source) => source.shiny && (!kinds || kinds.size === 0 || kinds.has(source.kind))
+      (source) => (!shinyOnly || source.shiny) && (kinds.size === 0 || kinds.has(source.kind))
     );
     return sources.length > 0 ? [{ ...entry, sources }] : [];
   });
