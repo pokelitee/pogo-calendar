@@ -170,7 +170,7 @@ const faqData: FaqDataItem[] = [
       {
         type: 'link',
         content: 'GitHub Issues page',
-        link: { text: 'GitHub Issues page', url: 'https://github.com/pogo-calendar/pogo-calendar/issues' },
+        link: { text: 'GitHub Issues page', url: 'https://github.com/pokelitee/pogo-calendar/issues' },
       },
       { type: 'text', content: ' to report a bug or suggest a new feature.' },
     ],

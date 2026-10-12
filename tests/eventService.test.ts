@@ -19,10 +19,19 @@ function event(id: string, title: string): CalendarEvent {
   };
 }
 
-test('builds a continuous archive year range beginning in 2025', () => {
-  assert.deepEqual(getEventArchiveYears(2024), []);
-  assert.deepEqual(getEventArchiveYears(2025), [2025]);
-  assert.deepEqual(getEventArchiveYears(2027), [2025, 2026, 2027]);
+test('lists archive years from the manifest in ascending order', () => {
+  const file = { sha256: 'abc123', size: 1, updated_at: '2026-01-01T00:00:00Z' };
+  const manifest = {
+    files: {
+      'archives/archive_2026.json': file,
+      'events.json': file,
+      'archives/archive_2025.json': file,
+      'archives/notes.json': file,
+    },
+  };
+
+  assert.deepEqual(getEventArchiveYears(manifest), [2025, 2026]);
+  assert.deepEqual(getEventArchiveYears({ files: {} }), []);
 });
 
 test('merges archived and current events with the current version winning', () => {

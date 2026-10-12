@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   parseArchiveEventData,
   parseEventData,
+  parseManifestData,
   parseRaidBossData,
   parseResearchTaskData,
 } from '../src/services/dataValidation.ts';
@@ -54,6 +55,7 @@ test('accepts string raid tiers and nullable CP ranges', () => {
         name: 'Mega Example',
         tier: 'Mega Raids',
         shiny_available: false,
+        is_shadow: false,
         cp_range: null,
         boosted_cp_range: null,
         types: ['Water'],
@@ -64,6 +66,32 @@ test('accepts string raid tiers and nullable CP ranges', () => {
 
   assert.equal(parsed['Mega Raids'][0].tier, 'Mega Raids');
   assert.equal(parsed['Mega Raids'][0].cp_range, null);
+});
+
+test('requires the shadow flag on raid bosses', () => {
+  const parsed = parseRaidBossData({
+    '1-Star Raids': [
+      {
+        name: 'Shadow Example',
+        tier: '1-Star Raids',
+        shiny_available: false,
+        is_shadow: true,
+        cp_range: null,
+        boosted_cp_range: null,
+        types: ['Ghost'],
+        asset_url: null,
+      },
+    ],
+  });
+
+  assert.equal(parsed['1-Star Raids'][0].is_shadow, true);
+  assert.throws(
+    () =>
+      parseRaidBossData({
+        '1-Star Raids': [{ ...parsed['1-Star Raids'][0], is_shadow: undefined }],
+      }),
+    /raid_bosses\.1-Star Raids\[0\]\.is_shadow/
+  );
 });
 
 test('requires a description for current events', () => {
@@ -122,5 +150,31 @@ test('rejects malformed remote records with a useful path', () => {
         Tasks: [{ task: 'Broken', rewards: [{ type: 'item' }] }],
       }),
     /research_tasks\.Tasks\[0\]\.rewards\[0\]\.name/
+  );
+});
+
+test('parses manifest file entries', () => {
+  const parsed = parseManifestData({
+    files: {
+      'events.json': {
+        sha256: 'abc123',
+        size: 1024,
+        updated_at: '2026-10-12T17:30:07Z',
+      },
+    },
+  });
+
+  assert.equal(parsed.files['events.json'].updated_at, '2026-10-12T17:30:07Z');
+});
+
+test('rejects manifest entries with an invalid update time', () => {
+  assert.throws(
+    () =>
+      parseManifestData({
+        files: {
+          'events.json': { sha256: 'abc123', size: 1024, updated_at: 'soon' },
+        },
+      }),
+    /manifest\.files\.events\.json\.updated_at/
   );
 });

@@ -62,6 +62,13 @@ function RaidBossFilter() {
           />
           Show Shiny Available Only
         </label>
+        <label className="flex items-center gap-2.5 text-sm">
+          <Checkbox
+            checked={filters.shadowOnly}
+            onCheckedChange={(checked) => handleFilterChange('shadowOnly', checked === true)}
+          />
+          Show Shadow Raids Only
+        </label>
       </FilterSection>
 
       <Separator />
