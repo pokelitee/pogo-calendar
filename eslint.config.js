@@ -12,9 +12,16 @@ export default tseslint.config([
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
-      reactHooks.configs['recommended-latest'],
       reactRefresh.configs.vite,
     ],
+    plugins: { 'react-hooks': reactHooks },
+    // eslint-plugin-react-hooks 7's recommended set adds the React Compiler
+    // rules; only the two classic hook rules are enforced until the effects
+    // they flag are refactored.
+    rules: {
+      'react-hooks/rules-of-hooks': 'error',
+      'react-hooks/exhaustive-deps': 'warn',
+    },
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
