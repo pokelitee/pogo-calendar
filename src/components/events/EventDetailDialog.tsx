@@ -14,6 +14,7 @@ import type { ToastSeverity } from '../../hooks/useToast';
 import { toDisplayPokemon, type CalendarEvent, type EventPokemon } from '../../types/events';
 import { downloadIcsFile } from '../../utils/calendarUtils';
 import { formatDateLine } from '../../utils/dateUtils';
+import { getPokemonFieldTitle } from '../../utils/eventDetailUtils';
 import { CategoryTag } from '../shared/CategoryTag';
 import { DeleteConfirmationDialog } from '../shared/DeleteConfirmationDialog';
 import { EventStatusTag } from '../shared/EventStatusTag';
@@ -96,26 +97,6 @@ const PokemonChipList = ({ items }: { items: (string | EventPokemon)[] }) => (
     ))}
   </div>
 );
-
-const POKEMON_FIELD_TITLES: Record<string, string> = {
-  features: 'Featured Pokémon',
-  spawns: 'Wild Encounters',
-  raids: 'Raid Battles',
-  eggs: 'Egg Hatches',
-  shiny: 'Available Shinies',
-  shadow: 'Available Shadows',
-  moves: 'Special Moves',
-};
-
-function getPokemonFieldTitle(fieldName: string): string {
-  if (fieldName in POKEMON_FIELD_TITLES) {
-    return POKEMON_FIELD_TITLES[fieldName];
-  }
-  return fieldName
-    .split('_')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
 
 function EventDetailDialog({
   event,
