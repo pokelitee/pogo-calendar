@@ -14,7 +14,9 @@ import type { ToastSeverity } from '../../hooks/useToast';
 import { toDisplayPokemon, type CalendarEvent, type EventPokemon } from '../../types/events';
 import { downloadIcsFile } from '../../utils/calendarUtils';
 import { formatDateLine } from '../../utils/dateUtils';
+import { getPokemonFieldTitle } from '../../utils/eventDetailUtils';
 import { CategoryTag } from '../shared/CategoryTag';
+import { CopyDexSearchButton } from '../shared/CopyDexSearchButton';
 import { DeleteConfirmationDialog } from '../shared/DeleteConfirmationDialog';
 import { EventStatusTag } from '../shared/EventStatusTag';
 import { ShinyIndicator } from '../shared/ShinyIndicator';
@@ -30,14 +32,16 @@ interface DetailSectionProps {
   title: string;
   children: React.ReactNode;
   icon?: React.ReactNode;
+  action?: React.ReactNode;
 }
 
-function DetailSection({ title, children, icon }: DetailSectionProps) {
+function DetailSection({ title, children, icon, action }: DetailSectionProps) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
         {icon}
         <h3 className="text-base font-bold">{title}</h3>
+        {action && <div className="ml-auto">{action}</div>}
       </div>
       {children}
     </div>
@@ -96,26 +100,6 @@ const PokemonChipList = ({ items }: { items: (string | EventPokemon)[] }) => (
     ))}
   </div>
 );
-
-const POKEMON_FIELD_TITLES: Record<string, string> = {
-  features: 'Featured Pokémon',
-  spawns: 'Wild Encounters',
-  raids: 'Raid Battles',
-  eggs: 'Egg Hatches',
-  shiny: 'Available Shinies',
-  shadow: 'Available Shadows',
-  moves: 'Special Moves',
-};
-
-function getPokemonFieldTitle(fieldName: string): string {
-  if (fieldName in POKEMON_FIELD_TITLES) {
-    return POKEMON_FIELD_TITLES[fieldName];
-  }
-  return fieldName
-    .split('_')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
 
 function EventDetailDialog({
   event,
@@ -324,7 +308,17 @@ function EventDetailDialog({
                 })
                 .map(([key, value]) => (
                   <div key={key} className="py-4">
-                    <DetailSection title={getPokemonFieldTitle(key)}>
+                    <DetailSection
+                      title={getPokemonFieldTitle(key)}
+                      action={
+                        <CopyDexSearchButton
+                          pokemon={(value as (string | EventPokemon)[]).filter(
+                            (item): item is EventPokemon => typeof item !== 'string'
+                          )}
+                          label="Copy search"
+                        />
+                      }
+                    >
                       <PokemonChipList
                         items={value as (string | EventPokemon)[]}
                       />

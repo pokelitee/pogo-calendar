@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ShinyChip } from '../components/filters/shared';
+import { CopyDexSearchButton } from '../components/shared/CopyDexSearchButton';
 import { DataErrorDisplay } from '../components/shared/DataErrorDisplay';
 import { DataImage } from '../components/shared/DataImage';
 import { DataLoadingSkeleton } from '../components/shared/DataLoadingSkeleton';
@@ -238,7 +239,15 @@ function RocketLineupPage() {
       <PageHeader
         title="Team GO Rocket Lineups"
         description="Current Pokémon used by Team GO Rocket leaders"
-        actions={<ViewModeToggle value={viewMode} onChange={setViewMode} />}
+        actions={
+          <div className="flex items-center gap-2">
+            <CopyDexSearchButton pokemon={Object.values(filteredData)
+                .flat()
+                .filter((slot) => slot.is_encounter)
+                .flatMap((slot) => slot.pokemons)} />
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          </div>
+        }
       />
 
       <Alert variant="info" className="mb-6">

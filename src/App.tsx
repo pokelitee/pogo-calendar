@@ -29,6 +29,10 @@ const EggPoolPage = lazy(() => import('./pages/EggPool'));
 const RaidBossesPage = lazy(() => import('./pages/RaidBosses'));
 const ResearchTasksPage = lazy(() => import('./pages/ResearchTasks'));
 const RocketLineupPage = lazy(() => import('./pages/RocketLineup'));
+const ToolsPage = lazy(() => import('./pages/Tools'));
+const SearchStringBuilderPage = lazy(() => import('./pages/SearchStringBuilder'));
+const PokemonFinderPage = lazy(() => import('./pages/PokemonFinder'));
+const ShinyTrackerPage = lazy(() => import('./pages/ShinyTracker'));
 
 function App() {
   const { settings, setSettings } = useSettingsContext();
@@ -157,6 +161,10 @@ function App() {
                 <Route path={ROUTES.RAID_BOSSES} element={<RaidBossesPage />} />
                 <Route path={ROUTES.RESEARCH_TASKS} element={<ResearchTasksPage />} />
                 <Route path={ROUTES.ROCKET_LINEUP} element={<RocketLineupPage />} />
+                <Route path={ROUTES.TOOLS} element={<ToolsPage />} />
+                <Route path={ROUTES.SEARCH_STRING_BUILDER} element={<SearchStringBuilderPage />} />
+                <Route path={ROUTES.POKEMON_FINDER} element={<PokemonFinderPage />} />
+                <Route path={ROUTES.SHINY_TRACKER} element={<ShinyTrackerPage />} />
                 <Route path={ROUTES.FAQ} element={<FaqPage />} />
               </Route>
               <Route path="*" element={<Navigate to={ROUTES.CALENDAR} replace />} />

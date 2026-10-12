@@ -86,6 +86,21 @@ const faqData: FaqDataItem[] = [
     ],
   },
   {
+    question: 'What is in the Tools menu?',
+    answer: [
+      {
+        type: 'text',
+        content:
+          'The Search String Builder turns filters into a search you can paste into your Pokémon storage. Pokémon Finder shows every current event, raid, egg, research task, and Rocket encounter that offers a Pokémon. Shinies Available Now lists every Pokémon you can currently find shiny.',
+      },
+      {
+        type: 'text',
+        content:
+          'Search keywords such as "shiny" or "4*" are English and only work with the game set to English. The "Copy search string" buttons on the data pages use Pokédex numbers instead, which work in any language.',
+      },
+    ],
+  },
+  {
     question: 'Can I create my own custom events?',
     answer: [
       {

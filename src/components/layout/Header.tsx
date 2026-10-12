@@ -8,6 +8,7 @@ import {
   Menu,
   RefreshCw,
   Ship,
+  Wrench,
   Sliders,
   X,
   Zap,
@@ -16,6 +17,7 @@ import {
 import React, { useState, type ReactNode } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../config/routes';
+import { TOOLS } from '../../config/tools';
 import { cn } from '../../lib/utils';
 import { useCalendarContext } from '../../hooks/useCalendarContext';
 import { usePageFiltersContext } from '../../hooks/usePageFiltersContext';
@@ -30,20 +32,66 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { Sheet, SheetBody, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { Button } from '../ui/button';
 import LogoIcon from '/icon.svg';
 
-const NAV_ITEMS: { label: string; path: string; icon: LucideIcon }[] = [
+interface NavLink {
+  label: string;
+  path: string;
+  icon: LucideIcon;
+}
+
+interface NavGroup {
+  label: string;
+  items: NavLink[];
+}
+
+type NavEntry = NavLink | NavGroup;
+
+const NAV_ENTRIES: NavEntry[] = [
   { label: 'Calendar', path: ROUTES.CALENDAR, icon: CalendarIcon },
-  { label: 'Egg Pool', path: ROUTES.EGG_POOL, icon: Egg },
-  { label: 'Raid Bosses', path: ROUTES.RAID_BOSSES, icon: Zap },
-  { label: 'Research', path: ROUTES.RESEARCH_TASKS, icon: Clipboard },
-  { label: 'Rocket', path: ROUTES.ROCKET_LINEUP, icon: Ship },
+  {
+    label: 'Game Data',
+    items: [
+      { label: 'Egg Pool', path: ROUTES.EGG_POOL, icon: Egg },
+      { label: 'Raid Bosses', path: ROUTES.RAID_BOSSES, icon: Zap },
+      { label: 'Research', path: ROUTES.RESEARCH_TASKS, icon: Clipboard },
+      { label: 'Rocket', path: ROUTES.ROCKET_LINEUP, icon: Ship },
+    ],
+  },
+  {
+    label: 'Tools',
+    items: [
+      { label: 'All Tools', path: ROUTES.TOOLS, icon: Wrench },
+      ...TOOLS.map(({ label, path, icon }) => ({ label, path, icon })),
+    ],
+  },
   { label: 'FAQ', path: ROUTES.FAQ, icon: HelpCircle },
 ];
+
+const isNavGroup = (entry: NavEntry): entry is NavGroup => 'items' in entry;
+
+const NAV_LINKS = NAV_ENTRIES.flatMap((entry) => (isNavGroup(entry) ? entry.items : [entry]));
+
+const NAV_LINK_CLASSNAME =
+  'rounded-md px-3 py-1.5 text-sm font-semibold text-muted-foreground no-underline transition-colors duration-150 hover:bg-accent hover:text-foreground';
+
+function NavMenuLink({ item }: { item: NavLink }) {
+  const Icon = item.icon;
+  return (
+    <DropdownMenuItem asChild>
+      <RouterLink to={item.path} className="no-underline text-inherit">
+        <Icon className="h-4 w-4" />
+        {item.label}
+      </RouterLink>
+    </DropdownMenuItem>
+  );
+}
 
 interface HeaderProps {
   onSettingsClick: () => void;
@@ -95,7 +143,7 @@ function HeaderComponent({
   };
   const filterPanel = filterPanels[location.pathname];
   const filterCount = filterPanel?.activeFilterCount ?? 0;
-  const currentNavLabel = NAV_ITEMS.find((item) => item.path === location.pathname)?.label || 'Calendar';
+  const currentNavLabel = NAV_LINKS.find((item) => item.path === location.pathname)?.label || 'Calendar';
 
   const filterTriggerButton = (
     <div className="relative">
@@ -133,18 +181,36 @@ function HeaderComponent({
         </RouterLink>
 
         <nav className="ml-2 hidden shrink-0 items-center gap-0.5 lg:flex">
-          {NAV_ITEMS.map((item) => {
-            const isActive = item.path === location.pathname;
+          {NAV_ENTRIES.map((entry) => {
+            if (isNavGroup(entry)) {
+              const activeItem = entry.items.find((item) => item.path === location.pathname);
+              return (
+                <DropdownMenu key={entry.label}>
+                  <DropdownMenuTrigger
+                    className={cn(
+                      NAV_LINK_CLASSNAME,
+                      'inline-flex items-center gap-1 outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                      activeItem && 'bg-accent text-primary'
+                    )}
+                  >
+                    {activeItem ? `${entry.label}: ${activeItem.label}` : entry.label}
+                    <ChevronDown className="h-4 w-4" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="min-w-[200px]">
+                    {entry.items.map((item) => (
+                      <NavMenuLink key={item.path} item={item} />
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              );
+            }
             return (
               <RouterLink
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  'rounded-md px-3 py-1.5 text-sm font-semibold text-muted-foreground no-underline transition-colors duration-150 hover:bg-accent hover:text-foreground',
-                  isActive && 'bg-accent text-primary'
-                )}
+                key={entry.path}
+                to={entry.path}
+                className={cn(NAV_LINK_CLASSNAME, entry.path === location.pathname && 'bg-accent text-primary')}
               >
-                {item.label}
+                {entry.label}
               </RouterLink>
             );
           })}
@@ -182,17 +248,22 @@ function HeaderComponent({
               )}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="min-w-[200px]">
-              {NAV_ITEMS.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <DropdownMenuItem key={item.path} asChild>
-                    <RouterLink to={item.path} className="no-underline text-inherit">
-                      <Icon className="h-4 w-4" />
-                      {item.label}
-                    </RouterLink>
-                  </DropdownMenuItem>
-                );
-              })}
+              {NAV_ENTRIES.map((entry, index) =>
+                isNavGroup(entry) ? (
+                  <React.Fragment key={entry.label}>
+                    {index > 0 && <DropdownMenuSeparator />}
+                    <DropdownMenuLabel>{entry.label}</DropdownMenuLabel>
+                    {entry.items.map((item) => (
+                      <NavMenuLink key={item.path} item={item} />
+                    ))}
+                    {index < NAV_ENTRIES.length - 1 && !isNavGroup(NAV_ENTRIES[index + 1]) && (
+                      <DropdownMenuSeparator />
+                    )}
+                  </React.Fragment>
+                ) : (
+                  <NavMenuLink key={entry.path} item={entry} />
+                )
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
