@@ -7,16 +7,15 @@ import { DataLoadingSkeleton } from '../components/shared/DataLoadingSkeleton';
 import { NoResults } from '../components/shared/NoResults';
 import { PageHeader } from '../components/shared/PageHeader';
 import { SectionHeader } from '../components/shared/SectionHeader';
+import { TypeBadge } from '../components/shared/TypeBadge';
 import { ViewModeToggle, type ViewMode } from '../components/shared/ViewModeToggle';
 import { Alert } from '../components/ui/alert';
-import { Badge } from '../components/ui/badge';
 import { Card, INTERACTIVE_CARD_CLASSNAME } from '../components/ui/card';
-import { POKEMON_TYPE_COLORS, RAID_TIER_COLORS } from '../config/colorMapping';
+import { RAID_TIER_COLORS } from '../config/colorMapping';
 import { usePageFiltersContext } from '../hooks/usePageFiltersContext';
 import { usePageData } from '../hooks/usePageData';
 import { fetchRaidBosses } from '../services/dataService';
 import type { RaidBoss, RaidBossData } from '../types/raidBosses';
-import { contrastColor } from '../utils/colorUtils';
 
 function RaidBossesPage() {
   const { filters, setOptions } = usePageFiltersContext().raidBoss;
@@ -108,16 +107,7 @@ function RaidBossesPage() {
         <div className="flex flex-col gap-2.5">
           <div className="flex flex-wrap justify-center gap-1">
             {boss.types.map((type) => (
-              <Badge
-                key={type}
-                size="sm"
-                style={{
-                  backgroundColor: POKEMON_TYPE_COLORS[type] || '#999',
-                  color: contrastColor(POKEMON_TYPE_COLORS[type] || '#999'),
-                }}
-              >
-                {type}
-              </Badge>
+              <TypeBadge key={type} type={type} />
             ))}
             {boss.is_shadow && <ShadowChip />}
             {boss.shiny_available && <ShinyChip />}
@@ -158,14 +148,8 @@ function RaidBossesPage() {
           {boss.shiny_available && <ShinyChip />}
         </div>
         <div className="flex flex-wrap gap-1">
-          {boss.types.map((t) => (
-            <Badge
-              key={t}
-              size="sm"
-              style={{ backgroundColor: POKEMON_TYPE_COLORS[t], color: contrastColor(POKEMON_TYPE_COLORS[t] || '#999') }}
-            >
-              {t}
-            </Badge>
+          {boss.types.map((type) => (
+            <TypeBadge key={type} type={type} />
           ))}
         </div>
       </div>
