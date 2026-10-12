@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 
 const footerLinks = [
-  { href: 'https://github.com/pogo-calendar/pogo-calendar', text: 'App Source' },
+  { href: 'https://github.com/pokelitee/pogo-calendar', text: 'App Source' },
   { href: 'https://leekduck.com/events/', text: 'Data Source' },
-  { href: 'https://github.com/pogo-calendar/leak-duck', text: 'Scraper Source' },
-  { href: 'https://github.com/pogo-calendar/pogo-calendar/issues', text: 'Send Feedback' },
+  { href: 'https://github.com/pokelitee/leak-duck', text: 'Scraper Source' },
+  { href: 'https://github.com/pokelitee/pogo-calendar/issues', text: 'Send Feedback' },
 ];
 
 const FooterLink = React.memo(function FooterLink({ href, text }: { href: string; text: string }) {
