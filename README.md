@@ -35,6 +35,15 @@ You can view the live application here: [pokelitee.github.io/pogo-calendar](http
 - **Raid Bosses:** View active raid bosses by tier (1-star through Mega), including shadow raids, with type, CP range, shiny, and shadow filters.
 - **Research Tasks:** Search research tasks by description or Pokémon reward, and filter by reward type, task category, and shiny availability.
 - **Rocket Lineup:** View current Team GO Rocket lineups for Giovanni, the leaders, and every grunt type, filtered by member, battle slot, encounter, and shiny availability.
+- **Copy Search String:** Each data page, and each Pokémon section of an event, can copy a storage search for the Pokémon shown. It uses Pokédex numbers, so it works in any game language.
+
+The data pages are grouped under the **Game Data** menu.
+
+### Tools
+
+- **Search String Builder:** Build a storage search from Pokémon, dex ranges, appraisal, variants, evolution, origin, size, gender, types, move types, regions, CP, and IV bars, with presets such as transfer candidates and Great League IVs. Keywords are English, matching the game's English search terms.
+- **Pokémon Finder:** Search one Pokémon across active and upcoming events, raids, eggs, research encounters, and Rocket encounters.
+- **Shinies Available Now:** Every Pokémon currently obtainable as a shiny, filterable by name and source.
 
 ### Advanced Filtering
 
@@ -78,11 +87,12 @@ src/
 │   ├── filters/       # Calendar and data-page filter panels
 │   ├── layout/        # Header, footer, page layout
 │   ├── shared/        # App-level shared components (settings, errors, loaders)
+│   ├── tools/         # Components shared by the Tools pages
 │   └── ui/            # Component kit built on Radix UI primitives
 ├── config/            # Data URLs, storage keys, colors, routes
 ├── contexts/          # Calendar, event data, custom events, page filters, settings
 ├── hooks/             # Data fetching and state hooks
-├── pages/             # Lazy-loaded pages (Calendar, data pages, FAQ)
+├── pages/             # Lazy-loaded pages (Calendar, data pages, tools, FAQ)
 ├── services/          # leak-duck fetching and runtime validation
 ├── types/             # TypeScript definitions for app state and leak-duck data
 └── utils/             # Date/time, calendar, color, and storage helpers
