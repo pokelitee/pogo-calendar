@@ -8,6 +8,7 @@ import {
   Menu,
   RefreshCw,
   Ship,
+  Wrench,
   Sliders,
   X,
   Zap,
@@ -16,6 +17,7 @@ import {
 import React, { useState, type ReactNode } from 'react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../config/routes';
+import { TOOLS } from '../../config/tools';
 import { cn } from '../../lib/utils';
 import { useCalendarContext } from '../../hooks/useCalendarContext';
 import { usePageFiltersContext } from '../../hooks/usePageFiltersContext';
@@ -60,6 +62,13 @@ const NAV_ENTRIES: NavEntry[] = [
       { label: 'Raid Bosses', path: ROUTES.RAID_BOSSES, icon: Zap },
       { label: 'Research', path: ROUTES.RESEARCH_TASKS, icon: Clipboard },
       { label: 'Rocket', path: ROUTES.ROCKET_LINEUP, icon: Ship },
+    ],
+  },
+  {
+    label: 'Tools',
+    items: [
+      { label: 'All Tools', path: ROUTES.TOOLS, icon: Wrench },
+      ...TOOLS.map(({ label, path, icon }) => ({ label, path, icon })),
     ],
   },
   { label: 'FAQ', path: ROUTES.FAQ, icon: HelpCircle },

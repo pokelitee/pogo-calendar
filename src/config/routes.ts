@@ -9,6 +9,8 @@ export const ROUTES = {
   RAID_BOSSES: '/raid-bosses',
   RESEARCH_TASKS: '/research-tasks',
   ROCKET_LINEUP: '/rocket-lineup',
+  TOOLS: '/tools',
+  SEARCH_STRING_BUILDER: '/tools/search-string',
   FAQ: '/faq',
 } as const;
 
