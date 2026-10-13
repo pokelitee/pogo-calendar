@@ -51,7 +51,9 @@ jobs:
           echo "run-id=$BUILD_RUN_ID" >> "$GITHUB_OUTPUT"
 
   deploy:
-    if: needs.prepare.outputs.commit != ''
+    if: >-
+      always() && !cancelled() && needs.prepare.result == 'success' &&
+      needs.prepare.outputs.commit != ''
     needs: prepare
     runs-on: ubuntu-latest
     timeout-minutes: 10
