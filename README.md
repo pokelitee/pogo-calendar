@@ -42,7 +42,10 @@ The data pages are grouped under the **Game Data** menu.
 ### Tools
 
 - **Search String Builder:** Build a storage search from every term in [Niantic's search guide](https://niantic.helpshift.com/hc/faq/1486-searching-filtering-your-pokemon-inventory/) plus the community-documented ones on [Serebii](https://serebii.net/pokemongo/pokemonsearch.shtml), grouped into collapsible sections: Pokémon and tags, appraisal and stats, variants, types and regions, moves (with move slots), evolution and training, origin, status/size/gender, and inventory counts. Includes presets such as transfer candidates and Great League IVs. Keywords are English, matching the game's English search terms.
-- **Pokémon Finder:** Browse or search every Pokémon available from active and upcoming events, raids, eggs, research encounters, and Rocket encounters, filtered by source and shiny availability.
+- **Pokémon Finder:** Browse or search every Pokémon available from active and upcoming events, raids, eggs, research encounters, and Rocket encounters, filtered by source and shiny availability. Mark Pokémon as caught or shiny caught and hide the ones you already have.
+- **Type Matchups:** Pick a current raid boss or up to two types to see every weakness and resistance with Pokémon GO's multipliers, and copy storage searches for counters. Raid boss cards link here with their types filled in.
+- **Bonus Tracker:** Event bonuses active now and coming up, grouped by what they boost (Stardust, XP, Candy, shiny odds, and more), with how long each lasts.
+- **What's New:** Events, raid bosses, egg hatches, research tasks, and Rocket lineups that appeared since you last marked news as seen.
 
 ### Advanced Filtering
 
@@ -50,7 +53,7 @@ The data pages are grouped under the **Game Data** menu.
 - **Page-Specific Filters:** Each data page has tailored filters (tiers, types, shiny status, slots, etc.) with search and bulk selection.
 - **Optimized Category Filter:** Modern pop-up menu for category selection with grouping, color keys, "Select All," and "Clear All" actions.
 - **Integrated "Saved" Filter:** Filter by your saved events directly from the category menu.
-- **Persistent State:** Calendar filters, custom events, saved events, notes, and settings are preserved in `localStorage`.
+- **Persistent State:** Calendar filters, custom events, saved events, notes, settings, your caught list, and What's New progress are preserved in `localStorage`.
 
 ### Polished User Experience
 

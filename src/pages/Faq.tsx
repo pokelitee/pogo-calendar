@@ -71,7 +71,7 @@ const faqData: FaqDataItem[] = [
       {
         type: 'text',
         content:
-          "Yes, absolutely. All your personal data, including custom events, saved event IDs, notes, filter settings, and preferences, is stored exclusively in your browser's local storage. This data is never sent to any server.",
+          "Yes, absolutely. All your personal data, including custom events, saved event IDs, notes, filter settings, preferences, the Pokémon you mark as caught, and What's New progress, is stored exclusively in your browser's local storage. This data is never sent to any server.",
       },
     ],
   },
@@ -91,7 +91,7 @@ const faqData: FaqDataItem[] = [
       {
         type: 'text',
         content:
-          'The Search String Builder turns filters into a search you can paste into your Pokémon storage. Pokémon Finder lists every Pokémon offered by a current or upcoming event, raid, egg, research task, or Rocket encounter, and can narrow that to a name, a source, or shiny-eligible Pokémon.',
+          'The Search String Builder turns filters into a search you can paste into your Pokémon storage. Pokémon Finder lists every Pokémon offered by a current or upcoming event, raid, egg, research task, or Rocket encounter, can narrow that to a name, a source, or shiny-eligible Pokémon, and tracks which ones you have caught. Type Matchups shows what a raid boss is weak to and copies a search for counters. Bonus Tracker lists active and upcoming event bonuses by type. What’s New shows what appeared since you last checked.',
       },
       {
         type: 'text',
