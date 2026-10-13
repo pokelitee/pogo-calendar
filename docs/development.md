@@ -1,8 +1,10 @@
-# Contributing
+# Development
 
-Follow the [organization contribution guide](https://github.com/pokelitee/.github/blob/main/CONTRIBUTING.md) and use the [README](README.md) for setup.
+See the [README](../README.md) for quick start and documentation links. General contribution policy lives in the [organization guide](https://github.com/pokelitee/.github/blob/main/CONTRIBUTING.md).
 
-## Local checks
+## Setup and checks
+
+Run the commands below from the repository root.
 
 Use Node.js 22 and install the locked dependencies with `npm ci`.
 
@@ -57,3 +59,20 @@ Every push to `main` is built and deployed to GitHub Pages by `.github/workflows
 Changes to `main` require a pull request, passing `validate` CI, and resolved review conversations, including changes by administrators. No approving review is required while there is one maintainer. GitHub automatically deletes merged branches.
 
 The Pages environment and deployment workflow permit only `main`. The intended live ruleset is tracked in `.github/rulesets/main.json`; editing that file alone does not apply the settings to GitHub.
+
+## Data integration and user state
+
+Data endpoints are centralized in [`src/config/api.ts`](../src/config/api.ts). Remote Leak Duck JSON passes through [`src/services/dataValidation.ts`](../src/services/dataValidation.ts) before entering application state; update validation, TypeScript definitions, and representative tests together when that contract changes. The upstream field reference remains on the [Leak Duck API site](https://pokelitee.github.io/leak-duck/#reference).
+
+Archive history is optional and loaded only when enabled. Preserve loading, empty, error, and retry states when adding data-backed views. Storage keys and routes belong in `src/config/`; treat persisted user data as an existing compatibility boundary when changing its shape.
+
+User settings, notes, custom events, saved events, caught Pokémon, and news progress live in browser `localStorage`. There is no account sync or backend. Clearing site data removes that local state. Event `.ics` export saves calendar entries, not a complete application backup.
+
+## Troubleshooting
+
+- **Tests fail before running:** use Node.js 22 and install the locked dependencies with `npm ci`; the test command relies on TypeScript stripping.
+- **Data requests fail:** inspect the network response and validation error, then compare with the Leak Duck API contract. Retry after upstream service recovery rather than accepting malformed JSON.
+- **Routes or assets fail after deployment:** retain hash routing and the repository base path in `vite.config.ts`. If forking under a new repository name, update that base path.
+- **Deployment missing or stale:** check `.github/workflows/deploy_pages.yml`, its validation/build steps, Pages source, and the `main` environment restriction. A successful PR check does not itself deploy the site.
+
+The app's [FAQ](https://pokelitee.github.io/pogo-calendar/#/faq) is the user-facing help reference. Keep explanations of changed user behavior there as well as updating the README when a major feature changes.

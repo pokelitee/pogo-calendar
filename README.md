@@ -33,7 +33,7 @@ Open the local URL printed by Vite. For a production build, run `npm run build`,
 
 `src/pages/` contains lazy-loaded pages; `src/components/` groups UI by feature. Contexts and hooks manage application state, services fetch and validate remote data, and `src/config/` centralizes URLs and shared settings. Hash-based routing supports static hosting on GitHub Pages.
 
-See [Contributing](CONTRIBUTING.md#architecture) for the source layout and development conventions.
+See [Development](docs/development.md#architecture) for the source layout and development conventions.
 
 ## Data source
 
@@ -54,11 +54,11 @@ Every leak-duck response is validated in `src/services/dataValidation.ts` before
 
 - The app's FAQ explains user-facing behavior.
 - [Leak Duck API reference](https://pokelitee.github.io/leak-duck/#reference) defines the upstream data contract.
-- [Contributing](CONTRIBUTING.md) covers checks, architecture, dependency updates, and deployment.
+- [Development](docs/development.md) covers checks, architecture, data integration, dependency updates, deployment, and troubleshooting.
 
 ## Contributing
 
-Follow the [organization contribution guide](https://github.com/pokelitee/.github/blob/main/CONTRIBUTING.md) and the [project instructions](CONTRIBUTING.md). Use a short-lived branch and a pull request into `main`.
+Follow the [organization contribution guide](https://github.com/pokelitee/.github/blob/main/CONTRIBUTING.md) and the [development guide](docs/development.md). Use a short-lived branch and a pull request into `main`.
 
 ## Credits
 
