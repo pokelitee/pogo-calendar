@@ -63,7 +63,12 @@ function BonusTrackerPage() {
   const availableCategories = CATEGORY_ORDER.filter((category) =>
     entries.some((entry) => entry.category === category)
   );
-  const visible = entries.filter((entry) => categories.length === 0 || categories.includes(entry.category));
+  // Ignore selections for categories that a data refresh removed, which would
+  // otherwise hide everything with no pressed toggle left to clear.
+  const activeCategories = categories.filter((category) => availableCategories.includes(category));
+  const visible = entries.filter(
+    (entry) => activeCategories.length === 0 || activeCategories.includes(entry.category)
+  );
 
   const openEvent = (event: CalendarEvent) => {
     setSelectedEvent(event);
@@ -99,7 +104,7 @@ function BonusTrackerPage() {
           type="multiple"
           aria-label="Filter by bonus type"
           className="mb-6 flex-wrap"
-          value={categories}
+          value={activeCategories}
           onValueChange={(value) => setCategories(value as BonusCategory[])}
         >
           {availableCategories.map((category) => (
@@ -111,7 +116,14 @@ function BonusTrackerPage() {
       )}
 
       {visible.length === 0 && (
-        <NoResults title="No Bonuses" message="No current or upcoming event bonuses match these filters." />
+        <NoResults
+          title="No Bonuses"
+          message={
+            entries.length === 0
+              ? 'No current or upcoming event has bonuses right now.'
+              : 'No current or upcoming event bonuses match these filters.'
+          }
+        />
       )}
 
       {TIMING_SECTIONS.map(({ timing, title }) => {

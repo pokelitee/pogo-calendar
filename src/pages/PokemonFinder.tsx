@@ -85,8 +85,12 @@ function PokemonFinderPage() {
         <DataLoadingSkeleton itemCount={6} gridSize={{ xs: 12, md: 6 }} />
       ) : results.length === 0 ? (
         <NoResults
-          title="Not Available Right Now"
-          message="No current or upcoming event, raid, egg, research task, or Rocket encounter matches these filters."
+          title={failedSources.length > 0 ? 'No Results' : 'Not Available Right Now'}
+          message={
+            failedSources.length > 0
+              ? 'Some data could not be loaded, so this list may be incomplete. Retry above.'
+              : 'No current or upcoming event, raid, egg, research task, or Rocket encounter matches these filters.'
+          }
         />
       ) : (
         <>
