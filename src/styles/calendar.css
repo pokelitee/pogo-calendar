@@ -1,77 +1,39 @@
-.fc {
-  --fc-border-color: hsl(var(--border));
-  --fc-page-bg-color: transparent;
-  --fc-neutral-bg-color: hsl(var(--muted));
-  --fc-list-event-hover-bg-color: hsl(var(--accent));
-  --fc-today-bg-color: hsl(var(--muted) / 0.6);
-  --fc-day-other-bg-color: transparent;
-  --fc-list-day-bg-color: hsl(var(--muted));
-  --fc-list-day-side-bg-color: hsl(var(--muted));
-  --fc-event-text-color: hsl(var(--foreground));
-  font-family: var(--font-sans);
-}
+/* FullCalendar's classic theme reads its colors from these variables. Mapping
+   them to the app's tokens gives the calendar the app's look, including dark
+   mode, which the tokens already switch with the .dark class. */
+:root {
+  --fc-classic-button: hsl(var(--secondary));
+  --fc-classic-button-border: hsl(var(--secondary));
+  --fc-classic-button-strong: hsl(var(--secondary));
+  --fc-classic-button-strong-border: hsl(var(--secondary));
+  --fc-classic-button-outline: hsl(var(--ring) / 0.5);
+  --fc-classic-button-foreground: hsl(var(--secondary-foreground));
 
-.fc .fc-col-header-cell {
-  background-color: hsl(var(--card));
-}
+  --fc-classic-primary: hsl(var(--primary));
+  --fc-classic-primary-foreground: hsl(var(--primary-foreground));
 
-.fc .fc-col-header-cell-cushion {
-  padding: 0.5rem 0.25rem;
-  color: hsl(var(--muted-foreground));
-  font-weight: 600;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
+  --fc-classic-event: transparent;
+  --fc-classic-event-contrast: hsl(var(--foreground));
+  --fc-classic-background-event: hsl(var(--success));
+  --fc-classic-background-event-opacity: 15%;
+  --fc-classic-background-event-foreground-opacity: 50%;
+  --fc-classic-highlight: hsl(var(--primary) / 0.12);
+  --fc-classic-today: hsl(var(--muted) / 0.6);
+  --fc-classic-now: hsl(var(--primary));
+  --fc-classic-small-dot-width: 8px;
+  --fc-classic-large-dot-width: 10px;
 
-.fc .fc-daygrid-day-number,
-.fc .fc-list-day-text,
-.fc .fc-list-day-side-text {
-  color: hsl(var(--foreground));
-  font-weight: 600;
-}
+  --fc-classic-background: transparent;
+  --fc-classic-faint: hsl(var(--muted) / 0.5);
+  --fc-classic-muted: hsl(var(--muted));
+  --fc-classic-strong: hsl(var(--accent));
 
-.fc .fc-daygrid-day-frame {
-  padding: 0.125rem;
-}
+  --fc-classic-foreground: hsl(var(--foreground));
+  --fc-classic-faint-foreground: hsl(var(--muted-foreground) / 0.7);
+  --fc-classic-muted-foreground: hsl(var(--muted-foreground));
 
-.fc .fc-daygrid-day-top {
-  line-height: 1;
-}
-
-.fc .fc-daygrid-day-number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.5rem;
-  height: 1.5rem;
-  margin: 0.25rem;
-  padding: 0 0.375rem;
-  border-radius: 9999px;
-  font-size: 0.8125rem;
-}
-
-.fc .fc-day-today .fc-daygrid-day-number {
-  background-color: hsl(var(--primary));
-  color: hsl(var(--primary-foreground));
-}
-
-.fc .fc-daygrid-event {
-  margin-top: 1px;
-}
-
-.fc .fc-daygrid-event-harness {
-  margin-inline: 1px;
-}
-
-.fc-theme-standard td,
-.fc-theme-standard th,
-.fc-theme-standard .fc-scrollgrid {
-  border-color: hsl(var(--border));
-}
-
-.fc .fc-list-event:hover td {
-  background-color: hsl(var(--accent));
+  --fc-classic-border: hsl(var(--border));
+  --fc-classic-strong-border: hsl(var(--border));
 }
 
 .calendar-event-pill {
@@ -80,18 +42,9 @@
   transition: background-color 150ms ease;
 }
 
-.fc-event:hover .calendar-event-pill,
+.calendar-event-pill:hover,
 .event-highlight .calendar-event-pill {
   background-color: var(--event-bg-active);
-}
-
-/* FullCalendar's list view sizes the title <td> to fit its content by
-   default, which pushes our pill past the container edge instead of
-   letting it shrink and ellipsize. Forcing width:100% with max-width:0
-   makes the cell shrink to the space actually available. */
-.fc-list-event-title {
-  width: 100%;
-  max-width: 0;
 }
 
 @media (max-width: 640px) {
@@ -102,21 +55,7 @@
     scrollbar-gutter: stable;
   }
 
-  .calendar-scroll-shell .fc-dayGridMonth-view {
+  .calendar-scroll-shell .calendar-month-view {
     min-width: 42rem;
-  }
-
-  .fc .fc-col-header-cell-cushion {
-    font-size: 0.6875rem;
-  }
-
-  .fc .fc-daygrid-day-number {
-    min-width: 1.25rem;
-    height: 1.25rem;
-    font-size: 0.75rem;
-  }
-
-  .fc .fc-daygrid-day-frame {
-    padding: 0.0625rem;
   }
 }

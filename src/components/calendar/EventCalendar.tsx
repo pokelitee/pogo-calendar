@@ -1,18 +1,24 @@
-import type {
-  DateSelectArg,
-  DatesSetArg,
-  EventClickArg,
-  EventContentArg,
-  FormatterInput,
-} from '@fullcalendar/core';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import listPlugin from '@fullcalendar/list';
-import FullCalendar from '@fullcalendar/react';
+import FullCalendar, {
+  type CalendarRef,
+  type DateSelectInfo,
+  type DatesSetInfo,
+  type EventClickInfo,
+  type EventDisplayInfo,
+  type FormatterInput,
+} from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/react/daygrid';
+import interactionPlugin from '@fullcalendar/react/interaction';
+import listPlugin from '@fullcalendar/react/list';
+import classicThemePlugin from '@fullcalendar/react/themes/classic';
+import '@fullcalendar/react/skeleton.css';
+import '@fullcalendar/react/themes/classic/theme.css';
+// After FullCalendar's stylesheets so the app's palette and overrides win.
+import '../../styles/calendar.css';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useCalendarContext } from '../../hooks/useCalendarContext';
 import { HOVER_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { useSettingsContext } from '../../hooks/useSettingsContext';
+import { cn } from '../../lib/utils';
 import type { CalendarEvent } from '../../types/events';
 import type { CalendarView } from '../../types/settings';
 import { Card } from '../ui/card';
@@ -35,7 +41,7 @@ function EventCalendar({ view, isMobile }: EventCalendarProps) {
     filters: { startDate: filterStartDate, endDate: filterEndDate },
     setFilters,
   } = useCalendarContext();
-  const calendarRef = useRef<FullCalendar>(null);
+  const calendarRef = useRef<CalendarRef>(null);
   const { settings } = useSettingsContext();
   const { firstDay, hour12, timezone } = settings;
   const canHover = useMediaQuery(HOVER_QUERY);
@@ -68,14 +74,14 @@ function EventCalendar({ view, isMobile }: EventCalendarProps) {
   );
 
   const handleEventClick = useCallback(
-    (clickInfo: EventClickArg) => {
+    (clickInfo: EventClickInfo) => {
       onSelectEvent(findOriginalEvent(clickInfo.event));
     },
     [findOriginalEvent, onSelectEvent]
   );
 
   const handleDatesSet = useCallback(
-    (dateInfo: DatesSetArg) => {
+    (dateInfo: DatesSetInfo) => {
       setTitle(dateInfo.view.title);
       onViewChange(dateInfo.view.type);
     },
@@ -90,7 +96,7 @@ function EventCalendar({ view, isMobile }: EventCalendarProps) {
   );
 
   const handleDateSelect = useCallback(
-    (selectionInfo: DateSelectArg) => {
+    (selectionInfo: DateSelectInfo) => {
       const { start, end } = selectionInfo;
       const inclusiveEnd = new Date(end.getTime() - 1);
 
@@ -156,7 +162,7 @@ function EventCalendar({ view, isMobile }: EventCalendarProps) {
   );
 
   const renderEventContent = useCallback(
-    (eventInfo: EventContentArg) => {
+    (eventInfo: EventDisplayInfo) => {
       const article_url = eventInfo.event.extendedProps.article_url;
       const isSaved = savedEventIds.includes(article_url);
 
@@ -186,7 +192,7 @@ function EventCalendar({ view, isMobile }: EventCalendarProps) {
           <FullCalendar
             key={timezone}
             ref={calendarRef}
-            plugins={[dayGridPlugin, listPlugin, interactionPlugin]}
+            plugins={[classicThemePlugin, dayGridPlugin, listPlugin, interactionPlugin]}
             headerToolbar={false}
             initialView={view}
             events={events}
@@ -197,8 +203,7 @@ function EventCalendar({ view, isMobile }: EventCalendarProps) {
             dayMaxEvents={false}
             dayMaxEventRows={false}
             expandRows={false}
-            eventBackgroundColor="transparent"
-            eventBorderColor="transparent"
+            eventColor="transparent"
             datesSet={handleDatesSet}
             views={{
               dayGridMonth: { titleFormat: { month: isMobile ? 'short' : 'long', year: 'numeric' } },
@@ -210,9 +215,27 @@ function EventCalendar({ view, isMobile }: EventCalendarProps) {
             unselectAuto={false}
             eventTimeFormat={eventTimeFormat}
             timeZone={timezone}
-            eventClassNames={(arg) => {
-              return getEventClassSelector(arg.event.extendedProps.article_url);
-            }}
+            eventClass={(arg) => getEventClassSelector(arg.event.extendedProps.article_url)}
+            viewClass={(arg) => (arg.view.type === 'dayGridMonth' ? 'calendar-month-view' : '')}
+            dayHeaderContent={(arg) => (
+              <span className="py-2 text-[0.6875rem] font-semibold uppercase tracking-wide text-muted-foreground sm:text-xs">
+                {arg.text}
+              </span>
+            )}
+            dayCellTopContent={(arg) => (
+              <span
+                className={cn(
+                  'm-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-semibold sm:h-6 sm:min-w-6 sm:px-1.5 sm:text-[0.8125rem]',
+                  arg.isToday
+                    ? 'bg-primary text-primary-foreground'
+                    : arg.isOther
+                      ? 'text-muted-foreground'
+                      : 'text-foreground'
+                )}
+              >
+                {arg.dayNumberText}
+              </span>
+            )}
           />
         </div>
       </Card>
