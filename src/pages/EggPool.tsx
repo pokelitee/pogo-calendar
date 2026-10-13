@@ -71,7 +71,7 @@ function EggPoolPage() {
   }, [data, filters]);
 
   if (loading) {
-    return <DataLoadingSkeleton itemCount={8} gridSize={{ xs: 6, sm: 4, md: 3, lg: 2 }} />;
+    return <DataLoadingSkeleton itemCount={8} gridSize={{ xs: 4, md: 3, lg: 2 }} />;
   }
 
   if (error || !data || !filteredData) {

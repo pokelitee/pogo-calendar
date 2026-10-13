@@ -104,7 +104,7 @@ function RocketLineupPage() {
   }, [data, filters]);
 
   if (loading) {
-    return <DataLoadingSkeleton itemCount={4} gridSize={{ xs: 12 }} />;
+    return <DataLoadingSkeleton itemCount={4} gridSize={{ xs: 12, lg: 6 }} />;
   }
 
   if (error || !data || !filteredData) {
