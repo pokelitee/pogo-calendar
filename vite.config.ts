@@ -29,10 +29,9 @@ export default defineConfig({
             { name: 'pickers', test: vendor('react-day-picker', 'cmdk') },
 
             // FullCalendar
-            { name: 'fullcalendar-core', test: vendor('@fullcalendar/core', '@fullcalendar/react', 'preact') },
             {
-              name: 'fullcalendar-plugins',
-              test: vendor('@fullcalendar/daygrid', '@fullcalendar/list', '@fullcalendar/interaction'),
+              name: 'fullcalendar',
+              test: vendor('@fullcalendar/core', '@fullcalendar/react', '@full-ui/headless-calendar', 'temporal-polyfill'),
             },
 
             // Date utilities

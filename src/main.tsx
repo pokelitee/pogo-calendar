@@ -6,7 +6,6 @@ import { CalendarProvider } from './contexts/CalendarProvider.tsx';
 import { PageFiltersProvider } from './contexts/PageFiltersProvider.tsx';
 import { SettingsProvider } from './contexts/SettingsProvider.tsx';
 import './index.css';
-import './styles/calendar.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

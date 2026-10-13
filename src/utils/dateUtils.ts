@@ -59,3 +59,11 @@ export function formatHour(value: number): string {
 export function formatToLocalTime(date: string | Date): string {
   return format(new Date(date), "yyyy-MM-dd'T'HH:mm:ss");
 }
+
+/**
+ * Restores the space FullCalendar 7 drops before AM/PM in event times:
+ * "10:00AM" → "10:00 AM", "6:00 – 7:00PM" → "6:00 – 7:00 PM".
+ */
+export function formatEventTimeText(text: string): string {
+  return text.replace(/(\d)(AM|PM|am|pm)\b/g, '$1 $2');
+}
