@@ -67,9 +67,9 @@ const PokemonBadge = ({ pokemon }: { pokemon: EventPokemon }) => {
         <img
           src={pokemon.asset_url}
           alt=""
-          // Negative margins let the sprite overhang the badge without
-          // making it taller.
-          className="-my-1.5 size-8 object-contain"
+          // The negative top margin lets the sprite overhang the top of the
+          // badge without making it taller or moving its bottom edge.
+          className="-mt-3 size-8 object-contain"
         />
       )}
       {pokemon.name}
@@ -96,7 +96,7 @@ const PokemonBadge = ({ pokemon }: { pokemon: EventPokemon }) => {
 };
 
 const PokemonChipList = ({ items }: { items: EventPokemon[] }) => (
-  <div className="flex flex-wrap gap-x-1.5 gap-y-3 py-1">
+  <div className="flex flex-wrap gap-x-1.5 gap-y-3 pt-2">
     {items.map((pokemon) => (
       <PokemonBadge key={pokemon.name} pokemon={pokemon} />
     ))}
