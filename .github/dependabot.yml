@@ -16,11 +16,6 @@ updates:
       npm-dependencies:
         patterns: ["*"]
         update-types: [minor, patch]
-    ignore:
-      # @fullcalendar/core and react have a stable 7.x, but the daygrid, list
-      # and interaction plugins are still 7.0.0 release candidates.
-      - dependency-name: "@fullcalendar/*"
-        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: "/"
