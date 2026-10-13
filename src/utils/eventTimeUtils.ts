@@ -103,3 +103,24 @@ export function getEventInstant(
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
 }
+
+export type EventTiming = 'active' | 'upcoming';
+
+export interface TimedEvent {
+  event: CalendarEvent;
+  timing: EventTiming;
+  start: Date | null;
+  end: Date;
+}
+
+/**
+ * Returns the events that have not ended yet, tagged as active or upcoming.
+ */
+export function getCurrentEvents(events: CalendarEvent[], now: Date = new Date()): TimedEvent[] {
+  return events.flatMap((event): TimedEvent[] => {
+    const start = getEventInstant(event, 'start');
+    const end = getEventInstant(event, 'end');
+    if (!end || end <= now) return [];
+    return [{ event, timing: start && start > now ? 'upcoming' : 'active', start, end }];
+  });
+}

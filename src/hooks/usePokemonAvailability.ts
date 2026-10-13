@@ -5,8 +5,8 @@ import {
   fetchResearchTasks,
   fetchRocketLineup,
 } from '../services/dataService';
-import { getEventInstant } from '../utils/eventTimeUtils';
-import { buildPokemonAvailability, type TimedEvent } from '../utils/pokemonAvailability';
+import { getCurrentEvents } from '../utils/eventTimeUtils';
+import { buildPokemonAvailability } from '../utils/pokemonAvailability';
 import { useEventDataContext } from './useEventDataContext';
 import { usePageData } from './usePageData';
 
@@ -22,15 +22,7 @@ export function usePokemonAvailability() {
   const rocketLineups = usePageData(fetchRocketLineup);
   const { allEvents, loading: eventsLoading, error: eventsError, refetchEvents } = useEventDataContext();
 
-  const timedEvents = useMemo(() => {
-    const now = new Date();
-    return allEvents.flatMap((event): TimedEvent[] => {
-      const start = getEventInstant(event, 'start');
-      const end = getEventInstant(event, 'end');
-      if (!end || end <= now) return [];
-      return [{ event, timing: start && start > now ? 'upcoming' : 'active' }];
-    });
-  }, [allEvents]);
+  const timedEvents = useMemo(() => getCurrentEvents(allEvents), [allEvents]);
 
   const entries = useMemo(
     () =>

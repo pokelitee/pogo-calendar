@@ -1,8 +1,9 @@
 import type { EggPoolData } from '../types/eggPool';
-import type { CalendarEvent, EventPokemon } from '../types/events';
+import type { EventPokemon } from '../types/events';
 import type { RaidBossData } from '../types/raidBosses';
 import type { ResearchTaskData } from '../types/researchTasks';
 import type { RocketLineupData } from '../types/rocketLineup';
+import type { EventTiming, TimedEvent } from './eventTimeUtils';
 
 export type PokemonSourceKind = 'event' | 'raid' | 'egg' | 'research' | 'rocket';
 
@@ -13,8 +14,6 @@ export const POKEMON_SOURCE_KIND_LABELS: Record<PokemonSourceKind, string> = {
   research: 'Research',
   rocket: 'Rocket',
 };
-
-export type EventTiming = 'active' | 'upcoming';
 
 export interface PokemonSource {
   kind: PokemonSourceKind;
@@ -31,11 +30,6 @@ export interface PokemonAvailability {
   assetUrl: string | null;
   dexNumber: number | null;
   sources: PokemonSource[];
-}
-
-export interface TimedEvent {
-  event: CalendarEvent;
-  timing: EventTiming;
 }
 
 export interface AvailabilityData {
