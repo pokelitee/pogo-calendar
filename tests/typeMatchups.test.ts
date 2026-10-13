@@ -8,6 +8,7 @@ import {
   getDefensiveMatchups,
   getEffectiveness,
   getWeaknesses,
+  parseTypeList,
 } from '../src/utils/typeMatchups.ts';
 
 test('matches the standard chart totals', () => {
@@ -67,4 +68,11 @@ test('builds counter searches for move types', () => {
     fastAndCharged: '@1electric,@1rock&@2electric,@3electric,@2rock,@3rock',
   });
   assert.deepEqual(buildCounterSearches([]), { anyMove: '', fastAndCharged: '' });
+});
+
+test('parses distinct known types, at most two', () => {
+  assert.deepEqual(parseTypeList('Water,Flying'), ['Water', 'Flying']);
+  assert.deepEqual(parseTypeList('Fire,Fire'), ['Fire']);
+  assert.deepEqual(parseTypeList('Fire,Banana,Water,Grass'), ['Fire', 'Water']);
+  assert.deepEqual(parseTypeList(null), []);
 });

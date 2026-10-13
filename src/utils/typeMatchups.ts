@@ -92,6 +92,13 @@ export const NOT_VERY_EFFECTIVE_MULTIPLIER = 0.625;
 export const IMMUNE_MULTIPLIER = 0.390625;
 
 /**
+ * Rounds a multiplier so float products such as 1.6 × 1.6 compare and group exactly.
+ */
+export function roundMultiplier(multiplier: number): number {
+  return Math.round(multiplier * 1e6) / 1e6;
+}
+
+/**
  * Returns the damage multiplier for an attacking type against a Pokémon of
  * one or two defending types, using Pokémon GO's multipliers.
  */
@@ -103,8 +110,7 @@ export function getEffectiveness(attacking: PokemonType, defending: readonly Pok
     if (matchups.immune.includes(type)) return total * IMMUNE_MULTIPLIER;
     return total;
   }, 1);
-  // Rounded so float products such as 1.6 × 1.6 compare and group exactly.
-  return Math.round(multiplier * 1e6) / 1e6;
+  return roundMultiplier(multiplier);
 }
 
 export interface EffectivenessGroup {
@@ -138,6 +144,19 @@ export function getWeaknesses(defending: readonly PokemonType[]): PokemonType[] 
 
 export function isPokemonType(value: string): value is PokemonType {
   return (POKEMON_TYPES as readonly string[]).includes(value);
+}
+
+// A Pokémon has at most two types.
+export const MAX_DEFENDING_TYPES = 2;
+
+/**
+ * Parses a comma-separated type list (as stored in a URL), keeping known,
+ * distinct types up to the two a Pokémon can have. Repeating a type would
+ * otherwise apply its multiplier twice.
+ */
+export function parseTypeList(value: string | null): PokemonType[] {
+  const types = (value ?? '').split(',').filter(isPokemonType);
+  return [...new Set(types)].slice(0, MAX_DEFENDING_TYPES);
 }
 
 /**

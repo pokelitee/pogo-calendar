@@ -1,47 +1,49 @@
+import { Check } from 'lucide-react';
 import { useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CopyButton } from '../components/shared/CopyButton';
 import { DataImage } from '../components/shared/DataImage';
 import { PageHeader } from '../components/shared/PageHeader';
 import { TypeBadge } from '../components/shared/TypeBadge';
-import { Alert } from '../components/ui/alert';
-import { Button } from '../components/ui/button';
+import { AvailabilityNotice } from '../components/tools/AvailabilityNotice';
 import { Card } from '../components/ui/card';
+import { Chip } from '../components/ui/chip';
 import { Skeleton } from '../components/ui/skeleton';
 import { POKEMON_TYPE_COLORS } from '../config/colorMapping';
+import { GAME_DATA_PAGES } from '../config/gameData';
 import { usePageData } from '../hooks/usePageData';
 import { cn } from '../lib/utils';
 import { fetchRaidBosses } from '../services/dataService';
 import type { RaidBoss } from '../types/raidBosses';
 import {
+  IMMUNE_MULTIPLIER,
+  NOT_VERY_EFFECTIVE_MULTIPLIER,
   POKEMON_TYPES,
+  SUPER_EFFECTIVE_MULTIPLIER,
   buildCounterSearches,
   formatMultiplier,
   getDefensiveMatchups,
   getWeaknesses,
   isPokemonType,
+  MAX_DEFENDING_TYPES,
+  parseTypeList,
+  roundMultiplier,
   type PokemonType,
 } from '../utils/typeMatchups';
 
-const MAX_DEFENDING_TYPES = 2;
-
 const MULTIPLIER_LABELS: Record<number, string> = {
-  2.56: 'Double weakness',
-  1.6: 'Weak',
+  [roundMultiplier(SUPER_EFFECTIVE_MULTIPLIER ** 2)]: 'Double weakness',
+  [SUPER_EFFECTIVE_MULTIPLIER]: 'Weak',
   1: 'Neutral',
-  0.625: 'Resists',
-  0.390625: 'Double resist',
-  0.244141: 'Triple resist',
+  [NOT_VERY_EFFECTIVE_MULTIPLIER]: 'Resists',
+  [IMMUNE_MULTIPLIER]: 'Double resist',
+  [roundMultiplier(IMMUNE_MULTIPLIER * NOT_VERY_EFFECTIVE_MULTIPLIER)]: 'Triple resist',
 };
-
-function parseTypes(value: string | null): PokemonType[] {
-  return (value ?? '').split(',').filter(isPokemonType).slice(0, MAX_DEFENDING_TYPES);
-}
 
 function TypeMatchupsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const typesParam = searchParams.get('types');
-  const defending = useMemo(() => parseTypes(typesParam), [typesParam]);
+  const defending = useMemo(() => parseTypeList(typesParam), [typesParam]);
   const bossName = searchParams.get('boss');
   const raidBosses = usePageData(fetchRaidBosses, 'Raid bosses could not be loaded.');
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -81,7 +83,7 @@ function TypeMatchupsPage() {
     <div>
       <PageHeader
         title="Type Matchups"
-        description="See what a raid boss or type combination is weak to, then copy a search for counters in your storage."
+        description="See what a raid boss or type combination is weak to, then copy a search for counters in your storage"
       />
 
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -92,34 +94,28 @@ function TypeMatchupsPage() {
             {raidBosses.loading ? (
               <Skeleton className="h-24 w-full" />
             ) : raidBosses.error ? (
-              <Alert variant="warning">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <span>{raidBosses.error} You can still pick types below.</span>
-                  <Button variant="outline" size="sm" onClick={raidBosses.refetch}>
-                    Retry
-                  </Button>
-                </div>
-              </Alert>
+              <AvailabilityNotice
+                failedSources={[GAME_DATA_PAGES.raid.title]}
+                onRetry={raidBosses.refetch}
+                className="mb-0"
+              />
             ) : (
               <div className="flex flex-wrap gap-2">
                 {bosses.map((boss) => {
                   const active = bossName === boss.name;
                   return (
-                    <button
+                    <Chip
                       key={`${boss.tier}-${boss.name}`}
-                      type="button"
                       aria-pressed={active}
                       onClick={() => selectBoss(boss)}
-                      className={cn(
-                        'flex items-center gap-1.5 rounded-full border py-1 pl-1 pr-3 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                        active ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-card hover:bg-accent'
-                      )}
+                      state={active ? 'selected' : 'off'}
+                      className="pl-1"
                     >
                       <span className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-muted">
                         <DataImage src={boss.asset_url} alt="" className="max-h-full max-w-full object-contain" />
                       </span>
                       {boss.name}
-                    </button>
+                    </Chip>
                   );
                 })}
               </div>
@@ -133,23 +129,20 @@ function TypeMatchupsPage() {
               {POKEMON_TYPES.map((type) => {
                 const active = defending.includes(type);
                 return (
-                  <button
+                  <Chip
                     key={type}
-                    type="button"
                     aria-pressed={active}
                     onClick={() => toggleType(type)}
-                    className={cn(
-                      'rounded-full border-2 px-3 py-1 text-sm font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                      !active && 'border-border bg-card text-foreground hover:bg-accent'
-                    )}
+                    className={cn('border-2 font-semibold', active && 'text-foreground')}
                     style={
                       active
                         ? { borderColor: POKEMON_TYPE_COLORS[type], backgroundColor: `${POKEMON_TYPE_COLORS[type]}33` }
                         : undefined
                     }
                   >
+                    {active && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
                     {type}
-                  </button>
+                  </Chip>
                 );
               })}
             </div>
@@ -162,7 +155,7 @@ function TypeMatchupsPage() {
           ) : (
             <>
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-base font-semibold">{bossName ?? 'Selected types'}</h2>
+                <h2 className="text-base font-semibold">{bossName ?? 'Selected Types'}</h2>
                 {defending.map((type) => (
                   <TypeBadge key={type} type={type} />
                 ))}
@@ -170,7 +163,7 @@ function TypeMatchupsPage() {
 
               <dl className="flex flex-col gap-3">
                 {matchups.map(({ multiplier, types }) => (
-                  <div key={multiplier} className="grid grid-cols-[8.5rem_1fr] items-start gap-2">
+                  <div key={multiplier} className="grid grid-cols-[10.5rem_1fr] items-start gap-2">
                     <dt className="text-sm">
                       <span className="font-semibold">{MULTIPLIER_LABELS[multiplier] ?? 'Damage'}</span>{' '}
                       <span className="text-muted-foreground">{formatMultiplier(multiplier)}</span>
@@ -187,7 +180,7 @@ function TypeMatchupsPage() {
               {weaknesses.length > 0 && (
                 <div className="flex flex-col gap-3 border-t border-border pt-4">
                   <div>
-                    <h3 className="text-sm font-semibold">Find counters in your storage</h3>
+                    <h3 className="text-sm font-semibold">Find Counters in Your Storage</h3>
                     <p className="text-xs text-muted-foreground">
                       English search keywords; set the game to English to use them.
                     </p>

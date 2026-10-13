@@ -1,6 +1,7 @@
 import type { CalendarEvent } from '../types/events';
 import type { DataManifest } from '../types/manifest';
 
+// Matches getArchivePath in config/api.ts, which tests can't import at runtime.
 const ARCHIVE_PATH_PATTERN = /^archives\/archive_(\d{4})\.json$/;
 
 export function getEventArchiveYears(manifest: DataManifest): number[] {

@@ -14,7 +14,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import React, { useState, type ReactNode } from 'react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { NavLink as RouterNavLink, Link as RouterLink, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../config/routes';
 import { TOOLS } from '../../config/tools';
 import { cn } from '../../lib/utils';
@@ -81,10 +81,10 @@ function NavMenuLink({ item }: { item: NavLink }) {
   const Icon = item.icon;
   return (
     <DropdownMenuItem asChild>
-      <RouterLink to={item.path} className="no-underline text-inherit">
+      <RouterNavLink to={item.path} end className="no-underline text-inherit">
         <Icon className="h-4 w-4" />
         {item.label}
-      </RouterLink>
+      </RouterNavLink>
     </DropdownMenuItem>
   );
 }
@@ -201,13 +201,14 @@ function HeaderComponent({
               );
             }
             return (
-              <RouterLink
+              <RouterNavLink
                 key={entry.path}
                 to={entry.path}
+                end
                 className={cn(NAV_LINK_CLASSNAME, entry.path === location.pathname && 'bg-accent text-primary')}
               >
                 {entry.label}
-              </RouterLink>
+              </RouterNavLink>
             );
           })}
         </nav>

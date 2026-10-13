@@ -13,11 +13,9 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useCalendarContext } from '../../hooks/useCalendarContext';
 import { HOVER_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { useSettingsContext } from '../../hooks/useSettingsContext';
-import type { ToastSeverity } from '../../hooks/useToast';
 import type { CalendarEvent } from '../../types/events';
 import type { CalendarView } from '../../types/settings';
 import { Card } from '../ui/card';
-import EventDetailDialog from '../events/EventDetailDialog';
 import EventHoverDetails from '../events/EventHoverDetails';
 import { CalendarEventContent } from './CalendarEventContent';
 import { CalendarToolbar } from './CalendarToolbar';
@@ -25,20 +23,14 @@ import { CalendarToolbar } from './CalendarToolbar';
 interface EventCalendarProps {
   view: CalendarView;
   isMobile: boolean;
-  onEditEvent: (event: CalendarEvent) => void;
-  onDeleteEvent: (eventId: string) => void;
-  showToast: (message: string, severity?: ToastSeverity) => void;
 }
 
-function EventCalendar({ view, isMobile, onEditEvent, onDeleteEvent, showToast }: EventCalendarProps) {
+function EventCalendar({ view, isMobile }: EventCalendarProps) {
   const {
     filteredEvents: events,
     savedEventIds,
-    eventNotes,
-    selectedEvent,
     setSelectedEvent: onSelectEvent,
     handleToggleSaveEvent: onToggleSaveEvent,
-    updateNote: onUpdateNote,
     setCurrentView: onViewChange,
     filters: { startDate: filterStartDate, endDate: filterEndDate },
     setFilters,
@@ -89,10 +81,6 @@ function EventCalendar({ view, isMobile, onEditEvent, onDeleteEvent, showToast }
     },
     [onViewChange]
   );
-
-  const handleCloseDialog = useCallback(() => {
-    onSelectEvent(null);
-  }, [onSelectEvent]);
 
   const setDateRange = useCallback(
     (startDate: Date | null, endDate: Date | null) => {
@@ -234,18 +222,6 @@ function EventCalendar({ view, isMobile, onEditEvent, onDeleteEvent, showToast }
         mousePosition={popoverState.position}
         event={popoverState.event}
         onClose={handlePopoverClose}
-      />
-
-      <EventDetailDialog
-        eventNotes={eventNotes}
-        onUpdateNote={onUpdateNote}
-        event={selectedEvent}
-        onClose={handleCloseDialog}
-        savedEventIds={savedEventIds}
-        onToggleSaveEvent={onToggleSaveEvent}
-        onDeleteEvent={onDeleteEvent}
-        onEditEvent={onEditEvent}
-        showToast={showToast}
       />
     </>
   );

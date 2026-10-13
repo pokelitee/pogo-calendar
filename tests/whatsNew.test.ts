@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { CalendarEvent } from '../src/types/events.ts';
 import {
+  addMissingBaselines,
   collectNewsItems,
   findNewItems,
   updateSnapshot,
@@ -65,4 +66,14 @@ test('keeps the previous snapshot for kinds that did not load', () => {
   const next = updateSnapshot(previous, collectNewsItems({ ...EMPTY, events: [event('b')] }));
 
   assert.deepEqual(next, { event: ['b'], raid: ['5-Star Raids|Dialga'] });
+});
+
+test('adds a baseline only for kinds that loaded without one', () => {
+  const items = collectNewsItems({ ...EMPTY, events: [event('a')], raidBosses: { '5-Star Raids': [boss('Dialga')] } });
+  const seen = { event: ['old'] };
+  const next = addMissingBaselines(seen, items);
+
+  assert.deepEqual(next, { event: ['old'], raid: ['5-Star Raids|Dialga'] });
+  assert.equal(addMissingBaselines(next, items), next);
+  assert.deepEqual(addMissingBaselines({}, collectNewsItems(EMPTY)), {});
 });

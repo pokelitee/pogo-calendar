@@ -1,6 +1,6 @@
 import { CheckCheck } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { DataImage } from '../components/shared/DataImage';
 import { DataLoadingSkeleton } from '../components/shared/DataLoadingSkeleton';
 import { NoResults } from '../components/shared/NoResults';
@@ -11,28 +11,19 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { SEEN_NEWS_KEY } from '../config/constants';
-import { ROUTES } from '../config/routes';
-import { useEventDataContext } from '../hooks/useEventDataContext';
+import { GAME_DATA_PAGES } from '../config/gameData';
 import { useGameData } from '../hooks/useGameData';
-import type { CalendarEvent } from '../types/events';
+import { useOpenEventOnCalendar } from '../hooks/useOpenEventOnCalendar';
 import { safeGetJSON, safeSetJSON } from '../utils/storageUtils';
 import {
   NEWS_KINDS,
+  addMissingBaselines,
   collectNewsItems,
   findNewItems,
   updateSnapshot,
   type NewsItem,
-  type NewsKind,
   type SeenSnapshot,
 } from '../utils/whatsNew';
-
-const NEWS_KIND_DETAILS: Record<NewsKind, { title: string; path: string }> = {
-  event: { title: 'Events', path: ROUTES.CALENDAR },
-  raid: { title: 'Raid Bosses', path: ROUTES.RAID_BOSSES },
-  egg: { title: 'Egg Hatches', path: ROUTES.EGG_POOL },
-  research: { title: 'Research Tasks', path: ROUTES.RESEARCH_TASKS },
-  rocket: { title: 'Team GO Rocket Lineups', path: ROUTES.ROCKET_LINEUP },
-};
 
 // Only string arrays for known kinds are kept, so malformed storage reads as
 // a first visit instead of breaking the page.
@@ -50,8 +41,7 @@ function readSeenSnapshot(): SeenSnapshot | null {
 function WhatsNewPage() {
   const { currentEvents, raidBosses, eggPool, researchTasks, rocketLineups, loading, failedSources, retry } =
     useGameData();
-  const { setSelectedEvent } = useEventDataContext();
-  const navigate = useNavigate();
+  const openEvent = useOpenEventOnCalendar();
   const [seen, setSeen] = useState<SeenSnapshot | null>(readSeenSnapshot);
   const [firstVisit] = useState(() => seen === null);
 
@@ -69,10 +59,12 @@ function WhatsNewPage() {
 
   const markAllSeen = () => setSeen((previous) => updateSnapshot(previous ?? {}, items));
 
-  // The first visit records a baseline so later visits have something to compare.
+  // Record a baseline for anything that has none yet, so later visits have
+  // something to compare: everything on the first visit, and any data set
+  // that failed on an earlier visit once it loads.
   useEffect(() => {
-    if (!loading && seen === null) setSeen(updateSnapshot({}, items));
-  }, [loading, seen, items]);
+    if (!loading) setSeen((previous) => addMissingBaselines(previous ?? {}, items));
+  }, [loading, items]);
 
   useEffect(() => {
     if (seen) safeSetJSON(SEEN_NEWS_KEY, seen);
@@ -86,16 +78,11 @@ function WhatsNewPage() {
     ([, kindItems]) => kindItems.length > 0
   );
 
-  const openEvent = (event: CalendarEvent) => {
-    setSelectedEvent(event);
-    navigate(ROUTES.CALENDAR);
-  };
-
   const renderItem = (item: NewsItem) => (
     <li key={item.id} className="flex items-center gap-3 text-sm">
       {item.assetUrl !== undefined && (
         <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted">
-          <DataImage src={item.assetUrl} alt={item.title} className="max-h-full max-w-full object-contain" />
+          <DataImage src={item.assetUrl} alt="" className="max-h-full max-w-full object-contain" />
         </span>
       )}
       <span className="min-w-0">
@@ -119,7 +106,7 @@ function WhatsNewPage() {
     <div>
       <PageHeader
         title="What's New"
-        description="Events, raid bosses, eggs, research, and Rocket lineups that appeared since you last checked."
+        description="Events, raid bosses, eggs, research, and Rocket lineups that appeared since you last checked"
         actions={
           newItems.length > 0 && (
             <Button variant="outline" onClick={markAllSeen}>
@@ -147,14 +134,15 @@ function WhatsNewPage() {
             <Card key={kind} className="p-4">
               <div className="mb-3 flex items-center justify-between gap-2">
                 <h2 className="flex items-center gap-2 text-base font-semibold">
-                  {NEWS_KIND_DETAILS[kind].title}
+                  {GAME_DATA_PAGES[kind].title}
                   <Badge size="sm">{kindItems.length} new</Badge>
                 </h2>
                 <RouterLink
-                  to={NEWS_KIND_DETAILS[kind].path}
+                  to={GAME_DATA_PAGES[kind].path}
+                  aria-label={`View all ${GAME_DATA_PAGES[kind].title}`}
                   className="text-xs font-semibold text-primary no-underline hover:underline"
                 >
-                  View all →
+                  View all <span aria-hidden="true">→</span>
                 </RouterLink>
               </div>
               <ul className="flex flex-col gap-2.5">{kindItems.map(renderItem)}</ul>

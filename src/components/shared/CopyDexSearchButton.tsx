@@ -3,15 +3,18 @@ import { buildDexSearchString } from '../../utils/searchString';
 import { CopyButton } from './CopyButton';
 
 interface CopyDexSearchButtonProps {
-  pokemon: { asset_url: string | null }[];
+  // A known dexNumber takes precedence over reading one from the sprite URL.
+  pokemon: { asset_url: string | null; dexNumber?: number | null }[];
   label?: string;
+  // Distinguishes several copy buttons on one screen for assistive tech.
+  context?: string;
 }
 
 /**
  * Copies a storage search string matching the given Pokémon by Pokédex number.
  */
-export function CopyDexSearchButton({ pokemon, label = 'Copy search string' }: CopyDexSearchButtonProps) {
-  const dexNumbers = pokemon.map(({ asset_url }) => getDexNumber(asset_url));
+export function CopyDexSearchButton({ pokemon, label = 'Copy search string', context }: CopyDexSearchButtonProps) {
+  const dexNumbers = pokemon.map(({ asset_url, dexNumber }) => dexNumber ?? getDexNumber(asset_url));
   const known = dexNumbers.filter((dex): dex is number => dex !== null);
   const skipped = dexNumbers.length - known.length;
   const title = [
@@ -28,6 +31,7 @@ export function CopyDexSearchButton({ pokemon, label = 'Copy search string' }: C
       variant="outline"
       size="sm"
       title={title}
+      aria-label={context ? `${label}: ${context}` : undefined}
     />
   );
 }

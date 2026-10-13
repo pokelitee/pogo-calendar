@@ -104,7 +104,7 @@ function RocketLineupPage() {
   }, [data, filters]);
 
   if (loading) {
-    return <DataLoadingSkeleton itemCount={4} gridSize={{ xs: 12 }} />;
+    return <DataLoadingSkeleton itemCount={4} gridSize={{ xs: 12, lg: 6 }} />;
   }
 
   if (error || !data || !filteredData) {
@@ -234,17 +234,19 @@ function RocketLineupPage() {
     return a.localeCompare(b);
   });
 
+  const encounterPokemon = Object.values(filteredData)
+    .flat()
+    .filter((slot) => slot.is_encounter)
+    .flatMap((slot) => slot.pokemons);
+
   return (
     <div>
       <PageHeader
         title="Team GO Rocket Lineups"
-        description="Current Pokémon used by Team GO Rocket leaders"
+        description="Current Pokémon used by Giovanni, the leaders, and every grunt type"
         actions={
           <div className="flex items-center gap-2">
-            <CopyDexSearchButton pokemon={Object.values(filteredData)
-                .flat()
-                .filter((slot) => slot.is_encounter)
-                .flatMap((slot) => slot.pokemons)} />
+            <CopyDexSearchButton pokemon={encounterPokemon} />
             <ViewModeToggle value={viewMode} onChange={setViewMode} />
           </div>
         }

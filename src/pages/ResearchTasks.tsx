@@ -185,6 +185,10 @@ function ResearchTasksPage() {
     </Card>
   );
 
+  const encounterRewards = Object.values(filteredData)
+    .flat()
+    .flatMap((task) => task.rewards.filter((reward) => reward.type === 'encounter'));
+
   return (
     <div>
       <PageHeader
@@ -192,9 +196,7 @@ function ResearchTasksPage() {
         description="Current field research tasks and their rewards"
         actions={
           <div className="flex items-center gap-2">
-            <CopyDexSearchButton pokemon={Object.values(filteredData)
-                .flat()
-                .flatMap((task) => task.rewards.filter((reward) => reward.type === 'encounter'))} />
+            <CopyDexSearchButton pokemon={encounterRewards} />
             <ViewModeToggle value={viewMode} onChange={setViewMode} />
           </div>
         }

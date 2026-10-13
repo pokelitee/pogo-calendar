@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
-  SEARCH_PRESETS,
+  SEARCH_PRESET_GROUPS,
   SEARCH_RANGE_FIELDS,
   SEARCH_RANGE_KEYS,
   SEARCH_SECTIONS,
   SEARCH_TERM_CATEGORIES,
   SEARCH_TERM_GROUPS,
 } from '../src/config/searchTerms.ts';
+import { POKEMON_TYPES } from '../src/utils/typeMatchups.ts';
 import {
   EMPTY_SEARCH_STATE,
   buildDexSearchString,
@@ -16,6 +17,8 @@ import {
   nextTermState,
   type SearchStringState,
 } from '../src/utils/searchString.ts';
+
+const SEARCH_PRESETS = SEARCH_PRESET_GROUPS.flatMap(({ presets }) => presets);
 
 const GROUPS = [
   { keywords: ['shiny', 'lucky', 'shadow'] },
@@ -99,7 +102,7 @@ test('builds the documented preset strings', () => {
   assert.equal(preset('Lucky trade candidates'), '!lucky&!traded&year2016,year2017,year2018,year2019');
   assert.equal(preset('Max Battle Pokémon'), 'dynamax,gigantamax');
   assert.equal(
-    preset('Today’s catches to transfer'),
+    preset("Today's catches to transfer"),
     '0*,1*,2*&!shiny&!lucky&!shadow&!costume&!background&!legendary&!mythical&!ultrabeast&!favorite&!xxs&!xxl&age0'
   );
   assert.equal(
@@ -125,6 +128,11 @@ test('places every category and range in exactly one existing section', () => {
 
   assert.deepEqual([...sectionCategories].sort(), SEARCH_TERM_CATEGORIES.map(({ id }) => id).sort());
   assert.deepEqual([...sectionRanges].sort(), SEARCH_RANGE_FIELDS.map(({ key }) => key).sort());
+});
+
+test('lists the same Pokémon types as the type chart', () => {
+  const typeKeywords = SEARCH_TERM_CATEGORIES.find(({ id }) => id === 'type')!.terms.map(({ label }) => label);
+  assert.deepEqual(typeKeywords, [...POKEMON_TYPES]);
 });
 
 test('builds a sorted, de-duplicated dex number search', () => {

@@ -11,18 +11,18 @@ import { Input } from '../components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '../components/ui/toggle-group';
 import { useCollection } from '../hooks/useCollection';
 import { usePokemonAvailability } from '../hooks/usePokemonAvailability';
+import type { GameDataKind } from '../types/gameData';
 import {
   POKEMON_SOURCE_KIND_LABELS,
   filterPokemonAvailability,
-  type PokemonSourceKind,
 } from '../utils/pokemonAvailability';
 
-const SOURCE_KINDS = Object.keys(POKEMON_SOURCE_KIND_LABELS) as PokemonSourceKind[];
+const SOURCE_KINDS = Object.keys(POKEMON_SOURCE_KIND_LABELS) as GameDataKind[];
 
 function PokemonFinderPage() {
   const { entries, loading, failedSources, retry } = usePokemonAvailability();
   const [query, setQuery] = useState('');
-  const [kinds, setKinds] = useState<PokemonSourceKind[]>([]);
+  const [kinds, setKinds] = useState<GameDataKind[]>([]);
   const [shinyOnly, setShinyOnly] = useState(false);
   const [hideCaught, setHideCaught] = useState(false);
   const { has: isInCollection, toggle: toggleCollection } = useCollection();
@@ -41,7 +41,7 @@ function PokemonFinderPage() {
     <div>
       <PageHeader
         title="Pokémon Finder"
-        description="Every Pokémon you can get right now or soon, and where: events, raids, eggs, research, and Team GO Rocket."
+        description="Every Pokémon you can get right now or soon, and where: events, raids, eggs, research, and Team GO Rocket"
       />
 
       <AvailabilityNotice failedSources={failedSources} onRetry={retry} />
@@ -63,7 +63,7 @@ function PokemonFinderPage() {
           aria-label="Filter by source"
           className="flex-wrap self-start"
           value={kinds}
-          onValueChange={(value) => setKinds(value as PokemonSourceKind[])}
+          onValueChange={(value) => setKinds(value as GameDataKind[])}
         >
           {SOURCE_KINDS.map((kind) => (
             <ToggleGroupItem key={kind} value={kind}>
@@ -77,7 +77,7 @@ function PokemonFinderPage() {
         </label>
         <label className="flex items-center gap-2.5 text-sm">
           <Checkbox checked={hideCaught} onCheckedChange={(checked) => setHideCaught(checked === true)} />
-          {shinyOnly ? 'Hide shinies I’ve caught' : 'Hide Pokémon I’ve caught'}
+          {shinyOnly ? "Hide shinies I've caught" : "Hide Pokémon I've caught"}
         </label>
       </div>
 
@@ -85,14 +85,20 @@ function PokemonFinderPage() {
         <DataLoadingSkeleton itemCount={6} gridSize={{ xs: 12, md: 6 }} />
       ) : results.length === 0 ? (
         <NoResults
-          title="Not Available Right Now"
-          message="No current or upcoming event, raid, egg, research task, or Rocket encounter matches these filters."
+          title={failedSources.length > 0 ? 'No Results' : 'Not Available Right Now'}
+          message={
+            failedSources.length > 0
+              ? 'Some data could not be loaded, so this list may be incomplete. Retry above.'
+              : 'No current or upcoming event, raid, egg, research task, or Rocket encounter matches these filters.'
+          }
         />
       ) : (
         <>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm text-muted-foreground">{results.length} Pokémon</p>
-            <CopyDexSearchButton pokemon={results.map((entry) => ({ asset_url: entry.assetUrl }))} />
+            <CopyDexSearchButton
+              pokemon={results.map((entry) => ({ asset_url: entry.assetUrl, dexNumber: entry.dexNumber }))}
+            />
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {results.map((entry) => (

@@ -343,7 +343,7 @@ export const SEARCH_PRESET_GROUPS: SearchPresetGroup[] = [
         state: withTerms({ '0*': 'include', '1*': 'include', '2*': 'include', ...KEEPER_EXCLUSIONS }),
       },
       {
-        label: 'Today’s catches to transfer',
+        label: "Today's catches to transfer",
         description: 'The same filter, limited to Pokémon caught today.',
         state: withTerms(
           { '0*': 'include', '1*': 'include', '2*': 'include', ...KEEPER_EXCLUSIONS },
@@ -397,4 +397,3 @@ export const SEARCH_PRESET_GROUPS: SearchPresetGroup[] = [
   },
 ];
 
-export const SEARCH_PRESETS: SearchPreset[] = SEARCH_PRESET_GROUPS.flatMap(({ presets }) => presets);

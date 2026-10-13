@@ -32,9 +32,10 @@ function RaidBossWeaknesses({ boss }: { boss: RaidBoss }) {
       ))}
       <RouterLink
         to={`${ROUTES.TYPE_MATCHUPS}?${new URLSearchParams({ types: types.join(','), boss: boss.name })}`}
+        aria-label={`Counters for ${boss.name}`}
         className="ml-auto text-xs font-semibold text-primary no-underline hover:underline"
       >
-        Counters →
+        Counters <span aria-hidden="true">→</span>
       </RouterLink>
     </div>
   );

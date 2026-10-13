@@ -1,14 +1,13 @@
-import { Check, Sparkles } from 'lucide-react';
+import { Check, Plus, Sparkles } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { ROUTES } from '../../config/routes';
+import { GAME_DATA_PAGES } from '../../config/gameData';
 import type { CollectionList } from '../../hooks/useCollection';
 import { cn } from '../../lib/utils';
 import {
   POKEMON_SOURCE_KIND_LABELS,
   type PokemonAvailability,
   type PokemonSource,
-  type PokemonSourceKind,
 } from '../../utils/pokemonAvailability';
 import { getPokemonFieldTitle } from '../../utils/eventDetailUtils';
 import { DataImage } from '../shared/DataImage';
@@ -16,19 +15,12 @@ import { ShinyIndicator } from '../shared/ShinyIndicator';
 import { ShinyChip } from '../filters/shared';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
-
-const SOURCE_KIND_PATHS: Record<PokemonSourceKind, string> = {
-  event: ROUTES.CALENDAR,
-  raid: ROUTES.RAID_BOSSES,
-  egg: ROUTES.EGG_POOL,
-  research: ROUTES.RESEARCH_TASKS,
-  rocket: ROUTES.ROCKET_LINEUP,
-};
+import { Chip } from '../ui/chip';
 
 function SourceRow({ source }: { source: PokemonSource }) {
   return (
     <li className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-      <RouterLink to={SOURCE_KIND_PATHS[source.kind]} className="no-underline">
+      <RouterLink to={GAME_DATA_PAGES[source.kind].path} className="no-underline">
         <Badge variant="outline" size="sm">
           {POKEMON_SOURCE_KIND_LABELS[source.kind]}
         </Badge>
@@ -50,27 +42,28 @@ function SourceRow({ source }: { source: PokemonSource }) {
 function CollectionToggle({
   pressed,
   label,
+  pokemonName,
   icon,
   onToggle,
 }: {
   pressed: boolean;
   label: string;
+  pokemonName: string;
   icon: ReactNode;
   onToggle: () => void;
 }) {
   return (
-    <button
-      type="button"
+    <Chip
       aria-pressed={pressed}
+      aria-label={`${label}: ${pokemonName}`}
       onClick={onToggle}
-      className={cn(
-        'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-3.5',
-        pressed ? 'border-success bg-success/10 text-success' : 'border-border text-muted-foreground hover:bg-accent'
-      )}
+      size="sm"
+      state={pressed ? 'success' : 'off'}
+      className={cn('gap-1', !pressed && 'text-muted-foreground')}
     >
-      {icon}
+      {pressed ? icon : <Plus />}
       {label}
-    </button>
+    </Chip>
   );
 }
 
@@ -112,13 +105,15 @@ export function PokemonAvailabilityCard({
         <div className="mt-3 flex flex-wrap gap-2">
           <CollectionToggle
             pressed={caught}
-            label={caught ? 'Caught' : 'Mark caught'}
+            label="Caught"
+            pokemonName={entry.name}
             icon={<Check />}
             onToggle={() => onToggleCollection('registered')}
           />
           <CollectionToggle
             pressed={shinyCaught}
-            label={shinyCaught ? 'Shiny caught' : 'Mark shiny caught'}
+            label="Shiny caught"
+            pokemonName={entry.name}
             icon={<Sparkles />}
             onToggle={() => onToggleCollection('shiny')}
           />

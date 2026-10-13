@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { COLLECTION_KEY } from '../config/constants';
 import { safeGetJSON, safeSetJSON } from '../utils/storageUtils';
 
-// 'registered' means the Pokémon is caught; 'shiny' means its shiny is caught.
+// 'registered' marks a Pokémon caught; 'shiny' marks it shiny caught.
 export type CollectionList = 'registered' | 'shiny';
 
 type Collection = Record<CollectionList, string[]>;

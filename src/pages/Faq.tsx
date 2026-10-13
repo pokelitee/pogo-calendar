@@ -61,7 +61,7 @@ const faqData: FaqDataItem[] = [
       {
         type: 'text',
         content:
-          ' using a custom web scraper. The "Last Updated" time in the header shows when the data was last fetched.',
+          ' using a custom web scraper. The "Updated" time in the header shows when leak-duck last updated the event data.',
       },
     ],
   },
@@ -76,12 +76,12 @@ const faqData: FaqDataItem[] = [
     ],
   },
   {
-    question: 'What are the Egg Pool, Raid Bosses, Research Tasks, and Rocket Lineup pages?',
+    question: 'What is in the Game Data menu?',
     answer: [
       {
         type: 'text',
         content:
-          'These pages display current game data sourced from LeekDuck.com. The Egg Pool shows which Pokémon can hatch from different egg types with rarity tiers. Raid Bosses lists current raid encounters with CP ranges for perfect IV catches. Research Tasks shows field research rewards from PokéStops. Rocket Lineup displays Team GO Rocket leader battle lineups with possible encounter Pokémon.',
+          'The Game Data menu holds pages of current game data sourced from LeekDuck.com. The Egg Pool shows which Pokémon can hatch from different egg types with rarity tiers. Raid Bosses lists current raid encounters with CP ranges for perfect IV catches, their weaknesses, and a link to counters. Research Tasks shows field research rewards from PokéStops. Rocket Lineups shows the Pokémon used by Giovanni, the leaders, and every grunt type, including the ones you can catch.',
       },
     ],
   },
@@ -91,7 +91,7 @@ const faqData: FaqDataItem[] = [
       {
         type: 'text',
         content:
-          'The Search String Builder turns filters into a search you can paste into your Pokémon storage. Pokémon Finder lists every Pokémon offered by a current or upcoming event, raid, egg, research task, or Rocket encounter, can narrow that to a name, a source, or shiny-eligible Pokémon, and tracks which ones you have caught. Type Matchups shows what a raid boss is weak to and copies a search for counters. Bonus Tracker lists active and upcoming event bonuses by type. What’s New shows what appeared since you last checked.',
+          "The Search String Builder turns filters into a search you can paste into your Pokémon storage. Pokémon Finder lists every Pokémon offered by a current or upcoming event, raid, egg, research task, or Rocket encounter, can narrow that to a name, a source, or shiny-eligible Pokémon, and tracks which ones you have caught. Type Matchups shows what a raid boss is weak to and copies a search for counters. Bonus Tracker lists active and upcoming event bonuses by type. What's New shows what appeared since you last checked.",
       },
       {
         type: 'text',
@@ -106,7 +106,7 @@ const faqData: FaqDataItem[] = [
       {
         type: 'text',
         content:
-          "Yes! Click the 'Create Event' button in the header to add your own custom events to the calendar. These could be local community events, raid hours with friends, or personal reminders. Custom events are stored locally in your browser and will appear on the calendar alongside official Pokémon GO events.",
+          "Yes! On the Calendar, open the filters panel and click 'New Event' to add your own custom events to the calendar. These could be local community events, raid hours with friends, or personal reminders. Custom events are stored locally in your browser and will appear on the calendar alongside official Pokémon GO events.",
       },
     ],
   },
@@ -116,7 +116,7 @@ const faqData: FaqDataItem[] = [
       {
         type: 'text',
         content:
-          "You can save (bookmark) events you're interested in by clicking the star icon in the event details. Saved events appear with a filled star and can be filtered using the 'Saved Only' toggle in the filters menu. This makes it easy to track events you plan to attend.",
+          "You can save (bookmark) events you're interested in by clicking the star icon in the event details. Saved events appear with a filled star, and you can show only them by selecting the starred 'Saved Events' category in the filters. This makes it easy to track events you plan to attend.",
       },
     ],
   },
@@ -131,12 +131,12 @@ const faqData: FaqDataItem[] = [
     ],
   },
   {
-    question: 'How does the "Active Only" filter work?',
+    question: 'How does the "Show Active Events Only" filter work?',
     answer: [
       {
         type: 'text',
         content:
-          'When you enable the "Active Only" switch, the calendar will only display events that are currently in progress at this very moment (i.e., the current time is between the event\'s start and end times).',
+          'When you enable the "Show Active Events Only" switch, the calendar will only display events that are currently in progress at this very moment (i.e., the current time is between the event\'s start and end times).',
       },
     ],
   },
@@ -158,7 +158,7 @@ const faqData: FaqDataItem[] = [
       {
         type: 'text',
         content:
-          'Yes! Use the export button in the header to select and export multiple events to a single ',
+          "Yes! On the Calendar, open the filters panel and click 'Export'. You can export whole categories or pick specific events, all into a single ",
       },
       { type: 'code', content: '.ics' },
       {
@@ -197,7 +197,7 @@ function FaqPage() {
     <div className="mx-auto max-w-3xl">
       <PageHeader
         title="Frequently Asked Questions"
-        description="Here are answers to some common questions about the PoGo Event Calendar."
+        description="Here are answers to some common questions about the PoGo Calendar"
       />
       <Accordion type="single" collapsible className="mb-8 flex flex-col gap-2">
         {faqData.map((item) => (

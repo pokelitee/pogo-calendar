@@ -1,4 +1,10 @@
-import { LEAK_DUCK_DATA_BASE_URL, MANIFEST_API_URL } from '../config/api';
+import {
+  EGG_POOL_URL,
+  MANIFEST_URL,
+  RAID_BOSSES_URL,
+  RESEARCH_TASKS_URL,
+  ROCKET_LINEUPS_URL,
+} from '../config/api';
 import type { EggPoolData } from '../types/eggPool';
 import type { DataManifest } from '../types/manifest';
 import type { RaidBossData } from '../types/raidBosses';
@@ -11,11 +17,6 @@ import {
   parseResearchTaskData,
   parseRocketLineupData,
 } from './dataValidation';
-
-export const GITHUB_EGG_POOL_URL = `${LEAK_DUCK_DATA_BASE_URL}/egg_pool.json`;
-export const GITHUB_RAID_BOSSES_URL = `${LEAK_DUCK_DATA_BASE_URL}/raid_bosses.json`;
-export const GITHUB_RESEARCH_TASKS_URL = `${LEAK_DUCK_DATA_BASE_URL}/research_tasks.json`;
-export const GITHUB_ROCKET_LINEUP_URL = `${LEAK_DUCK_DATA_BASE_URL}/rocket_lineups.json`;
 
 /**
  * Generic data fetcher factory function
@@ -31,7 +32,7 @@ export const createDataFetcher =
     const response = await fetch(url, { cache: 'no-store' });
 
     if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
+      throw new Error(`Request for ${url} failed with status ${response.status}`);
     }
 
     return parse(await response.json());
@@ -41,7 +42,7 @@ export const createDataFetcher =
  * Fetch egg pool data from leak-duck
  */
 export const fetchEggPool = createDataFetcher<EggPoolData>(
-  GITHUB_EGG_POOL_URL,
+  EGG_POOL_URL,
   parseEggPoolData
 );
 
@@ -49,7 +50,7 @@ export const fetchEggPool = createDataFetcher<EggPoolData>(
  * Fetch raid bosses data from leak-duck
  */
 export const fetchRaidBosses = createDataFetcher<RaidBossData>(
-  GITHUB_RAID_BOSSES_URL,
+  RAID_BOSSES_URL,
   parseRaidBossData
 );
 
@@ -57,7 +58,7 @@ export const fetchRaidBosses = createDataFetcher<RaidBossData>(
  * Fetch research tasks data from leak-duck
  */
 export const fetchResearchTasks = createDataFetcher<ResearchTaskData>(
-  GITHUB_RESEARCH_TASKS_URL,
+  RESEARCH_TASKS_URL,
   parseResearchTaskData
 );
 
@@ -65,7 +66,7 @@ export const fetchResearchTasks = createDataFetcher<ResearchTaskData>(
  * Fetch rocket lineup data from leak-duck
  */
 export const fetchRocketLineup = createDataFetcher<RocketLineupData>(
-  GITHUB_ROCKET_LINEUP_URL,
+  ROCKET_LINEUPS_URL,
   parseRocketLineupData
 );
 
@@ -74,6 +75,6 @@ export const fetchRocketLineup = createDataFetcher<RocketLineupData>(
  * content last changed
  */
 export const fetchManifest = createDataFetcher<DataManifest>(
-  MANIFEST_API_URL,
+  MANIFEST_URL,
   parseManifestData
 );

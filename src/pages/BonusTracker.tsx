@@ -1,16 +1,15 @@
 import { formatDistanceToNowStrict } from 'date-fns';
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { DataErrorDisplay } from '../components/shared/DataErrorDisplay';
 import { DataLoadingSkeleton } from '../components/shared/DataLoadingSkeleton';
 import { NoResults } from '../components/shared/NoResults';
 import { PageHeader } from '../components/shared/PageHeader';
 import { Card } from '../components/ui/card';
 import { ToggleGroup, ToggleGroupItem } from '../components/ui/toggle-group';
-import { ROUTES } from '../config/routes';
 import { useEventDataContext } from '../hooks/useEventDataContext';
+import { useNow } from '../hooks/useNow';
+import { useOpenEventOnCalendar } from '../hooks/useOpenEventOnCalendar';
 import { useSettingsContext } from '../hooks/useSettingsContext';
-import type { CalendarEvent } from '../types/events';
 import { BONUS_CATEGORY_LABELS, categorizeBonus, type BonusCategory } from '../utils/bonuses';
 import { formatDateLine } from '../utils/dateUtils';
 import { getCurrentEvents, type EventTiming, type TimedEvent } from '../utils/eventTimeUtils';
@@ -39,14 +38,15 @@ function groupByCategory(entries: BonusEntry[]): [BonusCategory, BonusEntry[]][]
 }
 
 function BonusTrackerPage() {
-  const { allEvents, loading, error, refetchEvents, setSelectedEvent } = useEventDataContext();
+  const { allEvents, loading, error, refetchEvents } = useEventDataContext();
   const { settings } = useSettingsContext();
-  const navigate = useNavigate();
+  const openEvent = useOpenEventOnCalendar();
   const [categories, setCategories] = useState<BonusCategory[]>([]);
+  const now = useNow();
 
   const entries = useMemo(
     () =>
-      getCurrentEvents(allEvents)
+      getCurrentEvents(allEvents, now)
         .flatMap((timed) =>
           (timed.event.extendedProps.bonuses ?? []).map((bonus) => ({
             bonus,
@@ -55,18 +55,18 @@ function BonusTrackerPage() {
           }))
         )
         .sort((a, b) => sortTime(a.timed) - sortTime(b.timed)),
-    [allEvents]
+    [allEvents, now]
   );
 
   const availableCategories = CATEGORY_ORDER.filter((category) =>
     entries.some((entry) => entry.category === category)
   );
-  const visible = entries.filter((entry) => categories.length === 0 || categories.includes(entry.category));
-
-  const openEvent = (event: CalendarEvent) => {
-    setSelectedEvent(event);
-    navigate(ROUTES.CALENDAR);
-  };
+  // Ignore selections for categories that a data refresh removed, which would
+  // otherwise hide everything with no pressed toggle left to clear.
+  const activeCategories = categories.filter((category) => availableCategories.includes(category));
+  const visible = entries.filter(
+    (entry) => activeCategories.length === 0 || activeCategories.includes(entry.category)
+  );
 
   const describeTiming = ({ timing, start, end, event }: TimedEvent) =>
     timing === 'active'
@@ -89,7 +89,7 @@ function BonusTrackerPage() {
     <div>
       <PageHeader
         title="Bonus Tracker"
-        description="Event bonuses active now and coming up, grouped by what they boost."
+        description="Event bonuses active now and coming up, grouped by what they boost"
       />
 
       {availableCategories.length > 1 && (
@@ -97,7 +97,7 @@ function BonusTrackerPage() {
           type="multiple"
           aria-label="Filter by bonus type"
           className="mb-6 flex-wrap"
-          value={categories}
+          value={activeCategories}
           onValueChange={(value) => setCategories(value as BonusCategory[])}
         >
           {availableCategories.map((category) => (
@@ -109,7 +109,14 @@ function BonusTrackerPage() {
       )}
 
       {visible.length === 0 && (
-        <NoResults title="No Bonuses" message="No current or upcoming event bonuses match these filters." />
+        <NoResults
+          title="No Bonuses"
+          message={
+            entries.length === 0
+              ? 'No current or upcoming event has bonuses right now.'
+              : 'No current or upcoming event bonuses match these filters.'
+          }
+        />
       )}
 
       {TIMING_SECTIONS.map(({ timing, title }) => {

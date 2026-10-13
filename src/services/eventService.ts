@@ -1,7 +1,8 @@
 import {
-  GITHUB_EVENTS_API_URL,
-  TIMEZONES_API_URL,
-  getEventArchiveApiUrl,
+  EVENTS_URL,
+  TIMEZONES_URL,
+  getArchivePath,
+  getArchiveUrl,
 } from '../config/api';
 import type { ApiEvent, CalendarEvent } from '../types/events';
 import type { Timezone } from '../types/settings';
@@ -10,10 +11,8 @@ import {
   localDateTimeToInstant,
 } from '../utils/eventTimeUtils';
 import { getEventArchiveYears } from '../utils/eventHistoryUtils';
-import { fetchManifest } from './dataService';
+import { createDataFetcher, fetchManifest } from './dataService';
 import { parseArchiveEventData, parseEventData } from './dataValidation';
-
-type EventDetails = ApiEvent['details'];
 
 type ApiResponse = Record<string, ApiEvent[]>;
 
@@ -68,17 +67,6 @@ function getApiInstant(
 }
 
 /**
- * Extracts detail fields from the details object.
- * Bonuses and all other fields (Pokemon-related) are passed through as-is.
- *
- * @param details The details object from the API event.
- * @returns An object containing all detail fields.
- */
-function extractDetails(details: EventDetails) {
-  return { ...details };
-}
-
-/**
  * Transforms the raw API response data into an array of CalendarEvent objects.
  *
  * @param data The raw API response data.
@@ -93,8 +81,6 @@ function transformApiData(
   Object.values(data).forEach((eventsInCategory) => {
     eventsInCategory.forEach((event: ApiEvent) => {
       try {
-        const extractedDetails = extractDetails(event.details);
-
         const startTime = parseApiTime(
           event.start_time,
           event.is_local_time,
@@ -128,7 +114,7 @@ function transformApiData(
             is_local_time: event.is_local_time,
             start_instant: startInstant,
             end_instant: endInstant,
-            ...extractedDetails,
+            ...event.details,
           },
         });
       } catch (error) {
@@ -148,36 +134,18 @@ async function fetchArchiveData(
   const cached = archiveDataCache.get(year);
   if (cached?.sha256 === sha256) return cached.data;
 
-  const response = await fetch(getEventArchiveApiUrl(year), { cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error(
-      `Archive request for ${year} failed with status ${response.status}`
-    );
-  }
-
-  const data = parseArchiveEventData(await response.json());
+  const data = await createDataFetcher(getArchiveUrl(year), parseArchiveEventData)();
   archiveDataCache.set(year, { sha256, data });
   return data;
 }
 
+const fetchEventData = createDataFetcher(EVENTS_URL, parseEventData);
+
 /**
- * Fetches events from the GitHub Events API and transforms them into CalendarEvent objects.
- *
- * @returns A promise that resolves to an array of CalendarEvent objects fetched from the API.
+ * Fetches leak-duck's current events and converts them into CalendarEvent objects.
  */
-export const fetchEvents = async (
-  timezone: string
-): Promise<CalendarEvent[]> => {
-  const response = await fetch(GITHUB_EVENTS_API_URL, { cache: 'no-store' });
-
-  if (!response.ok) {
-    throw new Error(`API request failed with status ${response.status}`);
-  }
-
-  const data: ApiResponse = parseEventData(await response.json());
-
-  return transformApiData(data, timezone);
-};
+export const fetchEvents = async (timezone: string): Promise<CalendarEvent[]> =>
+  transformApiData(await fetchEventData(), timezone);
 
 export const fetchEventHistory = async (
   timezone: string
@@ -185,7 +153,7 @@ export const fetchEventHistory = async (
   const manifest = await fetchManifest();
   const archives = await Promise.all(
     getEventArchiveYears(manifest).map((year) =>
-      fetchArchiveData(year, manifest.files[`archives/archive_${year}.json`].sha256)
+      fetchArchiveData(year, manifest.files[getArchivePath(year)].sha256)
     )
   );
 
@@ -198,7 +166,7 @@ export const fetchEventHistory = async (
  * @returns A promise that resolves to an array of Timezone objects.
  */
 export const fetchTimezones = async (): Promise<Timezone[]> => {
-  const response = await fetch(TIMEZONES_API_URL);
+  const response = await fetch(TIMEZONES_URL);
   if (!response.ok) {
     throw new Error(
       `Timezone API request failed with status ${response.status}`
