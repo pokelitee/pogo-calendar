@@ -20,10 +20,10 @@ import {
   getDefensiveMatchups,
   getWeaknesses,
   isPokemonType,
+  MAX_DEFENDING_TYPES,
+  parseTypeList,
   type PokemonType,
 } from '../utils/typeMatchups';
-
-const MAX_DEFENDING_TYPES = 2;
 
 const MULTIPLIER_LABELS: Record<number, string> = {
   2.56: 'Double weakness',
@@ -34,14 +34,10 @@ const MULTIPLIER_LABELS: Record<number, string> = {
   0.244141: 'Triple resist',
 };
 
-function parseTypes(value: string | null): PokemonType[] {
-  return (value ?? '').split(',').filter(isPokemonType).slice(0, MAX_DEFENDING_TYPES);
-}
-
 function TypeMatchupsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const typesParam = searchParams.get('types');
-  const defending = useMemo(() => parseTypes(typesParam), [typesParam]);
+  const defending = useMemo(() => parseTypeList(typesParam), [typesParam]);
   const bossName = searchParams.get('boss');
   const raidBosses = usePageData(fetchRaidBosses, 'Raid bosses could not be loaded.');
   const resultsRef = useRef<HTMLDivElement>(null);

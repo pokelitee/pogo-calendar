@@ -140,6 +140,19 @@ export function isPokemonType(value: string): value is PokemonType {
   return (POKEMON_TYPES as readonly string[]).includes(value);
 }
 
+// A Pokémon has at most two types.
+export const MAX_DEFENDING_TYPES = 2;
+
+/**
+ * Parses a comma-separated type list (as stored in a URL), keeping known,
+ * distinct types up to the two a Pokémon can have. Repeating a type would
+ * otherwise apply its multiplier twice.
+ */
+export function parseTypeList(value: string | null): PokemonType[] {
+  const types = (value ?? '').split(',').filter(isPokemonType);
+  return [...new Set(types)].slice(0, MAX_DEFENDING_TYPES);
+}
+
 /**
  * Formats a multiplier for display, e.g. 2.56 → "×2.56", 0.390625 → "×0.39".
  */
