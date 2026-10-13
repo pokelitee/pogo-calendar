@@ -99,7 +99,7 @@ function TermChip({
   return (
     <Chip
       onClick={onToggle}
-      aria-label={`${category} ${term.label}: ${state === 'include' ? 'included' : state === 'exclude' ? 'excluded' : 'not selected'}`}
+      aria-label={`${state === 'exclude' ? `Not ${term.label}` : term.label} (${category}: ${state === 'include' ? 'included' : state === 'exclude' ? 'excluded' : 'not selected'})`}
       title={term.keyword}
       state={state === 'include' ? 'included' : state === 'exclude' ? 'excluded' : 'off'}
     >
@@ -119,16 +119,21 @@ function RangeInputs({
 }) {
   const range = value ?? { min: '', max: '' };
   const id = `search-range-${field.key}`;
+  const hintId = `${id}-hint`;
   const digitsOnly = (input: string) => input.replace(/\D/g, '');
   return (
     <div className="space-y-1.5">
       <Label htmlFor={`${id}-min`}>
-        {field.label} <span className="font-normal text-muted-foreground">· {field.hint}</span>
+        {field.label}{' '}
+        <span id={hintId} className="font-normal text-muted-foreground">
+          · {field.hint}
+        </span>
       </Label>
       <div className="flex items-center gap-2">
         <Input
           id={`${id}-min`}
           aria-label={`${field.label} minimum`}
+          aria-describedby={hintId}
           placeholder="Min"
           inputMode="numeric"
           autoComplete="off"
@@ -138,6 +143,7 @@ function RangeInputs({
         <span className="text-muted-foreground">–</span>
         <Input
           aria-label={`${field.label} maximum`}
+          aria-describedby={hintId}
           placeholder="Max"
           inputMode="numeric"
           autoComplete="off"
@@ -410,8 +416,8 @@ function SearchStringBuilderPage() {
         </div>
 
         <Card className="sticky bottom-24 z-10 flex flex-col gap-3 p-3 shadow-soft-lg lg:bottom-auto lg:top-20 lg:p-4 lg:shadow-soft-sm">
-          <h2 className="hidden text-base font-semibold lg:block">Your Search String</h2>
-          <code aria-live="polite" className="break-all lg:min-h-16 rounded-md bg-muted p-3 font-mono text-sm">
+          <h2 className="sr-only text-base font-semibold lg:not-sr-only">Your Search String</h2>
+          <code className="break-all lg:min-h-16 rounded-md bg-muted p-3 font-mono text-sm">
             {searchString || <span className="text-muted-foreground">Select filters to build a search.</span>}
           </code>
           <div className="flex gap-2">

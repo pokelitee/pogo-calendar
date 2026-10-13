@@ -1,4 +1,4 @@
-import { Check, Sparkles } from 'lucide-react';
+import { Check, Plus, Sparkles } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { GAME_DATA_PAGES } from '../../config/gameData';
@@ -42,23 +42,26 @@ function SourceRow({ source }: { source: PokemonSource }) {
 function CollectionToggle({
   pressed,
   label,
+  pokemonName,
   icon,
   onToggle,
 }: {
   pressed: boolean;
   label: string;
+  pokemonName: string;
   icon: ReactNode;
   onToggle: () => void;
 }) {
   return (
     <Chip
       aria-pressed={pressed}
+      aria-label={`${label}: ${pokemonName}`}
       onClick={onToggle}
       size="sm"
       state={pressed ? 'success' : 'off'}
       className={cn('gap-1', !pressed && 'text-muted-foreground')}
     >
-      {icon}
+      {pressed ? icon : <Plus />}
       {label}
     </Chip>
   );
@@ -102,13 +105,15 @@ export function PokemonAvailabilityCard({
         <div className="mt-3 flex flex-wrap gap-2">
           <CollectionToggle
             pressed={caught}
-            label={caught ? 'Caught' : 'Mark caught'}
+            label="Caught"
+            pokemonName={entry.name}
             icon={<Check />}
             onToggle={() => onToggleCollection('registered')}
           />
           <CollectionToggle
             pressed={shinyCaught}
-            label={shinyCaught ? 'Shiny caught' : 'Mark shiny caught'}
+            label="Shiny caught"
+            pokemonName={entry.name}
             icon={<Sparkles />}
             onToggle={() => onToggleCollection('shiny')}
           />

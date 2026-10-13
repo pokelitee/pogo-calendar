@@ -82,7 +82,7 @@ function WhatsNewPage() {
     <li key={item.id} className="flex items-center gap-3 text-sm">
       {item.assetUrl !== undefined && (
         <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted">
-          <DataImage src={item.assetUrl} alt={item.title} className="max-h-full max-w-full object-contain" />
+          <DataImage src={item.assetUrl} alt="" className="max-h-full max-w-full object-contain" />
         </span>
       )}
       <span className="min-w-0">
@@ -139,9 +139,10 @@ function WhatsNewPage() {
                 </h2>
                 <RouterLink
                   to={GAME_DATA_PAGES[kind].path}
+                  aria-label={`View all ${GAME_DATA_PAGES[kind].title}`}
                   className="text-xs font-semibold text-primary no-underline hover:underline"
                 >
-                  View all →
+                  View all <span aria-hidden="true">→</span>
                 </RouterLink>
               </div>
               <ul className="flex flex-col gap-2.5">{kindItems.map(renderItem)}</ul>

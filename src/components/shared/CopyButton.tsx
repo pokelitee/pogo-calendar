@@ -35,6 +35,10 @@ export function CopyButton({ value, label = 'Copy', disabled, ...props }: CopyBu
     <Button {...props} disabled={disabled || !value} onClick={() => void handleCopy()}>
       {status === 'copied' ? <Check /> : <Copy />}
       {status === 'copied' ? 'Copied!' : status === 'failed' ? 'Copy failed' : label}
+      {/* Announces the result even when callers give the button an aria-label. */}
+      <span aria-live="polite" className="sr-only">
+        {status === 'copied' ? 'Copied' : status === 'failed' ? 'Copy failed' : ''}
+      </span>
     </Button>
   );
 }

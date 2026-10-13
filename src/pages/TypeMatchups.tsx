@@ -1,3 +1,4 @@
+import { Check } from 'lucide-react';
 import { useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CopyButton } from '../components/shared/CopyButton';
@@ -135,6 +136,7 @@ function TypeMatchupsPage() {
                         : undefined
                     }
                   >
+                    {active && <Check className="h-3.5 w-3.5" aria-hidden="true" />}
                     {type}
                   </Chip>
                 );
