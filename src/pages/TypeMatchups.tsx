@@ -163,7 +163,7 @@ function TypeMatchupsPage() {
 
               <dl className="flex flex-col gap-3">
                 {matchups.map(({ multiplier, types }) => (
-                  <div key={multiplier} className="grid grid-cols-[8.5rem_1fr] items-start gap-2">
+                  <div key={multiplier} className="grid grid-cols-[10.5rem_1fr] items-start gap-2">
                     <dt className="text-sm">
                       <span className="font-semibold">{MULTIPLIER_LABELS[multiplier] ?? 'Damage'}</span>{' '}
                       <span className="text-muted-foreground">{formatMultiplier(multiplier)}</span>
