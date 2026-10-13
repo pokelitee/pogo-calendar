@@ -16,6 +16,11 @@ updates:
       npm-dependencies:
         patterns: ["*"]
         update-types: [minor, patch]
+    ignore:
+      # Node's types must match the Node version CI runs (22, set in the
+      # workflows' setup-node); bump both together by hand.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: "/"
