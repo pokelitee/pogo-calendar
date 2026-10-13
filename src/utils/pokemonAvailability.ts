@@ -40,10 +40,9 @@ export interface AvailabilityData {
 }
 
 // Event fields that are not ways to obtain a Pokémon: `bonuses` is text,
-// `moves` lists Pokémon that learn a special move, and `shiny` lists shinies
-// that mostly repeat the event's spawns or raids (some, like evolutions,
-// can't be obtained at the event at all, and leak-duck marks every entry
-// shiny_available: false).
+// `moves` lists Pokémon that learn a special move, and `shiny` lists which
+// shinies the event offers, mostly repeating its spawns or raids and sometimes
+// naming Pokémon, like evolutions, that can't be obtained at the event itself.
 const NON_SOURCE_EVENT_FIELDS = new Set(['bonuses', 'moves', 'shiny']);
 
 // LeekDuck sprite filenames carry the Pokédex number in one of these forms:
