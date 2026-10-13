@@ -46,8 +46,8 @@ export function RotatingPokemonSprite({ eventId, rotate, sprites }: RotatingPoke
   const activeIndex = rotationIndex % availableSprites.length;
 
   return (
-    // The sprite is drawn larger than its slot so it pops out of the event
-    // pill without making the row taller.
+    // The sprite is drawn larger than its slot and bottom-aligned, so it pops
+    // out the top of the event pill without making the row taller.
     <span className="relative z-10 size-6 shrink-0" aria-hidden="true">
       {availableSprites.map((sprite, index) => (
         <img
@@ -56,7 +56,7 @@ export function RotatingPokemonSprite({ eventId, rotate, sprites }: RotatingPoke
           alt=""
           draggable={false}
           className={cn(
-            'pointer-events-none absolute -inset-1 size-8 max-w-none object-contain transition-[opacity,transform] duration-300 ease-in-out',
+            'pointer-events-none absolute -left-1 bottom-0 size-8 max-w-none origin-bottom object-contain transition-[opacity,transform] duration-300 ease-in-out',
             index === activeIndex ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
           )}
           onError={() => {
