@@ -100,7 +100,7 @@ src/
 ├── hooks/             # Data fetching and state hooks
 ├── lib/               # Class name helper for Tailwind
 ├── pages/             # Lazy-loaded pages (Calendar, data pages, tools, FAQ)
-├── services/          # leak-duck and time zone fetching, and runtime validation
+├── services/          # leak-duck fetching and runtime validation
 ├── styles/            # Calendar styles
 ├── types/             # TypeScript definitions for app state and leak-duck data
 └── utils/             # Date/time, calendar, color, and storage helpers, plus the tools' logic
@@ -168,7 +168,7 @@ All game data comes from [leak-duck](https://github.com/pokelitee/leak-duck), se
 | `raid_bosses.json`, `egg_pool.json`, `research_tasks.json`, `rocket_lineups.json` | Data reference pages |
 | `manifest.json` | "Updated" time in the header and the list of available archive years |
 
-The time zone list in Settings comes from [dmfilipenko/timezones.json](https://github.com/dmfilipenko/timezones.json).
+The time zone list in Settings comes from the browser itself (`Intl.supportedValuesOf`), so it needs no network request.
 
 Every leak-duck response is validated in `src/services/dataValidation.ts` before it reaches application state. The schemas are documented in the [leak-duck API reference](https://pokelitee.github.io/leak-duck/#reference).
 

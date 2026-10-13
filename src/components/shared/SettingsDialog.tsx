@@ -1,9 +1,9 @@
 import { MonitorCog, Moon, Sun, X } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { dayOptions } from '../../config/eventFilter';
 import { useSettingsContext } from '../../hooks/useSettingsContext';
-import { fetchTimezones } from '../../services/eventService';
-import type { Settings, ThemeSetting, Timezone } from '../../types/settings';
+import type { Settings, ThemeSetting } from '../../types/settings';
+import { getTimeZoneOptions } from '../../utils/timeZones';
 import { Button } from '../ui/button';
 import { Combobox } from '../ui/combobox';
 import { IconButton } from '../ui/icon-button';
@@ -50,39 +50,11 @@ function SettingsDialogComponent({
   onRetryEventHistory,
 }: SettingsDialogProps) {
   const { settings } = useSettingsContext();
-  const [timezones, setTimezones] = useState<Timezone[]>([
-    { text: settings.timezone, value: settings.timezone },
-  ]);
-  const [loadingTimezones, setLoadingTimezones] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (open) {
-      const getTimezones = async () => {
-        setLoadingTimezones(true);
-        try {
-          const tzData = await fetchTimezones();
-          const userTimezone = settings.timezone;
-          const userTimezoneInList = tzData.some((tz) => tz.value === userTimezone);
-
-          if (cancelled) return;
-          if (!userTimezoneInList) {
-            setTimezones([{ text: userTimezone, value: userTimezone }, ...tzData]);
-          } else {
-            setTimezones(tzData);
-          }
-        } catch (error) {
-          console.error('Failed to fetch timezones:', error);
-        } finally {
-          if (!cancelled) setLoadingTimezones(false);
-        }
-      };
-      void getTimezones();
-    }
-    return () => {
-      cancelled = true;
-    };
-  }, [open, settings.timezone]);
+  // Built only while the dialog is open; formatting ~400 zones isn't free.
+  const timezones = useMemo(
+    () => (open ? getTimeZoneOptions(settings.timezone) : []),
+    [open, settings.timezone]
+  );
 
   const handleSettingChange = (field: keyof Settings, value: string | number | boolean) => {
     onSettingsChange({ [field]: value });
@@ -252,7 +224,6 @@ function SettingsDialogComponent({
               <Combobox
                 value={settings.timezone}
                 onChange={(value) => handleSettingChange('timezone', value)}
-                loading={loadingTimezones && timezones.length === 1}
                 options={timezones.map((tz) => ({ value: tz.value, label: tz.text }))}
                 placeholder="Select timezone"
                 searchPlaceholder="Search timezones..."
