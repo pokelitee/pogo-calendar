@@ -93,10 +93,24 @@ test('builds the documented preset strings', () => {
   assert.equal(preset('Great League IVs'), 'cp-1500&0-1attack&3-4defense&3-4hp');
   assert.equal(preset('Trade evolutions'), 'tradeevolve&!traded');
   assert.equal(preset('Legacy moves'), '@special');
+  assert.equal(preset('Little Cup IVs'), 'cp-500&0-1attack&3-4defense&3-4hp');
+  assert.equal(preset('Ultra League IVs'), 'cp-2500&0-1attack&3-4defense&3-4hp');
+  assert.equal(preset('Master League IVs'), '3-4attack&3-4defense&3-4hp');
+  assert.equal(preset('Lucky trade candidates'), '!lucky&!traded&year2016,year2017,year2018,year2019');
+  assert.equal(preset('Max Battle Pokémon'), 'dynamax,gigantamax');
+  assert.equal(
+    preset('Today’s catches to transfer'),
+    '0*,1*,2*&!shiny&!lucky&!shadow&!costume&!background&!legendary&!mythical&!ultrabeast&!favorite&!xxs&!xxl&age0'
+  );
   assert.equal(
     preset('Transfer candidates'),
     '0*,1*,2*&!shiny&!lucky&!shadow&!costume&!background&!legendary&!mythical&!ultrabeast&!favorite&!xxs&!xxl'
   );
+});
+
+test('gives every preset a unique label', () => {
+  const labels = SEARCH_PRESETS.map(({ label }) => label);
+  assert.equal(new Set(labels).size, labels.length);
 });
 
 test('uses each search keyword and range only once', () => {

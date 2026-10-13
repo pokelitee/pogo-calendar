@@ -21,8 +21,6 @@ export interface SearchRangeField {
   key: RangeKey;
   label: string;
   hint: string;
-  min?: number;
-  max?: number;
 }
 
 export type SearchSectionField = 'pokemon' | 'tags' | 'stats' | 'moveSlot' | 'moveNames' | 'custom';
@@ -173,17 +171,17 @@ export const SEARCH_TERM_CATEGORIES: SearchTermCategory[] = [
 ];
 
 export const SEARCH_RANGE_FIELDS: SearchRangeField[] = [
-  { key: 'cp', label: 'CP', hint: 'Combat Power', min: 0 },
-  { key: 'hp', label: 'HP', hint: 'Maximum HP', min: 0 },
-  { key: 'mega', label: 'Mega level', hint: '0 (never) to 3 (max)', min: 0, max: 3 },
-  { key: 'year', label: 'Year caught', hint: 'For example 2016', min: 2016 },
-  { key: 'age', label: 'Age (days)', hint: '0 is caught today', min: 0 },
-  { key: 'distance', label: 'Distance (km)', hint: 'From where it was caught', min: 0 },
-  { key: 'buddy', label: 'Buddy level', hint: '0 (never) to 5 (best)', min: 0, max: 5 },
-  { key: 'count', label: 'Owned of the species', hint: 'How many you have', min: 0 },
-  { key: 'countcandy', label: 'Candy', hint: 'Candy for the species', min: 0 },
-  { key: 'countcandyxl', label: 'XL Candy', hint: 'XL Candy for the species', min: 0 },
-  { key: 'candykm', label: 'Buddy Candy distance (km)', hint: '1, 3, 5, or 20', min: 0 },
+  { key: 'cp', label: 'CP', hint: 'Combat Power' },
+  { key: 'hp', label: 'HP', hint: 'Maximum HP' },
+  { key: 'mega', label: 'Mega level', hint: '0 (never) to 3 (max)' },
+  { key: 'year', label: 'Year caught', hint: 'For example 2016' },
+  { key: 'age', label: 'Age (days)', hint: '0 is caught today' },
+  { key: 'distance', label: 'Distance (km)', hint: 'From where it was caught' },
+  { key: 'buddy', label: 'Buddy level', hint: '0 (never) to 5 (best)' },
+  { key: 'count', label: 'Owned of the species', hint: 'How many you have' },
+  { key: 'countcandy', label: 'Candy', hint: 'Candy for the species' },
+  { key: 'countcandyxl', label: 'XL Candy', hint: 'XL Candy for the species' },
+  { key: 'candykm', label: 'Buddy Candy distance (km)', hint: '1, 3, 5, or 20' },
 ];
 
 export const SEARCH_SECTIONS: SearchSection[] = [
@@ -302,43 +300,101 @@ const KEEPER_EXCLUSIONS: Record<string, TermState> = {
   xxl: 'exclude',
 };
 
-export const SEARCH_PRESETS: SearchPreset[] = [
+// IV spreads favored in capped PvP leagues: low attack, high defense and HP.
+const PVP_IVS: Partial<SearchStringState> = { stats: { attack: [0, 1], defense: [3, 4], hp: [3, 4] } };
+
+export interface SearchPresetGroup {
+  title: string;
+  presets: SearchPreset[];
+}
+
+export const SEARCH_PRESET_GROUPS: SearchPresetGroup[] = [
   {
-    label: 'Transfer candidates',
-    description: '0–2★ Pokémon that are not shiny, lucky, shadow, legendary, costumed, or favorited.',
-    state: withTerms({ '0*': 'include', '1*': 'include', '2*': 'include', ...KEEPER_EXCLUSIONS }),
+    title: 'PvP IVs',
+    presets: [
+      {
+        label: 'Little Cup IVs',
+        description: 'PvP-friendly IVs at or under 500 CP.',
+        state: withTerms({}, { ...PVP_IVS, ranges: { cp: { min: '', max: '500' } } }),
+      },
+      {
+        label: 'Great League IVs',
+        description: 'PvP-friendly IVs at or under 1,500 CP.',
+        state: withTerms({}, { ...PVP_IVS, ranges: { cp: { min: '', max: '1500' } } }),
+      },
+      {
+        label: 'Ultra League IVs',
+        description: 'PvP-friendly IVs at or under 2,500 CP.',
+        state: withTerms({}, { ...PVP_IVS, ranges: { cp: { min: '', max: '2500' } } }),
+      },
+      {
+        label: 'Master League IVs',
+        description: 'Uncapped league: three or more bars in every stat.',
+        state: withTerms({}, { stats: { attack: [3, 4], defense: [3, 4], hp: [3, 4] } }),
+      },
+    ],
   },
   {
-    label: 'Hundos',
-    description: 'Perfect 15/15/15 Pokémon.',
-    state: withTerms({ '4*': 'include' }),
+    title: 'Cleanup',
+    presets: [
+      {
+        label: 'Transfer candidates',
+        description: '0–2★ Pokémon that are not shiny, lucky, shadow, legendary, costumed, or favorited.',
+        state: withTerms({ '0*': 'include', '1*': 'include', '2*': 'include', ...KEEPER_EXCLUSIONS }),
+      },
+      {
+        label: 'Today’s catches to transfer',
+        description: 'The same filter, limited to Pokémon caught today.',
+        state: withTerms(
+          { '0*': 'include', '1*': 'include', '2*': 'include', ...KEEPER_EXCLUSIONS },
+          { ranges: { age: { min: '0', max: '0' } } }
+        ),
+      },
+    ],
   },
   {
-    label: 'Nundos',
-    description: 'Zero-IV 0/0/0 Pokémon.',
-    state: withTerms({}, { stats: { attack: [0, 0], defense: [0, 0], hp: [0, 0] } }),
-  },
-  {
-    label: 'Great League IVs',
-    description: 'Low attack, high defense and HP, at or under 1,500 CP.',
-    state: withTerms(
-      {},
-      { ranges: { cp: { min: '', max: '1500' } }, stats: { attack: [0, 1], defense: [3, 4], hp: [3, 4] } }
-    ),
-  },
-  {
-    label: 'Trade evolutions',
-    description: 'Untraded Pokémon that evolve for free after a trade.',
-    state: withTerms({ tradeevolve: 'include', traded: 'exclude' }),
-  },
-  {
-    label: 'New Pokédex entries',
-    description: 'Evolutions that would register a new Pokédex entry.',
-    state: withTerms({ evolvenew: 'include' }),
-  },
-  {
-    label: 'Legacy moves',
-    description: 'Pokémon knowing a move they can no longer learn.',
-    state: withTerms({ '@special': 'include' }),
+    title: 'Collection & Trading',
+    presets: [
+      {
+        label: 'Hundos',
+        description: 'Perfect 15/15/15 Pokémon.',
+        state: withTerms({ '4*': 'include' }),
+      },
+      {
+        label: 'Nundos',
+        description: 'Zero-IV 0/0/0 Pokémon.',
+        state: withTerms({}, { stats: { attack: [0, 0], defense: [0, 0], hp: [0, 0] } }),
+      },
+      {
+        label: 'Lucky trade candidates',
+        description: 'Untraded, non-lucky Pokémon caught 2016–2019, which trade into lucky more often.',
+        state: withTerms(
+          { traded: 'exclude', lucky: 'exclude' },
+          { custom: 'year2016,year2017,year2018,year2019' }
+        ),
+      },
+      {
+        label: 'Trade evolutions',
+        description: 'Untraded Pokémon that evolve for free after a trade.',
+        state: withTerms({ tradeevolve: 'include', traded: 'exclude' }),
+      },
+      {
+        label: 'New Pokédex entries',
+        description: 'Evolutions that would register a new Pokédex entry.',
+        state: withTerms({ evolvenew: 'include' }),
+      },
+      {
+        label: 'Legacy moves',
+        description: 'Pokémon knowing a move they can no longer learn.',
+        state: withTerms({ '@special': 'include' }),
+      },
+      {
+        label: 'Max Battle Pokémon',
+        description: 'Dynamax and Gigantamax Pokémon.',
+        state: withTerms({ dynamax: 'include', gigantamax: 'include' }),
+      },
+    ],
   },
 ];
+
+export const SEARCH_PRESETS: SearchPreset[] = SEARCH_PRESET_GROUPS.flatMap(({ presets }) => presets);
