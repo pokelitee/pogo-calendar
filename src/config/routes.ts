@@ -12,6 +12,7 @@ export const ROUTES = {
   SEARCH_STRING_BUILDER: '/tools/search-string',
   POKEMON_FINDER: '/tools/pokemon-finder',
   TYPE_MATCHUPS: '/tools/type-matchups',
+  BONUS_TRACKER: '/tools/bonuses',
   FAQ: '/faq',
 } as const;
 

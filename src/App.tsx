@@ -32,6 +32,7 @@ const RocketLineupPage = lazy(() => import('./pages/RocketLineup'));
 const SearchStringBuilderPage = lazy(() => import('./pages/SearchStringBuilder'));
 const PokemonFinderPage = lazy(() => import('./pages/PokemonFinder'));
 const TypeMatchupsPage = lazy(() => import('./pages/TypeMatchups'));
+const BonusTrackerPage = lazy(() => import('./pages/BonusTracker'));
 
 function App() {
   const { settings, setSettings } = useSettingsContext();
@@ -163,6 +164,7 @@ function App() {
                 <Route path={ROUTES.SEARCH_STRING_BUILDER} element={<SearchStringBuilderPage />} />
                 <Route path={ROUTES.POKEMON_FINDER} element={<PokemonFinderPage />} />
                 <Route path={ROUTES.TYPE_MATCHUPS} element={<TypeMatchupsPage />} />
+                <Route path={ROUTES.BONUS_TRACKER} element={<BonusTrackerPage />} />
                 <Route path={ROUTES.FAQ} element={<FaqPage />} />
               </Route>
               <Route path="*" element={<Navigate to={ROUTES.CALENDAR} replace />} />

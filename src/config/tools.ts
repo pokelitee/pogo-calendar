@@ -1,4 +1,4 @@
-import { MapPin, Search, Swords, type LucideIcon } from 'lucide-react';
+import { Gift, MapPin, Search, Swords, type LucideIcon } from 'lucide-react';
 import { ROUTES } from './routes';
 
 export interface ToolDefinition {
@@ -22,5 +22,10 @@ export const TOOLS: ToolDefinition[] = [
     label: 'Type Matchups',
     path: ROUTES.TYPE_MATCHUPS,
     icon: Swords,
+  },
+  {
+    label: 'Bonus Tracker',
+    path: ROUTES.BONUS_TRACKER,
+    icon: Gift,
   },
 ];
