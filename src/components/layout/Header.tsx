@@ -105,7 +105,7 @@ interface FilterPanel {
   activeFilterCount: number;
 }
 
-function HeaderComponent({
+function Header({
   onSettingsClick,
   onRefresh,
   onNewEventClick,
@@ -292,4 +292,4 @@ function HeaderComponent({
   );
 }
 
-export default React.memo(HeaderComponent);
+export default Header;

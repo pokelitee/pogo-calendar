@@ -4,10 +4,7 @@ import {
   getArchiveUrl,
 } from '../config/api';
 import type { ApiEvent, CalendarEvent } from '../types/events';
-import {
-  formatInstantInTimeZone,
-  localDateTimeToInstant,
-} from '../utils/eventTimeUtils';
+import { toCalendarEvent } from '../utils/eventTimeUtils';
 import { getEventArchiveYears } from '../utils/eventHistoryUtils';
 import { createDataFetcher, fetchManifest } from './dataService';
 import { parseArchiveEventData, parseEventData } from './dataValidation';
@@ -17,107 +14,21 @@ type ApiResponse = Record<string, ApiEvent[]>;
 // Keyed by year; the stored hash lets a refresh pick up a changed archive.
 const archiveDataCache = new Map<number, { sha256: string; data: ApiResponse }>();
 
-function parseApiTime(
-  time: string | number,
-  isLocal: boolean,
-  timezone: string
-): string {
-  let date: Date;
-
-  if (isLocal && typeof time === 'string') {
-    // Validate the ISO string
-    date = new Date(time);
-    if (isNaN(date.getTime())) {
-      throw new Error(`Invalid ISO date string: ${time}`);
-    }
-    return time;
-  } else if (typeof time === 'number') {
-    // Validate a non-negative integer UNIX timestamp.
-    if (!Number.isInteger(time) || time < 0) {
-      throw new Error(`Invalid UNIX timestamp: ${time}`);
-    }
-    date = new Date(time * 1000);
-    if (isNaN(date.getTime())) {
-      throw new Error(`Invalid date created from UNIX timestamp: ${time}`);
-    }
-  } else {
-    throw new Error(
-      'Invalid time format. Expected ISO string for local time or UNIX timestamp for UTC time.'
-    );
-  }
-
-  return formatInstantInTimeZone(date, timezone);
-}
-
-function getApiInstant(
-  time: string | number,
-  isLocal: boolean,
-  timezone: string
-): string {
-  return isLocal
-    ? localDateTimeToInstant(String(time), timezone).toISOString()
-    : new Date(Number(time) * 1000).toISOString();
-}
-
 /**
- * Transforms the raw API response data into an array of CalendarEvent objects.
- *
- * @param data The raw API response data.
- * @returns An array of CalendarEvent objects.
+ * Converts every event in a leak-duck response, skipping (and logging) any
+ * whose times can't be converted rather than failing the whole calendar.
  */
-function transformApiData(
-  data: ApiResponse,
-  timezone: string
-): CalendarEvent[] {
-  const events: CalendarEvent[] = [];
-
-  Object.values(data).forEach((eventsInCategory) => {
-    eventsInCategory.forEach((event: ApiEvent) => {
+function transformApiData(data: ApiResponse, timezone: string): CalendarEvent[] {
+  return Object.values(data)
+    .flat()
+    .flatMap((event) => {
       try {
-        const startTime = parseApiTime(
-          event.start_time,
-          event.is_local_time,
-          timezone
-        );
-        const endTime = parseApiTime(
-          event.end_time,
-          event.is_local_time,
-          timezone
-        );
-        const startInstant = getApiInstant(
-          event.start_time,
-          event.is_local_time,
-          timezone
-        );
-        const endInstant = getApiInstant(
-          event.end_time,
-          event.is_local_time,
-          timezone
-        );
-
-        events.push({
-          title: event.title,
-          start: startTime,
-          end: endTime,
-          extendedProps: {
-            category: event.category,
-            article_url: event.article_url,
-            banner_url: event.banner_url,
-            description: event.description,
-            is_local_time: event.is_local_time,
-            start_instant: startInstant,
-            end_instant: endInstant,
-            ...event.details,
-          },
-        });
+        return [toCalendarEvent(event, timezone)];
       } catch (error) {
         console.error(`Failed to parse event: ${event.title}`, error);
-        // Skip invalid events rather than crashing the entire app
+        return [];
       }
     });
-  });
-
-  return events;
 }
 
 async function fetchArchiveData(
