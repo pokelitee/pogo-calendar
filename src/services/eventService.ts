@@ -1,11 +1,9 @@
 import {
   EVENTS_URL,
-  TIMEZONES_URL,
   getArchivePath,
   getArchiveUrl,
 } from '../config/api';
 import type { ApiEvent, CalendarEvent } from '../types/events';
-import type { Timezone } from '../types/settings';
 import {
   formatInstantInTimeZone,
   localDateTimeToInstant,
@@ -18,11 +16,6 @@ type ApiResponse = Record<string, ApiEvent[]>;
 
 // Keyed by year; the stored hash lets a refresh pick up a changed archive.
 const archiveDataCache = new Map<number, { sha256: string; data: ApiResponse }>();
-
-interface TimezoneApiItem {
-  text: string;
-  utc: string[];
-}
 
 function parseApiTime(
   time: string | number,
@@ -158,32 +151,4 @@ export const fetchEventHistory = async (
   );
 
   return archives.flatMap((archive) => transformApiData(archive, timezone));
-};
-
-/**
- * Fetches a list of IANA time zones.
- *
- * @returns A promise that resolves to an array of Timezone objects.
- */
-export const fetchTimezones = async (): Promise<Timezone[]> => {
-  const response = await fetch(TIMEZONES_URL);
-  if (!response.ok) {
-    throw new Error(
-      `Timezone API request failed with status ${response.status}`
-    );
-  }
-  const data: unknown = await response.json();
-  if (!Array.isArray(data)) {
-    throw new Error('Timezone API returned an invalid response');
-  }
-
-  return data.flatMap((item) => {
-    if (!item || typeof item !== 'object') return [];
-    const timezone = item as Partial<TimezoneApiItem>;
-    const value = timezone.utc?.[0];
-    if (typeof timezone.text !== 'string' || typeof value !== 'string') {
-      return [];
-    }
-    return [{ text: timezone.text, value }];
-  });
 };

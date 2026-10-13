@@ -88,7 +88,6 @@ interface ComboboxProps {
   placeholder?: string;
   searchPlaceholder?: string;
   emptyText?: string;
-  loading?: boolean;
   className?: string;
 }
 
@@ -99,7 +98,6 @@ export function Combobox({
   placeholder = 'Select…',
   searchPlaceholder = 'Search…',
   emptyText = 'No results found.',
-  loading,
   className,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false);
@@ -116,7 +114,7 @@ export function Combobox({
           )}
         >
           <span className={cn('truncate', !selected && 'text-muted-foreground')}>
-            {loading ? 'Loading…' : selected ? selected.label : placeholder}
+            {selected ? selected.label : placeholder}
           </span>
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </button>
