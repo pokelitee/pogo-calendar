@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: npm
     directory: "/"
     schedule:
-      interval: monthly
+      interval: weekly
     # Packages that must be upgraded together are grouped for every update
     # type; a lone major bump in these sets cannot install.
     groups:
@@ -25,4 +25,7 @@ updates:
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: monthly
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
