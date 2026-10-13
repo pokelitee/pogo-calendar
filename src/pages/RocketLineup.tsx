@@ -243,7 +243,7 @@ function RocketLineupPage() {
     <div>
       <PageHeader
         title="Team GO Rocket Lineups"
-        description="Current Pokémon used by Team GO Rocket leaders"
+        description="Current Pokémon used by Giovanni, the leaders, and every grunt type"
         actions={
           <div className="flex items-center gap-2">
             <CopyDexSearchButton pokemon={encounterPokemon} />

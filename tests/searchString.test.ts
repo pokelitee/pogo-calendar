@@ -99,7 +99,7 @@ test('builds the documented preset strings', () => {
   assert.equal(preset('Lucky trade candidates'), '!lucky&!traded&year2016,year2017,year2018,year2019');
   assert.equal(preset('Max Battle Pokémon'), 'dynamax,gigantamax');
   assert.equal(
-    preset('Today’s catches to transfer'),
+    preset("Today's catches to transfer"),
     '0*,1*,2*&!shiny&!lucky&!shadow&!costume&!background&!legendary&!mythical&!ultrabeast&!favorite&!xxs&!xxl&age0'
   );
   assert.equal(

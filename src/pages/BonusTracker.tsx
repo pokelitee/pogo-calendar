@@ -89,7 +89,7 @@ function BonusTrackerPage() {
     <div>
       <PageHeader
         title="Bonus Tracker"
-        description="Event bonuses active now and coming up, grouped by what they boost."
+        description="Event bonuses active now and coming up, grouped by what they boost"
       />
 
       {availableCategories.length > 1 && (

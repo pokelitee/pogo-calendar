@@ -79,7 +79,7 @@ function TypeMatchupsPage() {
     <div>
       <PageHeader
         title="Type Matchups"
-        description="See what a raid boss or type combination is weak to, then copy a search for counters in your storage."
+        description="See what a raid boss or type combination is weak to, then copy a search for counters in your storage"
       />
 
       <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -151,7 +151,7 @@ function TypeMatchupsPage() {
           ) : (
             <>
               <div className="flex flex-wrap items-center gap-2">
-                <h2 className="text-base font-semibold">{bossName ?? 'Selected types'}</h2>
+                <h2 className="text-base font-semibold">{bossName ?? 'Selected Types'}</h2>
                 {defending.map((type) => (
                   <TypeBadge key={type} type={type} />
                 ))}
@@ -176,7 +176,7 @@ function TypeMatchupsPage() {
               {weaknesses.length > 0 && (
                 <div className="flex flex-col gap-3 border-t border-border pt-4">
                   <div>
-                    <h3 className="text-sm font-semibold">Find counters in your storage</h3>
+                    <h3 className="text-sm font-semibold">Find Counters in Your Storage</h3>
                     <p className="text-xs text-muted-foreground">
                       English search keywords; set the game to English to use them.
                     </p>

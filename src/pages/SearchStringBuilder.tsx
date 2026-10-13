@@ -229,7 +229,7 @@ function SearchStringBuilderPage() {
                 checked={state.includeFamily}
                 onCheckedChange={(checked) => update('includeFamily', checked === true)}
               />
-              Include each named Pokémon’s evolution family
+              Include each named Pokémon's evolution family
             </label>
           </div>
         );
@@ -317,7 +317,7 @@ function SearchStringBuilderPage() {
     <div>
       <PageHeader
         title="Search String Builder"
-        description="Pick filters and copy the result into the search bar of your Pokémon storage."
+        description="Pick filters and copy the result into the search bar of your Pokémon storage"
       />
 
       <Alert variant="info" className="mb-6">

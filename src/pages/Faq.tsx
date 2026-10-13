@@ -91,7 +91,7 @@ const faqData: FaqDataItem[] = [
       {
         type: 'text',
         content:
-          'The Search String Builder turns filters into a search you can paste into your Pokémon storage. Pokémon Finder lists every Pokémon offered by a current or upcoming event, raid, egg, research task, or Rocket encounter, can narrow that to a name, a source, or shiny-eligible Pokémon, and tracks which ones you have caught. Type Matchups shows what a raid boss is weak to and copies a search for counters. Bonus Tracker lists active and upcoming event bonuses by type. What’s New shows what appeared since you last checked.',
+          "The Search String Builder turns filters into a search you can paste into your Pokémon storage. Pokémon Finder lists every Pokémon offered by a current or upcoming event, raid, egg, research task, or Rocket encounter, can narrow that to a name, a source, or shiny-eligible Pokémon, and tracks which ones you have caught. Type Matchups shows what a raid boss is weak to and copies a search for counters. Bonus Tracker lists active and upcoming event bonuses by type. What's New shows what appeared since you last checked.",
       },
       {
         type: 'text',
@@ -197,7 +197,7 @@ function FaqPage() {
     <div className="mx-auto max-w-3xl">
       <PageHeader
         title="Frequently Asked Questions"
-        description="Here are answers to some common questions about the PoGo Event Calendar."
+        description="Here are answers to some common questions about the PoGo Calendar"
       />
       <Accordion type="single" collapsible className="mb-8 flex flex-col gap-2">
         {faqData.map((item) => (

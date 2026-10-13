@@ -41,7 +41,7 @@ function PokemonFinderPage() {
     <div>
       <PageHeader
         title="Pokémon Finder"
-        description="Every Pokémon you can get right now or soon, and where: events, raids, eggs, research, and Team GO Rocket."
+        description="Every Pokémon you can get right now or soon, and where: events, raids, eggs, research, and Team GO Rocket"
       />
 
       <AvailabilityNotice failedSources={failedSources} onRetry={retry} />
@@ -77,7 +77,7 @@ function PokemonFinderPage() {
         </label>
         <label className="flex items-center gap-2.5 text-sm">
           <Checkbox checked={hideCaught} onCheckedChange={(checked) => setHideCaught(checked === true)} />
-          {shinyOnly ? 'Hide shinies I’ve caught' : 'Hide Pokémon I’ve caught'}
+          {shinyOnly ? "Hide shinies I've caught" : "Hide Pokémon I've caught"}
         </label>
       </div>
 

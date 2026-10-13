@@ -18,7 +18,7 @@ export function AvailabilityNotice({ failedSources, onRetry, className }: Availa
     <Alert variant="warning" className={cn('mb-6', className)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span>
-          Couldn’t load {failedSources.join(', ')}, so results may be incomplete.
+          Couldn't load {failedSources.join(', ')}, so results may be incomplete.
         </span>
         <Button variant="outline" size="sm" onClick={onRetry}>
           <RefreshCw />

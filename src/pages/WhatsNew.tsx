@@ -106,7 +106,7 @@ function WhatsNewPage() {
     <div>
       <PageHeader
         title="What's New"
-        description="Events, raid bosses, eggs, research, and Rocket lineups that appeared since you last checked."
+        description="Events, raid bosses, eggs, research, and Rocket lineups that appeared since you last checked"
         actions={
           newItems.length > 0 && (
             <Button variant="outline" onClick={markAllSeen}>
