@@ -1,5 +1,9 @@
+import { Check, Sparkles } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ROUTES } from '../../config/routes';
+import type { CollectionList } from '../../hooks/useCollection';
+import { cn } from '../../lib/utils';
 import {
   POKEMON_SOURCE_KIND_LABELS,
   type PokemonAvailability,
@@ -43,10 +47,49 @@ function SourceRow({ source }: { source: PokemonSource }) {
   );
 }
 
+function CollectionToggle({
+  pressed,
+  label,
+  icon,
+  onToggle,
+}: {
+  pressed: boolean;
+  label: string;
+  icon: ReactNode;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={pressed}
+      onClick={onToggle}
+      className={cn(
+        'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-3.5',
+        pressed ? 'border-success bg-success/10 text-success' : 'border-border text-muted-foreground hover:bg-accent'
+      )}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
+interface PokemonAvailabilityCardProps {
+  entry: PokemonAvailability;
+  caught: boolean;
+  shinyCaught: boolean;
+  onToggleCollection: (list: CollectionList) => void;
+}
+
 /**
- * Shows a Pokémon and where it can be obtained.
+ * Shows a Pokémon, where it can be obtained, and whether the trainer has it.
  */
-export function PokemonAvailabilityCard({ entry }: { entry: PokemonAvailability }) {
+export function PokemonAvailabilityCard({
+  entry,
+  caught,
+  shinyCaught,
+  onToggleCollection,
+}: PokemonAvailabilityCardProps) {
   const { sources } = entry;
   return (
     <Card className="flex gap-4 p-4">
@@ -66,6 +109,20 @@ export function PokemonAvailabilityCard({ entry }: { entry: PokemonAvailability 
             <SourceRow key={index} source={source} />
           ))}
         </ul>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <CollectionToggle
+            pressed={caught}
+            label={caught ? 'Caught' : 'Mark caught'}
+            icon={<Check />}
+            onToggle={() => onToggleCollection('registered')}
+          />
+          <CollectionToggle
+            pressed={shinyCaught}
+            label={shinyCaught ? 'Shiny caught' : 'Mark shiny caught'}
+            icon={<Sparkles />}
+            onToggle={() => onToggleCollection('shiny')}
+          />
+        </div>
       </div>
     </Card>
   );
