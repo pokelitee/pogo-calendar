@@ -11,7 +11,7 @@ import { CUSTOM_EVENT_CATEGORY } from '../../config/constants';
 import { useNoteEditor } from '../../hooks/useNoteEditor';
 import { useSettingsContext } from '../../hooks/useSettingsContext';
 import type { ToastSeverity } from '../../hooks/useToast';
-import { toDisplayPokemon, type CalendarEvent, type EventPokemon } from '../../types/events';
+import type { CalendarEvent, EventPokemon } from '../../types/events';
 import { downloadIcsFile } from '../../utils/calendarUtils';
 import { formatDateLine } from '../../utils/dateUtils';
 import { getPokemonFieldTitle } from '../../utils/eventDetailUtils';
@@ -93,9 +93,9 @@ const PokemonBadge = ({ pokemon }: { pokemon: EventPokemon }) => {
   );
 };
 
-const PokemonChipList = ({ items }: { items: (string | EventPokemon)[] }) => (
+const PokemonChipList = ({ items }: { items: EventPokemon[] }) => (
   <div className="flex flex-wrap gap-1.5">
-    {items.map(toDisplayPokemon).map((pokemon) => (
+    {items.map((pokemon) => (
       <PokemonBadge key={pokemon.name} pokemon={pokemon} />
     ))}
   </div>
@@ -285,42 +285,25 @@ function EventDetailDialog({
                 </div>
               )}
 
-              {Object.entries(eventDetails)
-                .filter(([key, value]) => {
-                  const nonPokemonFields = [
-                    'category',
-                    'article_url',
-                    'banner_url',
-                    'description',
-                    'bonuses',
-                    'id',
-                    'title',
-                    'isCustomEvent',
-                    'isSaved',
-                    'start',
-                    'end',
-                  ];
-                  return (
-                    !nonPokemonFields.includes(key) &&
-                    Array.isArray(value) &&
-                    value.length > 0
-                  );
-                })
-                .map(([key, value]) => (
+              {/* Every array field except bonuses is a Pokémon list. */}
+              {Object.entries(event?.extendedProps ?? {})
+                .filter(
+                  (entry): entry is [string, EventPokemon[]] =>
+                    entry[0] !== 'bonuses' && Array.isArray(entry[1]) && entry[1].length > 0
+                )
+                .map(([key, pokemon]) => (
                   <div key={key} className="py-4">
                     <DetailSection
                       title={getPokemonFieldTitle(key)}
                       action={
                         <CopyDexSearchButton
-                          pokemon={(value as (string | EventPokemon)[]).filter(
-                            (item): item is EventPokemon => typeof item !== 'string'
-                          )}
+                          pokemon={pokemon}
                           context={getPokemonFieldTitle(key)}
                         />
                       }
                     >
                       <PokemonChipList
-                        items={value as (string | EventPokemon)[]}
+                        items={pokemon}
                       />
                     </DetailSection>
                   </div>

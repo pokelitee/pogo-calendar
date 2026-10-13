@@ -94,11 +94,9 @@ export function buildPokemonAvailability(data: AvailabilityData): PokemonAvailab
   data.events?.forEach(({ event, timing }) => {
     Object.entries(event.extendedProps).forEach(([field, value]) => {
       if (NON_SOURCE_EVENT_FIELDS.has(field) || !Array.isArray(value)) return;
-      value.forEach((pokemon: string | EventPokemon) => {
-        // Text-only sections hold plain strings without sprite or shiny data.
-        if (typeof pokemon === 'string') return;
-        add(pokemon, { kind: 'event', group: event.title, detail: field, timing });
-      });
+      (value as EventPokemon[]).forEach((pokemon) =>
+        add(pokemon, { kind: 'event', group: event.title, detail: field, timing })
+      );
     });
   });
 
