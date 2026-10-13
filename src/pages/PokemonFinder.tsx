@@ -92,7 +92,9 @@ function PokemonFinderPage() {
         <>
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm text-muted-foreground">{results.length} Pokémon</p>
-            <CopyDexSearchButton pokemon={results.map((entry) => ({ asset_url: entry.assetUrl }))} />
+            <CopyDexSearchButton
+              pokemon={results.map((entry) => ({ asset_url: entry.assetUrl, dexNumber: entry.dexNumber }))}
+            />
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {results.map((entry) => (

@@ -234,6 +234,11 @@ function RocketLineupPage() {
     return a.localeCompare(b);
   });
 
+  const encounterPokemon = Object.values(filteredData)
+    .flat()
+    .filter((slot) => slot.is_encounter)
+    .flatMap((slot) => slot.pokemons);
+
   return (
     <div>
       <PageHeader
@@ -241,10 +246,7 @@ function RocketLineupPage() {
         description="Current Pokémon used by Team GO Rocket leaders"
         actions={
           <div className="flex items-center gap-2">
-            <CopyDexSearchButton pokemon={Object.values(filteredData)
-                .flat()
-                .filter((slot) => slot.is_encounter)
-                .flatMap((slot) => slot.pokemons)} />
+            <CopyDexSearchButton pokemon={encounterPokemon} />
             <ViewModeToggle value={viewMode} onChange={setViewMode} />
           </div>
         }

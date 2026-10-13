@@ -315,7 +315,6 @@ function EventDetailDialog({
                           pokemon={(value as (string | EventPokemon)[]).filter(
                             (item): item is EventPokemon => typeof item !== 'string'
                           )}
-                          label="Copy search"
                         />
                       }
                     >
