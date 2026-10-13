@@ -8,6 +8,7 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Checkbox } from '../components/ui/checkbox';
+import { Chip } from '../components/ui/chip';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Slider } from '../components/ui/slider';
@@ -96,20 +97,14 @@ function TermChip({
   onToggle: () => void;
 }) {
   return (
-    <button
-      type="button"
+    <Chip
       onClick={onToggle}
       aria-label={`${category} ${term.label}: ${state === 'include' ? 'included' : state === 'exclude' ? 'excluded' : 'not selected'}`}
       title={term.keyword}
-      className={cn(
-        'rounded-full border px-3 py-1 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        state === undefined && 'border-border bg-card text-foreground hover:bg-accent',
-        state === 'include' && 'border-primary bg-primary text-primary-foreground',
-        state === 'exclude' && 'border-destructive bg-destructive/10 text-destructive line-through'
-      )}
+      state={state === 'include' ? 'included' : state === 'exclude' ? 'excluded' : 'off'}
     >
       {state === 'exclude' ? `Not ${term.label}` : term.label}
-    </button>
+    </Chip>
   );
 }
 

@@ -16,6 +16,7 @@ import { ShinyIndicator } from '../shared/ShinyIndicator';
 import { ShinyChip } from '../filters/shared';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
+import { Chip } from '../ui/chip';
 
 const SOURCE_KIND_PATHS: Record<PokemonSourceKind, string> = {
   event: ROUTES.CALENDAR,
@@ -59,18 +60,16 @@ function CollectionToggle({
   onToggle: () => void;
 }) {
   return (
-    <button
-      type="button"
+    <Chip
       aria-pressed={pressed}
       onClick={onToggle}
-      className={cn(
-        'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [&_svg]:size-3.5',
-        pressed ? 'border-success bg-success/10 text-success' : 'border-border text-muted-foreground hover:bg-accent'
-      )}
+      size="sm"
+      state={pressed ? 'success' : 'off'}
+      className={cn('gap-1', !pressed && 'text-muted-foreground')}
     >
       {icon}
       {label}
-    </button>
+    </Chip>
   );
 }
 

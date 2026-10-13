@@ -7,6 +7,7 @@ import { TypeBadge } from '../components/shared/TypeBadge';
 import { Alert } from '../components/ui/alert';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
+import { Chip } from '../components/ui/chip';
 import { Skeleton } from '../components/ui/skeleton';
 import { POKEMON_TYPE_COLORS } from '../config/colorMapping';
 import { usePageData } from '../hooks/usePageData';
@@ -101,21 +102,18 @@ function TypeMatchupsPage() {
                 {bosses.map((boss) => {
                   const active = bossName === boss.name;
                   return (
-                    <button
+                    <Chip
                       key={`${boss.tier}-${boss.name}`}
-                      type="button"
                       aria-pressed={active}
                       onClick={() => selectBoss(boss)}
-                      className={cn(
-                        'flex items-center gap-1.5 rounded-full border py-1 pl-1 pr-3 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                        active ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-card hover:bg-accent'
-                      )}
+                      state={active ? 'selected' : 'off'}
+                      className="pl-1"
                     >
                       <span className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-muted">
                         <DataImage src={boss.asset_url} alt="" className="max-h-full max-w-full object-contain" />
                       </span>
                       {boss.name}
-                    </button>
+                    </Chip>
                   );
                 })}
               </div>
@@ -129,15 +127,11 @@ function TypeMatchupsPage() {
               {POKEMON_TYPES.map((type) => {
                 const active = defending.includes(type);
                 return (
-                  <button
+                  <Chip
                     key={type}
-                    type="button"
                     aria-pressed={active}
                     onClick={() => toggleType(type)}
-                    className={cn(
-                      'rounded-full border-2 px-3 py-1 text-sm font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                      !active && 'border-border bg-card text-foreground hover:bg-accent'
-                    )}
+                    className={cn('border-2 font-semibold', active && 'text-foreground')}
                     style={
                       active
                         ? { borderColor: POKEMON_TYPE_COLORS[type], backgroundColor: `${POKEMON_TYPE_COLORS[type]}33` }
@@ -145,7 +139,7 @@ function TypeMatchupsPage() {
                     }
                   >
                     {type}
-                  </button>
+                  </Chip>
                 );
               })}
             </div>
