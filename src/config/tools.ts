@@ -1,4 +1,4 @@
-import { MapPin, Search, type LucideIcon } from 'lucide-react';
+import { MapPin, Search, Swords, type LucideIcon } from 'lucide-react';
 import { ROUTES } from './routes';
 
 export interface ToolDefinition {
@@ -17,5 +17,10 @@ export const TOOLS: ToolDefinition[] = [
     label: 'Pokémon Finder',
     path: ROUTES.POKEMON_FINDER,
     icon: MapPin,
+  },
+  {
+    label: 'Type Matchups',
+    path: ROUTES.TYPE_MATCHUPS,
+    icon: Swords,
   },
 ];

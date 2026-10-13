@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { ShadowChip, ShinyChip } from '../components/filters/shared';
 import { CopyDexSearchButton } from '../components/shared/CopyDexSearchButton';
 import { DataErrorDisplay } from '../components/shared/DataErrorDisplay';
@@ -12,10 +13,32 @@ import { ViewModeToggle, type ViewMode } from '../components/shared/ViewModeTogg
 import { Alert } from '../components/ui/alert';
 import { Card, INTERACTIVE_CARD_CLASSNAME } from '../components/ui/card';
 import { RAID_TIER_COLORS } from '../config/colorMapping';
+import { ROUTES } from '../config/routes';
 import { usePageFiltersContext } from '../hooks/usePageFiltersContext';
 import { usePageData } from '../hooks/usePageData';
 import { fetchRaidBosses } from '../services/dataService';
 import type { RaidBoss, RaidBossData } from '../types/raidBosses';
+import { getWeaknesses, isPokemonType } from '../utils/typeMatchups';
+
+function RaidBossWeaknesses({ boss }: { boss: RaidBoss }) {
+  const types = boss.types.filter(isPokemonType);
+  const weaknesses = getWeaknesses(types);
+  if (weaknesses.length === 0) return null;
+  return (
+    <div className="flex flex-wrap items-center gap-1">
+      <span className="mr-1 text-xs text-muted-foreground">Weak to</span>
+      {weaknesses.map((type) => (
+        <TypeBadge key={type} type={type} />
+      ))}
+      <RouterLink
+        to={`${ROUTES.TYPE_MATCHUPS}?${new URLSearchParams({ types: types.join(','), boss: boss.name })}`}
+        className="ml-auto text-xs font-semibold text-primary no-underline hover:underline"
+      >
+        Counters →
+      </RouterLink>
+    </div>
+  );
+}
 
 function RaidBossesPage() {
   const { filters, setOptions } = usePageFiltersContext().raidBoss;
@@ -131,6 +154,7 @@ function RaidBossesPage() {
               </p>
             </div>
           </div>
+          <RaidBossWeaknesses boss={boss} />
         </div>
       </div>
     </Card>

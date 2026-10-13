@@ -11,6 +11,7 @@ export const ROUTES = {
   ROCKET_LINEUP: '/rocket-lineup',
   SEARCH_STRING_BUILDER: '/tools/search-string',
   POKEMON_FINDER: '/tools/pokemon-finder',
+  TYPE_MATCHUPS: '/tools/type-matchups',
   FAQ: '/faq',
 } as const;
 
