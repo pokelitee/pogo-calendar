@@ -1,4 +1,4 @@
-import type { CalendarEvent } from '../types/events';
+import type { ApiEvent, CalendarEvent } from '../types/events';
 
 const LOCAL_DATE_TIME_PATTERN =
   /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})$/;
@@ -92,6 +92,45 @@ export function localDateTimeToInstant(
     );
   }
   return result;
+}
+
+/**
+ * Converts one leak-duck event into a CalendarEvent for a time zone. Local-time
+ * events happen at the same wall-clock time everywhere, so they keep their
+ * wall time; other events are Unix timestamps shown in `timeZone`. Both get
+ * canonical instants for status checks and exports. Throws for a time that
+ * can't be converted, such as a local time skipped by a daylight saving change.
+ */
+export function toCalendarEvent(event: ApiEvent, timeZone: string): CalendarEvent {
+  const convert = (time: string | number) => {
+    if (event.is_local_time) {
+      const wallTime = String(time);
+      return { wallTime, instant: localDateTimeToInstant(wallTime, timeZone).toISOString() };
+    }
+    if (typeof time !== 'number' || !Number.isInteger(time) || time < 0) {
+      throw new Error(`Invalid Unix timestamp: ${time}`);
+    }
+    const instant = new Date(time * 1000);
+    return { wallTime: formatInstantInTimeZone(instant, timeZone), instant: instant.toISOString() };
+  };
+  const start = convert(event.start_time);
+  const end = convert(event.end_time);
+
+  return {
+    title: event.title,
+    start: start.wallTime,
+    end: end.wallTime,
+    extendedProps: {
+      category: event.category,
+      article_url: event.article_url,
+      banner_url: event.banner_url,
+      description: event.description,
+      is_local_time: event.is_local_time,
+      start_instant: start.instant,
+      end_instant: end.instant,
+      ...event.details,
+    },
+  };
 }
 
 export function getEventInstant(
