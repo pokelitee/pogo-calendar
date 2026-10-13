@@ -9,6 +9,7 @@ import { PokemonAvailabilityCard } from '../components/tools/PokemonAvailability
 import { Checkbox } from '../components/ui/checkbox';
 import { Input } from '../components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '../components/ui/toggle-group';
+import { useCollection } from '../hooks/useCollection';
 import { usePokemonAvailability } from '../hooks/usePokemonAvailability';
 import {
   POKEMON_SOURCE_KIND_LABELS,
@@ -23,10 +24,17 @@ function PokemonFinderPage() {
   const [query, setQuery] = useState('');
   const [kinds, setKinds] = useState<PokemonSourceKind[]>([]);
   const [shinyOnly, setShinyOnly] = useState(false);
+  const [hideCaught, setHideCaught] = useState(false);
+  const { has: isInCollection, toggle: toggleCollection } = useCollection();
+  // When hunting shinies, "caught" means the shiny has been caught.
+  const caughtList = shinyOnly ? 'shiny' : 'registered';
 
   const results = useMemo(
-    () => filterPokemonAvailability(entries, { query, kinds: new Set(kinds), shinyOnly }),
-    [entries, query, kinds, shinyOnly]
+    () =>
+      filterPokemonAvailability(entries, { query, kinds: new Set(kinds), shinyOnly }).filter(
+        (entry) => !hideCaught || !isInCollection(caughtList, entry.name)
+      ),
+    [entries, query, kinds, shinyOnly, hideCaught, isInCollection, caughtList]
   );
 
   return (
@@ -67,6 +75,10 @@ function PokemonFinderPage() {
           <Checkbox checked={shinyOnly} onCheckedChange={(checked) => setShinyOnly(checked === true)} />
           Shiny available only
         </label>
+        <label className="flex items-center gap-2.5 text-sm">
+          <Checkbox checked={hideCaught} onCheckedChange={(checked) => setHideCaught(checked === true)} />
+          {shinyOnly ? 'Hide shinies I’ve caught' : 'Hide Pokémon I’ve caught'}
+        </label>
       </div>
 
       {loading ? (
@@ -84,7 +96,13 @@ function PokemonFinderPage() {
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {results.map((entry) => (
-              <PokemonAvailabilityCard key={entry.name} entry={entry} />
+              <PokemonAvailabilityCard
+                key={entry.name}
+                entry={entry}
+                caught={isInCollection('registered', entry.name)}
+                shinyCaught={isInCollection('shiny', entry.name)}
+                onToggleCollection={(list) => toggleCollection(list, entry.name)}
+              />
             ))}
           </div>
         </>

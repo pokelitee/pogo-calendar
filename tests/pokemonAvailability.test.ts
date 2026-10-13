@@ -43,6 +43,8 @@ test('collects sources from every data set under one entry per name', () => {
           moves: [pokemon('Zoroark', `${CDN}/pm571.icon.png`)],
         }),
         timing: 'active',
+        start: null,
+        end: new Date('2026-10-02T10:00:00Z'),
       },
     ],
     raidBosses: {
@@ -100,7 +102,9 @@ test('collects sources from every data set under one entry per name', () => {
 
 test('ignores legacy string entries in event details', () => {
   const entries = buildPokemonAvailability({
-    events: [{ event: event('Old Event', { spawns: ['Pidgey'] }), timing: 'upcoming' }],
+    events: [
+      { event: event('Old Event', { spawns: ['Pidgey'] }), timing: 'upcoming', start: null, end: new Date() },
+    ],
   });
 
   assert.deepEqual(entries, []);
