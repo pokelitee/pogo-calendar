@@ -11,18 +11,18 @@ import { Input } from '../components/ui/input';
 import { ToggleGroup, ToggleGroupItem } from '../components/ui/toggle-group';
 import { useCollection } from '../hooks/useCollection';
 import { usePokemonAvailability } from '../hooks/usePokemonAvailability';
+import type { GameDataKind } from '../types/gameData';
 import {
   POKEMON_SOURCE_KIND_LABELS,
   filterPokemonAvailability,
-  type PokemonSourceKind,
 } from '../utils/pokemonAvailability';
 
-const SOURCE_KINDS = Object.keys(POKEMON_SOURCE_KIND_LABELS) as PokemonSourceKind[];
+const SOURCE_KINDS = Object.keys(POKEMON_SOURCE_KIND_LABELS) as GameDataKind[];
 
 function PokemonFinderPage() {
   const { entries, loading, failedSources, retry } = usePokemonAvailability();
   const [query, setQuery] = useState('');
-  const [kinds, setKinds] = useState<PokemonSourceKind[]>([]);
+  const [kinds, setKinds] = useState<GameDataKind[]>([]);
   const [shinyOnly, setShinyOnly] = useState(false);
   const [hideCaught, setHideCaught] = useState(false);
   const { has: isInCollection, toggle: toggleCollection } = useCollection();
@@ -63,7 +63,7 @@ function PokemonFinderPage() {
           aria-label="Filter by source"
           className="flex-wrap self-start"
           value={kinds}
-          onValueChange={(value) => setKinds(value as PokemonSourceKind[])}
+          onValueChange={(value) => setKinds(value as GameDataKind[])}
         >
           {SOURCE_KINDS.map((kind) => (
             <ToggleGroupItem key={kind} value={kind}>

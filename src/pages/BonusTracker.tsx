@@ -1,17 +1,15 @@
 import { formatDistanceToNowStrict } from 'date-fns';
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { DataErrorDisplay } from '../components/shared/DataErrorDisplay';
 import { DataLoadingSkeleton } from '../components/shared/DataLoadingSkeleton';
 import { NoResults } from '../components/shared/NoResults';
 import { PageHeader } from '../components/shared/PageHeader';
 import { Card } from '../components/ui/card';
 import { ToggleGroup, ToggleGroupItem } from '../components/ui/toggle-group';
-import { ROUTES } from '../config/routes';
 import { useEventDataContext } from '../hooks/useEventDataContext';
 import { useNow } from '../hooks/useNow';
+import { useOpenEventOnCalendar } from '../hooks/useOpenEventOnCalendar';
 import { useSettingsContext } from '../hooks/useSettingsContext';
-import type { CalendarEvent } from '../types/events';
 import { BONUS_CATEGORY_LABELS, categorizeBonus, type BonusCategory } from '../utils/bonuses';
 import { formatDateLine } from '../utils/dateUtils';
 import { getCurrentEvents, type EventTiming, type TimedEvent } from '../utils/eventTimeUtils';
@@ -40,9 +38,9 @@ function groupByCategory(entries: BonusEntry[]): [BonusCategory, BonusEntry[]][]
 }
 
 function BonusTrackerPage() {
-  const { allEvents, loading, error, refetchEvents, setSelectedEvent } = useEventDataContext();
+  const { allEvents, loading, error, refetchEvents } = useEventDataContext();
   const { settings } = useSettingsContext();
-  const navigate = useNavigate();
+  const openEvent = useOpenEventOnCalendar();
   const [categories, setCategories] = useState<BonusCategory[]>([]);
   const now = useNow();
 
@@ -69,11 +67,6 @@ function BonusTrackerPage() {
   const visible = entries.filter(
     (entry) => activeCategories.length === 0 || activeCategories.includes(entry.category)
   );
-
-  const openEvent = (event: CalendarEvent) => {
-    setSelectedEvent(event);
-    navigate(ROUTES.CALENDAR);
-  };
 
   const describeTiming = ({ timing, start, end, event }: TimedEvent) =>
     timing === 'active'

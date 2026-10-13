@@ -1,14 +1,13 @@
 import { Check, Sparkles } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { ROUTES } from '../../config/routes';
+import { GAME_DATA_PAGES } from '../../config/gameData';
 import type { CollectionList } from '../../hooks/useCollection';
 import { cn } from '../../lib/utils';
 import {
   POKEMON_SOURCE_KIND_LABELS,
   type PokemonAvailability,
   type PokemonSource,
-  type PokemonSourceKind,
 } from '../../utils/pokemonAvailability';
 import { getPokemonFieldTitle } from '../../utils/eventDetailUtils';
 import { DataImage } from '../shared/DataImage';
@@ -18,18 +17,10 @@ import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Chip } from '../ui/chip';
 
-const SOURCE_KIND_PATHS: Record<PokemonSourceKind, string> = {
-  event: ROUTES.CALENDAR,
-  raid: ROUTES.RAID_BOSSES,
-  egg: ROUTES.EGG_POOL,
-  research: ROUTES.RESEARCH_TASKS,
-  rocket: ROUTES.ROCKET_LINEUP,
-};
-
 function SourceRow({ source }: { source: PokemonSource }) {
   return (
     <li className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-      <RouterLink to={SOURCE_KIND_PATHS[source.kind]} className="no-underline">
+      <RouterLink to={GAME_DATA_PAGES[source.kind].path} className="no-underline">
         <Badge variant="outline" size="sm">
           {POKEMON_SOURCE_KIND_LABELS[source.kind]}
         </Badge>

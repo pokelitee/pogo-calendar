@@ -4,12 +4,12 @@ import { CopyButton } from '../components/shared/CopyButton';
 import { DataImage } from '../components/shared/DataImage';
 import { PageHeader } from '../components/shared/PageHeader';
 import { TypeBadge } from '../components/shared/TypeBadge';
-import { Alert } from '../components/ui/alert';
-import { Button } from '../components/ui/button';
+import { AvailabilityNotice } from '../components/tools/AvailabilityNotice';
 import { Card } from '../components/ui/card';
 import { Chip } from '../components/ui/chip';
 import { Skeleton } from '../components/ui/skeleton';
 import { POKEMON_TYPE_COLORS } from '../config/colorMapping';
+import { GAME_DATA_PAGES } from '../config/gameData';
 import { usePageData } from '../hooks/usePageData';
 import { cn } from '../lib/utils';
 import { fetchRaidBosses } from '../services/dataService';
@@ -89,14 +89,11 @@ function TypeMatchupsPage() {
             {raidBosses.loading ? (
               <Skeleton className="h-24 w-full" />
             ) : raidBosses.error ? (
-              <Alert variant="warning">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <span>{raidBosses.error} You can still pick types below.</span>
-                  <Button variant="outline" size="sm" onClick={raidBosses.refetch}>
-                    Retry
-                  </Button>
-                </div>
-              </Alert>
+              <AvailabilityNotice
+                failedSources={[GAME_DATA_PAGES.raid.title]}
+                onRetry={raidBosses.refetch}
+                className="mb-0"
+              />
             ) : (
               <div className="flex flex-wrap gap-2">
                 {bosses.map((boss) => {

@@ -1,15 +1,14 @@
 import type { EggPoolData } from '../types/eggPool';
 import type { CalendarEvent } from '../types/events';
+import type { GameDataKind } from '../types/gameData';
 import type { RaidBossData } from '../types/raidBosses';
 import type { ResearchTaskData } from '../types/researchTasks';
 import type { RocketLineupData } from '../types/rocketLineup';
 
-export type NewsKind = 'event' | 'raid' | 'egg' | 'research' | 'rocket';
-
-export const NEWS_KINDS: NewsKind[] = ['event', 'raid', 'egg', 'research', 'rocket'];
+export const NEWS_KINDS: GameDataKind[] = ['event', 'raid', 'egg', 'research', 'rocket'];
 
 export interface NewsItem {
-  kind: NewsKind;
+  kind: GameDataKind;
   // Stable identity used to decide whether the item was seen before.
   id: string;
   title: string;
@@ -18,10 +17,10 @@ export interface NewsItem {
   event?: CalendarEvent;
 }
 
-export type NewsItems = Partial<Record<NewsKind, NewsItem[]>>;
+export type NewsItems = Partial<Record<GameDataKind, NewsItem[]>>;
 
 // Item ids per kind, as of the last time the trainer marked news as seen.
-export type SeenSnapshot = Partial<Record<NewsKind, string[]>>;
+export type SeenSnapshot = Partial<Record<GameDataKind, string[]>>;
 
 export interface NewsData {
   // Data sets that failed or are still loading are null and left out.

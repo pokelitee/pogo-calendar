@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import { GAME_DATA_PAGES } from '../config/gameData';
 import {
   fetchEggPool,
   fetchRaidBosses,
@@ -25,11 +26,11 @@ export function useGameData() {
   const currentEvents = useMemo(() => getCurrentEvents(allEvents, now), [allEvents, now]);
 
   const sources = [
-    { label: 'Events', loading: eventsLoading, error: eventsError },
-    { label: 'Raid Bosses', ...raidBosses },
-    { label: 'Egg Pool', ...eggPool },
-    { label: 'Research', ...researchTasks },
-    { label: 'Rocket', ...rocketLineups },
+    { label: GAME_DATA_PAGES.event.title, loading: eventsLoading, error: eventsError },
+    { label: GAME_DATA_PAGES.raid.title, ...raidBosses },
+    { label: GAME_DATA_PAGES.egg.title, ...eggPool },
+    { label: GAME_DATA_PAGES.research.title, ...researchTasks },
+    { label: GAME_DATA_PAGES.rocket.title, ...rocketLineups },
   ];
   const failedSources = sources.filter((source) => source.error).map((source) => source.label);
 

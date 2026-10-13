@@ -1,13 +1,12 @@
 import type { EggPoolData } from '../types/eggPool';
+import type { GameDataKind } from '../types/gameData';
 import type { EventPokemon } from '../types/events';
 import type { RaidBossData } from '../types/raidBosses';
 import type { ResearchTaskData } from '../types/researchTasks';
 import type { RocketLineupData } from '../types/rocketLineup';
 import type { EventTiming, TimedEvent } from './eventTimeUtils';
 
-export type PokemonSourceKind = 'event' | 'raid' | 'egg' | 'research' | 'rocket';
-
-export const POKEMON_SOURCE_KIND_LABELS: Record<PokemonSourceKind, string> = {
+export const POKEMON_SOURCE_KIND_LABELS: Record<GameDataKind, string> = {
   event: 'Event',
   raid: 'Raid',
   egg: 'Egg',
@@ -16,7 +15,7 @@ export const POKEMON_SOURCE_KIND_LABELS: Record<PokemonSourceKind, string> = {
 };
 
 export interface PokemonSource {
-  kind: PokemonSourceKind;
+  kind: GameDataKind;
   // Raid tier, egg type, research task, Rocket member, or event title.
   group: string;
   // Event detail field key (spawns, raids, ...).
@@ -136,7 +135,7 @@ export function buildPokemonAvailability(data: AvailabilityData): PokemonAvailab
 export interface AvailabilityFilters {
   query: string;
   // Empty means every source kind.
-  kinds: ReadonlySet<PokemonSourceKind>;
+  kinds: ReadonlySet<GameDataKind>;
   shinyOnly: boolean;
 }
 
