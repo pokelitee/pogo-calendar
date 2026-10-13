@@ -1,6 +1,6 @@
-# Pokémon GO Event Calendar
+# PoGo Calendar
 
-A comprehensive React application for tracking Pokémon GO events and game data. This project evolved from a simple calendar display into a full-featured platform with interactive calendar views, data reference pages, advanced filtering, custom event management, and a modern, responsive user interface.
+A Pokémon GO event calendar and companion toolkit for tracking events and game data. This project evolved from a simple calendar display into a full-featured platform with interactive calendar views, data reference pages, advanced filtering, custom event management, and a modern, responsive user interface.
 
 ---
 
@@ -15,7 +15,7 @@ You can view the live application here: [pokelitee.github.io/pogo-calendar](http
 ### Dynamic Calendar & Theming
 
 - **Multiple Views:** View events in responsive month and weekly list views, powered by FullCalendar.
-- **Configurable Calendar Display:** Choose an automatic, month, or list default view; set the first day of the week; and show or hide event times in month view.
+- **Configurable Calendar Display:** Choose an automatic, month, or list default view; set the first day of the week; show or hide event times in month view; and pick a time zone and 12- or 24-hour time.
 - **Optional Event History:** Load every yearly archive of official events published by leak-duck, only when enabled in Settings.
 - **Theme Modes:** Choose a light, dark, or automatic system theme with persistence in `localStorage`.
 - **Custom Dark Mode Theming:** Thoroughly styled dark mode that covers all aspects of the calendar, including headers and pop-ups.
@@ -24,10 +24,13 @@ You can view the live application here: [pokelitee.github.io/pogo-calendar](http
 ### Event Management
 
 - **Color-Coded Events:** Events are colored by category, with dynamically generated colors for any new, unknown categories.
-- **Pokémon Event Sprites:** Focused events can display featured Pokémon, raid bosses, or a single spawn directly in the calendar, with optional rotation for small multi-Pokémon groups.
+- **Pokémon Event Sprites:** Focused events can display featured Pokémon, raid bosses, or a single spawn directly in the calendar, with optional rotation for small multi-Pokémon groups. Sprites can be turned off in Settings.
+- **Hover Previews:** On devices with a pointer, hovering an event shows its details without opening it.
 - **Save/Favorite Events:** Mark events as "saved" with a star icon, both on the event and in the details pop-up.
 - **Custom Events:** Full CRUD (Create, Read, Update, Delete) functionality for user-created events.
+- **Event Notes:** Add personal notes to any event from its details pop-up.
 - **"Add to Calendar":** Export any event to a universal `.ics` file that can be imported into Google Calendar, Apple Calendar, Outlook, etc.
+- **Bulk Export:** Export whole categories or a hand-picked set of events to one `.ics` file.
 
 ### Data Reference Pages
 
@@ -35,7 +38,7 @@ You can view the live application here: [pokelitee.github.io/pogo-calendar](http
 - **Raid Bosses:** View active raid bosses by tier (1-star through Mega), including shadow raids, with type, CP range, shiny, and shadow filters.
 - **Research Tasks:** Search research tasks by description or Pokémon reward, and filter by reward type, task category, and shiny availability.
 - **Rocket Lineup:** View current Team GO Rocket lineups for Giovanni, the leaders, and every grunt type, filtered by member, battle slot, encounter, and shiny availability.
-- **Copy Search String:** Each data page, and each Pokémon section of an event, can copy a storage search for the Pokémon shown. It uses Pokédex numbers, so it works in any game language.
+- **Copy Search String:** Each data page, the Pokémon Finder, and each Pokémon section of an event can copy a storage search for the Pokémon shown. It uses Pokédex numbers, so it works in any game language.
 
 The data pages are grouped under the **Game Data** menu.
 
@@ -49,9 +52,9 @@ The data pages are grouped under the **Game Data** menu.
 
 ### Advanced Filtering
 
-- **Calendar Filters:** Filter events by search term, date range, time-of-day range, and category with view-specific settings.
+- **Calendar Filters:** Filter events by search term, date range, time-of-day range, active status, and category, plus advanced filters for featured Pokémon and bonuses.
 - **Page-Specific Filters:** Each data page has tailored filters (tiers, types, shiny status, slots, etc.) with search and bulk selection.
-- **Optimized Category Filter:** Modern pop-up menu for category selection with grouping, color keys, "Select All," and "Clear All" actions.
+- **Grouped Category Filter:** Collapsible category groups with color keys, "Select All," and "Clear All" actions.
 - **Integrated "Saved" Filter:** Filter by your saved events directly from the category menu.
 - **Persistent State:** Calendar filters, custom events, saved events, notes, settings, your caught list, and What's New progress are preserved in `localStorage`.
 
@@ -83,6 +86,7 @@ The data pages are grouped under the **Game Data** menu.
 ```
 src/
 ├── App.tsx, main.tsx  # App shell, hash routing, and entry point
+├── assets/            # Bundled images
 ├── components/
 │   ├── calendar/      # FullCalendar view, event content, sprites
 │   ├── events/        # Event detail, create/edit, and .ics export dialogs
@@ -94,10 +98,12 @@ src/
 ├── config/            # Data URLs, storage keys, colors, routes
 ├── contexts/          # Calendar, event data, custom events, page filters, settings
 ├── hooks/             # Data fetching and state hooks
+├── lib/               # Class name helper for Tailwind
 ├── pages/             # Lazy-loaded pages (Calendar, data pages, tools, FAQ)
-├── services/          # leak-duck fetching and runtime validation
+├── services/          # leak-duck and time zone fetching, and runtime validation
+├── styles/            # Calendar styles
 ├── types/             # TypeScript definitions for app state and leak-duck data
-└── utils/             # Date/time, calendar, color, and storage helpers
+└── utils/             # Date/time, calendar, color, and storage helpers, plus the tools' logic
 tests/                 # Node test runner unit tests
 ```
 
@@ -162,7 +168,9 @@ All game data comes from [leak-duck](https://github.com/pokelitee/leak-duck), se
 | `raid_bosses.json`, `egg_pool.json`, `research_tasks.json`, `rocket_lineups.json` | Data reference pages |
 | `manifest.json` | "Updated" time in the header and the list of available archive years |
 
-Every response is validated in `src/services/dataValidation.ts` before it reaches application state. The schemas are documented in the [leak-duck API reference](https://pokelitee.github.io/leak-duck/#reference).
+The time zone list in Settings comes from [dmfilipenko/timezones.json](https://github.com/dmfilipenko/timezones.json).
+
+Every leak-duck response is validated in `src/services/dataValidation.ts` before it reaches application state. The schemas are documented in the [leak-duck API reference](https://pokelitee.github.io/leak-duck/#reference).
 
 ---
 
