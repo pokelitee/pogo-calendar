@@ -119,3 +119,18 @@ export function updateSnapshot(previous: SeenSnapshot, items: NewsItems): SeenSn
   });
   return next;
 }
+
+/**
+ * Records a baseline for every kind that loaded but has no snapshot yet, such
+ * as one that failed on the first visit. Returns the same object when nothing
+ * was added, so callers can skip a state update.
+ */
+export function addMissingBaselines(seen: SeenSnapshot, items: NewsItems): SeenSnapshot {
+  const missing = NEWS_KINDS.filter((kind) => items[kind] && !seen[kind]);
+  if (missing.length === 0) return seen;
+  const next: SeenSnapshot = { ...seen };
+  missing.forEach((kind) => {
+    next[kind] = items[kind]!.map((item) => item.id);
+  });
+  return next;
+}

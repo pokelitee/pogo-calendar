@@ -18,6 +18,7 @@ import type { CalendarEvent } from '../types/events';
 import { safeGetJSON, safeSetJSON } from '../utils/storageUtils';
 import {
   NEWS_KINDS,
+  addMissingBaselines,
   collectNewsItems,
   findNewItems,
   updateSnapshot,
@@ -69,10 +70,12 @@ function WhatsNewPage() {
 
   const markAllSeen = () => setSeen((previous) => updateSnapshot(previous ?? {}, items));
 
-  // The first visit records a baseline so later visits have something to compare.
+  // Record a baseline for anything that has none yet, so later visits have
+  // something to compare: everything on the first visit, and any data set
+  // that failed on an earlier visit once it loads.
   useEffect(() => {
-    if (!loading && seen === null) setSeen(updateSnapshot({}, items));
-  }, [loading, seen, items]);
+    if (!loading) setSeen((previous) => addMissingBaselines(previous ?? {}, items));
+  }, [loading, items]);
 
   useEffect(() => {
     if (seen) safeSetJSON(SEEN_NEWS_KEY, seen);
