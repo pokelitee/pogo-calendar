@@ -206,15 +206,14 @@ function parseEventDetails(
   path: string
 ): NonNullable<ApiEvent['details']> {
   const details = asRecord(value, path);
+  // Bonuses are text; every other section lists Pokémon with a sprite and
+  // shiny flag.
   return Object.fromEntries(
     Object.entries(details).map(([key, items]) => {
-      const entries = asArray(items, `${path}.${key}`);
-      if (entries.length === 0 || typeof entries[0] === 'string') {
-        return [key, asStringArray(entries, `${path}.${key}`)];
-      }
+      if (key === 'bonuses') return [key, asStringArray(items, `${path}.${key}`)];
       return [
         key,
-        entries.map((item, index) =>
+        asArray(items, `${path}.${key}`).map((item, index) =>
           parseEventPokemon(item, `${path}.${key}[${index}]`)
         ),
       ];

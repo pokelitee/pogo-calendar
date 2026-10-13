@@ -10,11 +10,7 @@ function getPokemonList(event: CalendarEvent, field: PokemonField): EventPokemon
   const value = event.extendedProps[field];
   if (!Array.isArray(value)) return [];
 
-  return (value as (string | EventPokemon)[]).map((item) =>
-    typeof item === 'string'
-      ? { name: item, asset_url: null, shiny_available: false }
-      : item
-  );
+  return value as EventPokemon[];
 }
 
 function withAssets(pokemon: EventPokemon[]): CalendarSprite[] {

@@ -115,25 +115,31 @@ test('rejects a non-string archive description', () => {
   );
 });
 
-test('accepts both legacy and current Pokemon formats in archives', () => {
+test('parses bonuses as text and every other section as Pokemon', () => {
   const parsed = parseArchiveEventData({
     Event: [
       apiEvent({
         details: {
           bonuses: ['2x Stardust'],
-          spawns: ['Zubat'],
-          raids: [
-            { name: 'Palkia', asset_url: null, shiny_available: true },
-          ],
+          spawns: [],
+          raids: [{ name: 'Palkia', asset_url: null, shiny_available: true }],
         },
       }),
     ],
   });
 
-  assert.deepEqual(parsed.Event[0].details.spawns, ['Zubat']);
+  assert.deepEqual(parsed.Event[0].details.bonuses, ['2x Stardust']);
+  assert.deepEqual(parsed.Event[0].details.spawns, []);
   assert.deepEqual(parsed.Event[0].details.raids, [
     { name: 'Palkia', asset_url: null, shiny_available: true },
   ]);
+});
+
+test('rejects plain Pokemon names in event sections', () => {
+  assert.throws(
+    () => parseEventData({ Event: [apiEvent({ details: { spawns: ['Zubat'] } })] }),
+    /events\.Event\[0\]\.details\.spawns\[0\]/
+  );
 });
 
 test('rejects malformed archive records other than the description', () => {

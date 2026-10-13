@@ -3,7 +3,7 @@ import { CUSTOM_EVENT_CATEGORY } from '../config/constants';
 import { useCustomEventsContext } from '../hooks/useCustomEventsContext';
 import { useEventDataContext } from '../hooks/useEventDataContext';
 import { useFilters } from '../hooks/useFilters';
-import { getPokemonName, type CalendarEvent, type NewEventData } from '../types/events';
+import type { CalendarEvent, EventPokemon, NewEventData } from '../types/events';
 import { CalendarContext } from './CalendarContext';
 import { CustomEventsProvider } from './CustomEventsProvider';
 import { EventDataProvider } from './EventDataProvider';
@@ -29,7 +29,7 @@ function getEventMetadata(events: CalendarEvent[]) {
     event.extendedProps.bonuses?.forEach((bonus) => bonuses.add(bonus));
     Object.entries(event.extendedProps).forEach(([key, value]) => {
       if (!NON_POKEMON_FIELDS.has(key) && Array.isArray(value)) {
-        value.forEach((item) => pokemon.add(getPokemonName(item)));
+        (value as EventPokemon[]).forEach((item) => pokemon.add(item.name));
       }
     });
   });

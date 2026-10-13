@@ -94,13 +94,10 @@ test('shows exactly one raid or spawn when higher-priority fields are absent', (
   );
 });
 
-test('omits legacy entries and Pokémon without usable sprite assets', () => {
+test('omits Pokémon without usable sprite assets', () => {
   const missingAsset = { ...pokemon('Missing'), asset_url: null };
   const blankAsset = { ...pokemon('Blank'), asset_url: '  ' };
-  const legacyEvent = eventWith('Event', {});
-  legacyEvent.extendedProps.spawns = ['Legacy'];
 
   assert.deepEqual(getCalendarSprites(eventWith('Event', { features: [missingAsset] })), []);
   assert.deepEqual(getCalendarSprites(eventWith('Event', { raids: [blankAsset] })), []);
-  assert.deepEqual(getCalendarSprites(legacyEvent), []);
 });

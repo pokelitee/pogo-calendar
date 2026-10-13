@@ -101,16 +101,6 @@ test('collects sources from every data set under one entry per name', () => {
   );
 });
 
-test('ignores legacy string entries in event details', () => {
-  const entries = buildPokemonAvailability({
-    events: [
-      { event: event('Old Event', { spawns: ['Pidgey'] }), timing: 'upcoming', start: null, end: new Date() },
-    ],
-  });
-
-  assert.deepEqual(entries, []);
-});
-
 const NO_FILTERS = { query: '', kinds: new Set<never>(), shinyOnly: false };
 
 test('filters names ignoring case and accents, and browses when empty', () => {

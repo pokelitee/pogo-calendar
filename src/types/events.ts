@@ -42,7 +42,8 @@ export interface ApiEvent {
   description?: string;
   details: {
     bonuses?: string[];
-    // All other fields (spawns, raids, shiny, features, eggs, moves) are Pokemon lists.
+    // All other fields (spawns, raids, shiny, features, eggs, moves) are Pokemon
+    // lists; string[] is in the union only so `bonuses` fits the signature.
     [key: string]: string[] | EventPokemon[] | undefined;
   };
 }
@@ -52,19 +53,3 @@ export type NewEventData = {
   start: string;
   end: string;
 };
-
-/**
- * Normalizes a Pokemon-list entry to a display-ready shape. Pokemon sections
- * hold EventPokemon objects, but text-only sections hold plain strings, so an
- * entry may be either.
- */
-export function toDisplayPokemon(item: string | EventPokemon): EventPokemon {
-  return typeof item === 'string' ? { name: item, asset_url: null, shiny_available: false } : item;
-}
-
-/**
- * Returns the display name for a Pokemon-list entry.
- */
-export function getPokemonName(item: string | EventPokemon): string {
-  return toDisplayPokemon(item).name;
-}
