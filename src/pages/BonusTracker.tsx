@@ -9,6 +9,7 @@ import { Card } from '../components/ui/card';
 import { ToggleGroup, ToggleGroupItem } from '../components/ui/toggle-group';
 import { ROUTES } from '../config/routes';
 import { useEventDataContext } from '../hooks/useEventDataContext';
+import { useNow } from '../hooks/useNow';
 import { useSettingsContext } from '../hooks/useSettingsContext';
 import type { CalendarEvent } from '../types/events';
 import { BONUS_CATEGORY_LABELS, categorizeBonus, type BonusCategory } from '../utils/bonuses';
@@ -43,10 +44,11 @@ function BonusTrackerPage() {
   const { settings } = useSettingsContext();
   const navigate = useNavigate();
   const [categories, setCategories] = useState<BonusCategory[]>([]);
+  const now = useNow();
 
   const entries = useMemo(
     () =>
-      getCurrentEvents(allEvents)
+      getCurrentEvents(allEvents, now)
         .flatMap((timed) =>
           (timed.event.extendedProps.bonuses ?? []).map((bonus) => ({
             bonus,
@@ -55,7 +57,7 @@ function BonusTrackerPage() {
           }))
         )
         .sort((a, b) => sortTime(a.timed) - sortTime(b.timed)),
-    [allEvents]
+    [allEvents, now]
   );
 
   const availableCategories = CATEGORY_ORDER.filter((category) =>

@@ -7,6 +7,7 @@ import {
 } from '../services/dataService';
 import { getCurrentEvents } from '../utils/eventTimeUtils';
 import { useEventDataContext } from './useEventDataContext';
+import { useNow } from './useNow';
 import { usePageData } from './usePageData';
 
 /**
@@ -20,7 +21,8 @@ export function useGameData() {
   const rocketLineups = usePageData(fetchRocketLineup);
   const { allEvents, loading: eventsLoading, error: eventsError, refetchEvents } = useEventDataContext();
 
-  const currentEvents = useMemo(() => getCurrentEvents(allEvents), [allEvents]);
+  const now = useNow();
+  const currentEvents = useMemo(() => getCurrentEvents(allEvents, now), [allEvents, now]);
 
   const sources = [
     { label: 'Events', loading: eventsLoading, error: eventsError },
