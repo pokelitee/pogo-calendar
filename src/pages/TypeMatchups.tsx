@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CopyButton } from '../components/shared/CopyButton';
 import { DataImage } from '../components/shared/DataImage';
@@ -44,6 +44,7 @@ function TypeMatchupsPage() {
   const defending = useMemo(() => parseTypes(typesParam), [typesParam]);
   const bossName = searchParams.get('boss');
   const raidBosses = usePageData(fetchRaidBosses, 'Raid bosses could not be loaded.');
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const bosses = useMemo(() => Object.values(raidBosses.data ?? {}).flat(), [raidBosses.data]);
   const matchups = useMemo(() => (defending.length > 0 ? getDefensiveMatchups(defending) : []), [defending]);
@@ -55,6 +56,14 @@ function TypeMatchupsPage() {
     if (types.length > 0) next.set('types', types.join(','));
     if (boss) next.set('boss', boss);
     setSearchParams(next, { replace: true });
+    // On narrow screens the results sit below the pickers; bring them into view.
+    // The desktop results card is sticky near the top, so it never scrolls.
+    requestAnimationFrame(() => {
+      const card = resultsRef.current;
+      if (!card) return;
+      const { top } = card.getBoundingClientRect();
+      if (top < 0 || top > window.innerHeight / 2) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   };
 
   const toggleType = (type: PokemonType) => {
@@ -147,7 +156,7 @@ function TypeMatchupsPage() {
           </Card>
         </div>
 
-        <Card className="flex flex-col gap-4 p-4 lg:sticky lg:top-20">
+        <Card ref={resultsRef} className="flex scroll-mt-20 flex-col gap-4 p-4 lg:sticky lg:top-20">
           {defending.length === 0 ? (
             <p className="text-sm text-muted-foreground">Pick a raid boss or a type to see its matchups.</p>
           ) : (
