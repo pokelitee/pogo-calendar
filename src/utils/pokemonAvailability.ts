@@ -40,9 +40,12 @@ export interface AvailabilityData {
   events?: TimedEvent[];
 }
 
-// Event fields that list Pokémon you can obtain. `moves` lists Pokémon that
-// learn a special move and `bonuses` is text, so neither is a source.
-const NON_SOURCE_EVENT_FIELDS = new Set(['bonuses', 'moves']);
+// Event fields that are not ways to obtain a Pokémon: `bonuses` is text,
+// `moves` lists Pokémon that learn a special move, and `shiny` lists shinies
+// that mostly repeat the event's spawns or raids (some, like evolutions,
+// can't be obtained at the event at all, and leak-duck marks every entry
+// shiny_available: false).
+const NON_SOURCE_EVENT_FIELDS = new Set(['bonuses', 'moves', 'shiny']);
 
 // LeekDuck sprite filenames carry the Pokédex number in one of these forms:
 // pm25.fCOSTUME.icon.png, pokemon_icon_551_00.png, poke_capture_0774_011_....png
@@ -94,7 +97,7 @@ export function buildPokemonAvailability(data: AvailabilityData): PokemonAvailab
     Object.entries(event.extendedProps).forEach(([field, value]) => {
       if (NON_SOURCE_EVENT_FIELDS.has(field) || !Array.isArray(value)) return;
       value.forEach((pokemon: string | EventPokemon) => {
-        // Plain strings are legacy archive entries without sprite or shiny data.
+        // Text-only sections hold plain strings without sprite or shiny data.
         if (typeof pokemon === 'string') return;
         add(pokemon, { kind: 'event', group: event.title, detail: field, timing });
       });

@@ -41,6 +41,7 @@ test('collects sources from every data set under one entry per name', () => {
           spawns: [pokemon('Zorua', `${CDN}/pm570.icon.png`, true)],
           bonuses: ['Triple Stardust'],
           moves: [pokemon('Zoroark', `${CDN}/pm571.icon.png`)],
+          shiny: [pokemon('Zoroark', `${CDN}/pm571.icon.png`)],
         }),
         timing: 'active',
         start: null,
