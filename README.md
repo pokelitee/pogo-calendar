@@ -182,6 +182,12 @@ Every push to `main` is built and deployed to GitHub Pages by `.github/workflows
 
 ---
 
+## Contributing
+
+Follow the [organization contribution guide](https://github.com/pokelitee/.github/blob/main/CONTRIBUTING.md) and the validation commands above. Changes to `main` require a pull request, passing `validate` CI, and resolved review conversations, including changes by administrators. GitHub automatically deletes merged branches. The intended live ruleset is tracked in `.github/rulesets/main.json`; editing that file alone does not apply it. The Pages environment and deployment workflow only permit `main` deployments.
+
+---
+
 ## Credits & Attribution
 
 - The source code for the data scraper is available at [github.com/pokelitee/leak-duck](https://github.com/pokelitee/leak-duck).
