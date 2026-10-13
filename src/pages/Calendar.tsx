@@ -2,6 +2,7 @@ import { CalendarX } from 'lucide-react';
 import { useState } from 'react';
 import { CalendarSkeleton } from '../components/calendar/CalendarSkeleton';
 import EventCalendar from '../components/calendar/EventCalendar';
+import EventDetailDialog from '../components/events/EventDetailDialog';
 import { DataErrorDisplay } from '../components/shared/DataErrorDisplay';
 import { NoResults } from '../components/shared/NoResults';
 import { PageHeader } from '../components/shared/PageHeader';
@@ -21,7 +22,19 @@ interface CalendarPageProps {
 }
 
 function CalendarPage({ onEditEvent, onDeleteEvent, showToast }: CalendarPageProps) {
-  const { loading, error, filteredEvents, setCurrentView, handleResetFilters } = useCalendarContext();
+  const {
+    loading,
+    error,
+    filteredEvents,
+    setCurrentView,
+    handleResetFilters,
+    selectedEvent,
+    setSelectedEvent,
+    savedEventIds,
+    handleToggleSaveEvent,
+    eventNotes,
+    updateNote,
+  } = useCalendarContext();
   const isMobile = useMediaQuery(MOBILE_QUERY);
   const { settings } = useSettingsContext();
 
@@ -76,14 +89,22 @@ function CalendarPage({ onEditEvent, onDeleteEvent, showToast }: CalendarPagePro
           }
         />
       ) : (
-        <EventCalendar
-          view={view}
-          isMobile={isMobile}
-          onEditEvent={onEditEvent}
-          onDeleteEvent={onDeleteEvent}
-          showToast={showToast}
-        />
+        <EventCalendar view={view} isMobile={isMobile} />
       )}
+
+      {/* Rendered outside the calendar so events opened from other pages show
+          even when the current filters hide every event. */}
+      <EventDetailDialog
+        eventNotes={eventNotes}
+        onUpdateNote={updateNote}
+        event={selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+        savedEventIds={savedEventIds}
+        onToggleSaveEvent={handleToggleSaveEvent}
+        onDeleteEvent={onDeleteEvent}
+        onEditEvent={onEditEvent}
+        showToast={showToast}
+      />
     </div>
   );
 }
