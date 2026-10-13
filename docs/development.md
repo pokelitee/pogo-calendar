@@ -50,7 +50,9 @@ Keep data URLs, storage keys, colors, and routes in `src/config/`. Browser `loca
 
 ## Deployment
 
-Every push to `main` is built and deployed to GitHub Pages by `.github/workflows/deploy_pages.yml`, using the official Pages actions. The repository's **Settings > Pages** source must be set to **GitHub Actions**. A deploy can also be started manually from the workflow's **Run workflow** button.
+The CI workflow validates and builds every push to `main`, then uploads a commit-specific site artifact. `.github/workflows/deploy-pages.yml` deploys that exact artifact after the successful main push run; it does not repeat lint, tests, or the build. PR runs cannot trigger deployment. Manual deployment runs the same reusable checks before publishing its artifact. The repository's **Settings > Pages** source must be set to **GitHub Actions**. A deploy can also be started manually from the workflow's **Run workflow** button.
+
+The deployment workflow skips artifacts whose commit is no longer the current `main` head, preventing an older CI run from replacing a newer site. Site artifacts are retained for seven days; use manual deployment to rebuild if an artifact expires.
 
 `vite.config.ts` sets `base: '/pogo-calendar'` to match the repository name.
 
@@ -73,6 +75,6 @@ User settings, notes, custom events, saved events, caught Pokémon, and news pro
 - **Tests fail before running:** use Node.js 22 and install the locked dependencies with `npm ci`; the test command relies on TypeScript stripping.
 - **Data requests fail:** inspect the network response and validation error, then compare with the Leak Duck API contract. Retry after upstream service recovery rather than accepting malformed JSON.
 - **Routes or assets fail after deployment:** retain hash routing and the repository base path in `vite.config.ts`. If forking under a new repository name, update that base path.
-- **Deployment missing or stale:** check `.github/workflows/deploy_pages.yml`, its validation/build steps, Pages source, and the `main` environment restriction. A successful PR check does not itself deploy the site.
+- **Deployment missing or stale:** check `.github/workflows/deploy-pages.yml`, its validation/build steps, Pages source, and the `main` environment restriction. A successful PR check does not itself deploy the site.
 
 The app's [FAQ](https://pokelitee.github.io/pogo-calendar/#/faq) is the user-facing help reference. Keep explanations of changed user behavior there as well as updating the README when a major feature changes.
