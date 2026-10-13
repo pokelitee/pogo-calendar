@@ -66,7 +66,7 @@ export function getDexNumber(assetUrl: string | null | undefined): number | null
 /**
  * Lowercases and strips diacritics so "flabebe" matches "Flabébé".
  */
-export function normalizeSearchText(value: string): string {
+function normalizeSearchText(value: string): string {
   return value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
 }
 

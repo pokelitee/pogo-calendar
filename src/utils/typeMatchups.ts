@@ -92,6 +92,13 @@ export const NOT_VERY_EFFECTIVE_MULTIPLIER = 0.625;
 export const IMMUNE_MULTIPLIER = 0.390625;
 
 /**
+ * Rounds a multiplier so float products such as 1.6 × 1.6 compare and group exactly.
+ */
+export function roundMultiplier(multiplier: number): number {
+  return Math.round(multiplier * 1e6) / 1e6;
+}
+
+/**
  * Returns the damage multiplier for an attacking type against a Pokémon of
  * one or two defending types, using Pokémon GO's multipliers.
  */
@@ -103,8 +110,7 @@ export function getEffectiveness(attacking: PokemonType, defending: readonly Pok
     if (matchups.immune.includes(type)) return total * IMMUNE_MULTIPLIER;
     return total;
   }, 1);
-  // Rounded so float products such as 1.6 × 1.6 compare and group exactly.
-  return Math.round(multiplier * 1e6) / 1e6;
+  return roundMultiplier(multiplier);
 }
 
 export interface EffectivenessGroup {

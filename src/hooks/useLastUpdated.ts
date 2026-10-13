@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { EVENTS_PATH } from '../config/api';
 import { fetchManifest } from '../services/dataService';
 
 /**
@@ -19,7 +20,7 @@ export function useLastUpdated() {
     setError(null);
     try {
       const manifest = await fetchManifest();
-      const updatedAt = manifest.files['events.json']?.updated_at;
+      const updatedAt = manifest.files[EVENTS_PATH]?.updated_at;
       if (requestId === requestIdRef.current) {
         setLastUpdated(
           updatedAt ? format(new Date(updatedAt), 'MMM d, h:mm a') : 'N/A'

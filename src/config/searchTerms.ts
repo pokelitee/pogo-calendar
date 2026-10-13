@@ -397,4 +397,3 @@ export const SEARCH_PRESET_GROUPS: SearchPresetGroup[] = [
   },
 ];
 
-export const SEARCH_PRESETS: SearchPreset[] = SEARCH_PRESET_GROUPS.flatMap(({ presets }) => presets);

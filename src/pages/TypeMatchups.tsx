@@ -16,7 +16,10 @@ import { cn } from '../lib/utils';
 import { fetchRaidBosses } from '../services/dataService';
 import type { RaidBoss } from '../types/raidBosses';
 import {
+  IMMUNE_MULTIPLIER,
+  NOT_VERY_EFFECTIVE_MULTIPLIER,
   POKEMON_TYPES,
+  SUPER_EFFECTIVE_MULTIPLIER,
   buildCounterSearches,
   formatMultiplier,
   getDefensiveMatchups,
@@ -24,16 +27,17 @@ import {
   isPokemonType,
   MAX_DEFENDING_TYPES,
   parseTypeList,
+  roundMultiplier,
   type PokemonType,
 } from '../utils/typeMatchups';
 
 const MULTIPLIER_LABELS: Record<number, string> = {
-  2.56: 'Double weakness',
-  1.6: 'Weak',
+  [roundMultiplier(SUPER_EFFECTIVE_MULTIPLIER ** 2)]: 'Double weakness',
+  [SUPER_EFFECTIVE_MULTIPLIER]: 'Weak',
   1: 'Neutral',
-  0.625: 'Resists',
-  0.390625: 'Double resist',
-  0.244141: 'Triple resist',
+  [NOT_VERY_EFFECTIVE_MULTIPLIER]: 'Resists',
+  [IMMUNE_MULTIPLIER]: 'Double resist',
+  [roundMultiplier(IMMUNE_MULTIPLIER * NOT_VERY_EFFECTIVE_MULTIPLIER)]: 'Triple resist',
 };
 
 function TypeMatchupsPage() {

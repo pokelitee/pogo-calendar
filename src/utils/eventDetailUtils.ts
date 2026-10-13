@@ -12,7 +12,7 @@ const POKEMON_FIELD_TITLES: Record<string, string> = {
  * Returns the display title for an event detail field such as `spawns`.
  */
 export function getPokemonFieldTitle(fieldName: string): string {
-  if (fieldName in POKEMON_FIELD_TITLES) {
+  if (Object.hasOwn(POKEMON_FIELD_TITLES, fieldName)) {
     return POKEMON_FIELD_TITLES[fieldName];
   }
   return fieldName

@@ -17,4 +17,3 @@ export const ROUTES = {
   FAQ: '/faq',
 } as const;
 
-export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
