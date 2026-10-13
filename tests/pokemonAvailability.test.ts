@@ -15,7 +15,7 @@ const pokemon = (name: string, asset_url: string | null, shiny_available = false
   shiny_available,
 });
 
-function event(title: string, details: CalendarEvent['extendedProps']): CalendarEvent {
+function event(title: string, details: Partial<CalendarEvent['extendedProps']>): CalendarEvent {
   return {
     title,
     start: '2026-10-01T10:00:00',
