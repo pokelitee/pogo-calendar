@@ -13,6 +13,7 @@ export const ROUTES = {
   POKEMON_FINDER: '/tools/pokemon-finder',
   TYPE_MATCHUPS: '/tools/type-matchups',
   BONUS_TRACKER: '/tools/bonuses',
+  WHATS_NEW: '/tools/whats-new',
   FAQ: '/faq',
 } as const;
 

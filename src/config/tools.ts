@@ -1,4 +1,4 @@
-import { Gift, MapPin, Search, Swords, type LucideIcon } from 'lucide-react';
+import { BellDot, Gift, MapPin, Search, Swords, type LucideIcon } from 'lucide-react';
 import { ROUTES } from './routes';
 
 export interface ToolDefinition {
@@ -27,5 +27,10 @@ export const TOOLS: ToolDefinition[] = [
     label: 'Bonus Tracker',
     path: ROUTES.BONUS_TRACKER,
     icon: Gift,
+  },
+  {
+    label: "What's New",
+    path: ROUTES.WHATS_NEW,
+    icon: BellDot,
   },
 ];

@@ -5,6 +5,7 @@ export const ALL_FILTERS_KEY = 'pogoCal-allEventFilters';
 export const SETTINGS_KEY = 'pogoCal-settings';
 export const EVENT_NOTES_KEY = 'pogoCal-eventNotes';
 export const COLLECTION_KEY = 'pogoCal-collection';
+export const SEEN_NEWS_KEY = 'pogoCal-seenNews';
 
 // Special Category Names
 export const SAVED_EVENTS_CATEGORY = 'Saved';
